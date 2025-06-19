@@ -244,36 +244,50 @@
             <label><input type="radio" name="coverageAmount" value="250001+"><span>$250,001+</span></label>
           </div>
         </form>
-        <form id="funnel-contact-form" style="display:none;">
-          <h2>Contact Information</h2>
-          <div class="contact-form-fields">
-            <div class="form-field">
-              <input type="text" id="firstName" name="firstName" placeholder="First Name" required>
+        <form id="funnel-contact-form" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/success">
+            <h2>Contact Information</h2>
+            <div class="contact-form-fields">
+                <!-- Hidden field for Netlify -->
+                <input type="hidden" name="form-name" value="contact" />
+                <p class="hidden">
+                    <label>Don't fill this out if you're human: <input name="bot-field" /></label>
+                </p>
+                
+                <div class="form-field">
+                    <input type="text" id="firstName" name="firstName" placeholder="First Name" required>
+                </div>
+                <div class="form-field">
+                    <input type="text" id="lastName" name="lastName" placeholder="Last Name" required>
+                </div>
+                <div class="form-field">
+                    <input type="tel" id="phone" name="phone" placeholder="Phone Number" required>
+                </div>
+                <div class="form-field">
+                    <input type="date" id="dateOfBirth" name="dateOfBirth" placeholder="Date of Birth" required>
+                </div>
+                <div class="form-field">
+                    <input type="email" id="email" name="email" placeholder="Email" required>
+                </div>
+
+                <!-- Hidden fields for funnel data -->
+                <input type="hidden" name="state" id="form-state">
+                <input type="hidden" name="militaryStatus" id="form-military-status">
+                <input type="hidden" name="branchOfService" id="form-branch">
+                <input type="hidden" name="maritalStatus" id="form-marital-status">
+                <input type="hidden" name="coverageAmount" id="form-coverage-amount">
+
+                <div class="consent-checkboxes">
+                    <label class="consent-label">
+                        <input type="checkbox" name="transactionalConsent" required>
+                        <span>By checking this box, I consent to receive transactional messages related to my account, orders, or services I have requested. These messages may include appointment reminders, order confirmations, and account notifications among others. Message frequency may vary. Message & Data rates may apply. Reply HELP for help or STOP to opt-out.</span>
+                    </label>
+                    <label class="consent-label">
+                        <input type="checkbox" name="marketingConsent">
+                        <span>By checking this box, I consent to receive marketing and promotional messages, including special offers, discounts, new product updates among others. Message frequency may vary. Message & Data rates may apply. Reply HELP for help or STOP to opt-out.</span>
+                    </label>
+                </div>
+                <button type="submit" class="cta-button primary">Confirm→</button>
             </div>
-            <div class="form-field">
-              <input type="text" id="lastName" name="lastName" placeholder="Last Name" required>
-            </div>
-            <div class="form-field">
-              <input type="tel" id="phone" name="phone" placeholder="Phone Number" required>
-            </div>
-            <div class="form-field">
-              <input type="date" id="dateOfBirth" name="dateOfBirth" placeholder="Date of Birth" required>
-            </div>
-            <div class="form-field">
-              <input type="email" id="email" name="email" placeholder="Email" required>
-            </div>
-            <div class="consent-checkboxes">
-              <label class="consent-label">
-                <input type="checkbox" name="transactionalConsent" required>
-                <span>By checking this box, I consent to receive transactional messages related to my account, orders, or services I have requested. These messages may include appointment reminders, order confirmations, and account notifications among others. Message frequency may vary. Message & Data rates may apply. Reply HELP for help or STOP to opt-out.</span>
-              </label>
-              <label class="consent-label">
-                <input type="checkbox" name="marketingConsent">
-                <span>By checking this box, I consent to receive marketing and promotional messages, including special offers, discounts, new product updates among others. Message frequency may vary. Message & Data rates may apply. Reply HELP for help or STOP to opt-out.</span>
-              </label>
-            </div>
-            <button type="submit" class="cta-button primary">Confirm</button>
-          </div>
         </form>
       </div>
     </div>

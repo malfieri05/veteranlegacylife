@@ -97,10 +97,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Contact form submission
+    // Contact form submission - handle with Netlify Forms
     document.getElementById('funnel-contact-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
         // Validate required fields
         const requiredFields = ['firstName', 'lastName', 'phone', 'dateOfBirth', 'email'];
         let isValid = true;
@@ -120,27 +118,21 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!transactionalConsent.checked) {
             showFieldError(transactionalConsent.parentElement, 'You must agree to receive transactional messages');
             isValid = false;
+            e.preventDefault();
         }
 
-        if (!isValid) return;
-
-        // Collect form data
-        const formData = {
-            firstName: document.getElementById('firstName').value,
-            lastName: document.getElementById('lastName').value,
-            phone: document.getElementById('phone').value,
-            dateOfBirth: document.getElementById('dateOfBirth').value,
-            email: document.getElementById('email').value,
-            transactionalConsent: transactionalConsent.checked,
-            marketingConsent: document.querySelector('input[name="marketingConsent"]').checked
-        };
-
-        // Here you would typically send the data to your server
-        console.log('Form submitted with data:', formData);
-        
-        // Hide funnel modal and show success message
-        document.querySelector('.funnel-modal').style.display = 'none';
-        showSuccessModal();
+        if (!isValid) {
+            e.preventDefault();
+        } else {
+            // Let Netlify handle the form submission
+            // Show success message after a brief delay
+            setTimeout(() => {
+                showSuccessModal();
+                // Reset the form
+                this.reset();
+                resetFunnel();
+            }, 1000);
+        }
     });
 
     // Close modal when clicking outside
@@ -573,4 +565,33 @@ if ('serviceWorker' in navigator) {
                 console.log('ServiceWorker registration failed');
             });
     });
-} 
+}
+
+// Update the funnel data collection
+document.getElementById('funnel-state-select').addEventListener('change', function() {
+    document.getElementById('form-state').value = this.value;
+});
+
+document.querySelectorAll('#funnel-military-form input[name="militaryStatus"]').forEach(input => {
+    input.addEventListener('change', function() {
+        document.getElementById('form-military-status').value = this.value;
+    });
+});
+
+document.querySelectorAll('#funnel-branch-form input[name="branchOfService"]').forEach(input => {
+    input.addEventListener('change', function() {
+        document.getElementById('form-branch').value = this.value;
+    });
+});
+
+document.querySelectorAll('#funnel-marital-form input[name="maritalStatus"]').forEach(input => {
+    input.addEventListener('change', function() {
+        document.getElementById('form-marital-status').value = this.value;
+    });
+});
+
+document.querySelectorAll('#funnel-coverage-form input[name="coverageAmount"]').forEach(input => {
+    input.addEventListener('change', function() {
+        document.getElementById('form-coverage-amount').value = this.value;
+    });
+});
