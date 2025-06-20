@@ -97,8 +97,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Contact form submission - handle with Netlify Forms
-    document.getElementById('funnel-contact-form').addEventListener('submit', function(e) {
+    // Contact form submission - send to Google Sheets via webhook
+    document.getElementById('funnel-contact-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
         // Validate required fields
         const requiredFields = ['firstName', 'lastName', 'phone', 'dateOfBirth', 'email'];
         let isValid = true;
@@ -118,20 +120,63 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!transactionalConsent.checked) {
             showFieldError(transactionalConsent.parentElement, 'You must agree to receive transactional messages');
             isValid = false;
-            e.preventDefault();
         }
 
-        if (!isValid) {
-            e.preventDefault();
-        } else {
-            // Let Netlify handle the form submission
-            // Show success message after a brief delay
-            setTimeout(() => {
-                showSuccessModal();
-                // Reset the form
-                this.reset();
-                resetFunnel();
-            }, 1000);
+        if (!isValid) return;
+
+        // --- Visual Feedback on Click ---
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.classList.add('is-loading');
+        submitBtn.innerHTML = `<span>Submitting</span><div class="spinner"></div>`;
+        // --- End Visual Feedback ---
+
+        // Collect form data
+        const formData = {
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            phone: document.getElementById('phone').value,
+            dateOfBirth: document.getElementById('dateOfBirth').value,
+            email: document.getElementById('email').value,
+            state: document.getElementById('form-state').value,
+            militaryStatus: document.getElementById('form-military-status').value,
+            branchOfService: document.getElementById('form-branch').value,
+            maritalStatus: document.getElementById('form-marital-status').value,
+            coverageAmount: document.getElementById('form-coverage-amount').value,
+            transactionalConsent: transactionalConsent.checked,
+            marketingConsent: document.querySelector('input[name="marketingConsent"]').checked,
+            timestamp: new Date().toISOString()
+        };
+
+        try {
+            // Send to Google Apps Script web app
+            await fetch('https://script.google.com/macros/s/AKfycbwaToaL8gbbEzdhjjKWG2lP3RZ-AnIa9CX4lN72W8R-O7z_3GmOFqpX32q-LOvoxRHCwg/exec', {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+
+            // With 'no-cors', we can't check the response. We optimistically assume success.
+            
+            // Hide funnel modal and show success message
+            document.querySelector('.funnel-modal').style.display = 'none';
+            showSuccessModal();
+            
+            // ONLY reset the form's input fields, do not touch the funnel state here.
+            this.reset();
+            
+        } catch (error) {
+            console.error('Error:', error);
+            alert('There was an error submitting your information. Please try again.');
+            
+            // --- Re-enable button on error ---
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('is-loading');
+            submitBtn.innerHTML = originalBtnText;
         }
     });
 
@@ -146,15 +191,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Success modal functionality
     function showSuccessModal() {
-        const successModal = document.querySelector('.success-modal');
-        successModal.style.display = 'flex';
-        
-        // Auto close after 3 seconds
-        setTimeout(() => {
-            successModal.style.display = 'none';
-            // Reset the funnel form
-            resetFunnel();
-        }, 3000);
+        const successModal = document.getElementById('success-modal');
+        if (successModal) {
+            successModal.classList.add('active');
+
+            // Automatically hide and reset after 3 seconds
+            setTimeout(hideSuccessModal, 3000);
+        }
+    }
+
+    function hideSuccessModal() {
+        const successModal = document.getElementById('success-modal');
+
+        // Hide the success message
+        if (successModal) {
+            successModal.classList.remove('active');
+        }
+        // Ensure the main funnel stays hidden until next time
+        const funnelModal = document.querySelector('.funnel-modal');
+        if (funnelModal) {
+            funnelModal.style.display = 'none';
+        }
+        // Reset the funnel steps for the next time it's opened
+        resetFunnel();
     }
 
     // Phone number formatting

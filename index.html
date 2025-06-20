@@ -27,20 +27,16 @@
 </head>
 <body>
     <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo-container">
-                    <img src="assets/logo.png" alt="Veteran Legacy Life Logo" class="logo">
-                    <span class="company-name">Veteran Legacy Life</span>
-                </div>
-                <div class="contact-info">
-                    <a href="tel:503764-5097" class="phone-number">
-                        <i class="fas fa-phone"></i>
-                        503 764-5097
-                    </a>
-                </div>
-            </div>
+    <header>
+        <div class="header-container">
+            <a href="/" class="brand">
+                <img src="assets/logo.png" alt="Veteran Legacy Life Logo">
+                <span>Veteran Legacy Life</span>
+            </a>
+            <a href="tel:503-764-5097" class="phone">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"></path></svg>
+                <span>503-764-5097</span>
+            </a>
         </div>
     </header>
 
@@ -56,7 +52,7 @@
                     <h2>Veterans & Active Service Members</h2>
                     <h1>You May Qualify for New Life Insurance Benefits in 2025</h1>
                     <p>As a resident of your state, you are entitled to check your eligibility for exclusive life insurance benefits designed specifically for our nation's heroes.</p>
-                    <button class="cta-button qualify-button">See If I Qualify</button>
+                    <button class="cta-button qualify-button">See If I Qualify <span>→</span></button>
                     <div class="security-note">
                         <i class="fas fa-shield-alt"></i>
                         <span>Your information is secure and protected</span>
@@ -244,7 +240,7 @@
             <label><input type="radio" name="coverageAmount" value="250001+"><span>$250,001+</span></label>
           </div>
         </form>
-        <form id="funnel-contact-form" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/success">
+        <form id="funnel-contact-form" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
             <h2>Contact Information</h2>
             <div class="contact-form-fields">
                 <!-- Hidden field for Netlify -->
@@ -286,17 +282,24 @@
                         <span>By checking this box, I consent to receive marketing and promotional messages, including special offers, discounts, new product updates among others. Message frequency may vary. Message & Data rates may apply. Reply HELP for help or STOP to opt-out.</span>
                     </label>
                 </div>
-                <button type="submit" class="cta-button primary">Confirm→</button>
+                <button type="submit" class="cta-button primary">Confirm</button>
             </div>
         </form>
       </div>
     </div>
 
     <!-- Success Modal -->
-    <div class="success-modal">
+    <div id="success-modal" class="modal-overlay">
         <div class="success-modal-content">
+            <div class="success-checkmark">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                    <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+            </div>
             <h2>Thank You!</h2>
-            <p>Your info has been securely collected - someone will reach out shortly!</p>
+            <p class="success-subheading">Your information has been submitted successfully.</p>
+            <p>A member of our team will contact you within 24 hours to discuss your life insurance options.</p>
         </div>
     </div>
 
