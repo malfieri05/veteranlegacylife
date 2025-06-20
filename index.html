@@ -259,7 +259,7 @@
                     <input type="tel" id="phone" name="phone" placeholder="Phone Number" required>
                 </div>
                 <div class="form-field">
-                    <input type="date" id="dateOfBirth" name="dateOfBirth" placeholder="Date of Birth" required>
+                    <input type="text" id="dateOfBirth" name="dateOfBirth" placeholder="Date of Birth" required onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'">
                 </div>
                 <div class="form-field">
                     <input type="email" id="email" name="email" placeholder="Email" required>

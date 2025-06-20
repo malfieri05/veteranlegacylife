@@ -772,8 +772,16 @@ header {
 .form-group input:focus,
 .form-group select:focus {
     outline: none;
-    border-color: var(--accent-color);
-    background: rgba(255, 255, 255, 0.2);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--primary-bg);
+}
+
+input[type="date"]:invalid {
+    color: #999;
+}
+
+.form-field input.error {
+    border-color: var(--secondary-color);
 }
 
 .checkbox-group {
@@ -1329,11 +1337,12 @@ html {
 
 .form-field input:focus {
     outline: none;
-    border-color: #4F46E5;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--primary-bg);
 }
 
 .form-field input.error {
-    border-color: #ef4444;
+    border-color: var(--secondary-color);
 }
 
 .error-message {
