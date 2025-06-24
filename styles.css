@@ -94,22 +94,6 @@ header {
     font-weight: 600;
 }
 
-.phone {
-    font-size: 1.8rem;
-    color: black;
-    font-weight: 600;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.phone svg {
-    width: 28px;
-    height: 28px;
-}
-/* End of New Header Styles */
-
 /* Hero Section */
 .hero {
     background: linear-gradient(135deg, #4169E1 0%, #1E3A8A 100%);
@@ -1074,7 +1058,7 @@ input[type="date"]:invalid {
     }
     
     .hero {
-        padding: 90px 20px 60px;
+        padding: 80px 20px;
     }
     
     .trust-badge {
@@ -1082,6 +1066,102 @@ input[type="date"]:invalid {
         padding: 8px 20px;
         top: 8px;
         font-size: 0.9em;
+    }
+    
+    /* -- Header Adjustments -- */
+    .header-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .brand span {
+        font-size: 1.3rem;
+    }
+    
+    .phone {
+        padding: 6px 12px;
+        font-size: 1.2rem;
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white !important;
+    }
+    
+    .phone-text {
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    
+    .call-now {
+        font-size: 0.8rem;
+        display: block !important;
+        visibility: visible !important;
+        color: rgba(255, 255, 255, 0.9) !important;
+    }
+    
+    .phone-number {
+        font-size: 1.2rem;
+        display: block !important;
+        visibility: visible !important;
+        color: white !important;
+    }
+
+    /* -- Hero Section Adjustments -- */
+    .hero h1 {
+        font-size: 2.2rem;
+    }
+    
+    .hero p.subtitle {
+        font-size: 1rem;
+    }
+
+    #open-funnel-btn {
+        padding: 16px 35px;
+        font-size: 1.2rem;
+    }
+
+    .trust-badge, .insurance-types {
+        text-align: center;
+    }
+
+    /* -- Funnel Modal Adjustments -- */
+    .funnel-modal-content {
+        padding: 20px;
+        width: 95%;
+        max-height: 90vh;
+    }
+
+    .funnel-modal h2 {
+        font-size: 1.5rem;
+    }
+
+    #funnel-state-select, #funnel-state-form .cta-button {
+        width: 100%;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* -- Footer and Other Sections -- */
+    .trust-indicators {
+        justify-content: center;
+    }
+
+    /* -- Success Modal on Mobile -- */
+    .success-modal-content {
+        padding: 30px 20px;
+    }
+    .success-modal-content h2 {
+        font-size: 1.8em;
+    }
+    .success-modal-content p {
+        margin-bottom: 20px;
     }
 }
 
@@ -1566,8 +1646,8 @@ html {
         gap: 10px;
     }
 
-    .brand span, .phone {
-        font-size: 1.3rem; /* Reduce font size on mobile */
+    .brand span {
+        font-size: 1.3rem;
     }
 
     /* -- Hero Section Adjustments -- */
@@ -1596,7 +1676,7 @@ html {
     .funnel-modal-content {
         padding: 20px;
         width: 95%;
-        max-height: 90vh; /* Ensure it doesn't take full screen height */
+        max-height: 90vh;
     }
 
     .funnel-modal h2 {
@@ -1604,11 +1684,11 @@ html {
     }
 
     #funnel-state-select, #funnel-state-form .cta-button {
-        width: 100%; /* Make state selection full-width */
+        width: 100%;
     }
 
     .form-grid {
-        grid-template-columns: 1fr; /* Stack grid items vertically */
+        grid-template-columns: 1fr;
     }
 
     /* -- Footer and Other Sections -- */
@@ -1626,4 +1706,82 @@ html {
     .success-modal-content p {
         margin-bottom: 20px;
     }
+} 
+
+.header {
+    position: relative;
+}
+
+/* Remove .header-phone-right styles if present */
+.header-phone-right { display: none !important; }
+
+@media (max-width: 900px) {
+    .header-phone-right {
+        position: static;
+        transform: none;
+        justify-content: center;
+        margin-top: 10px;
+        width: 100%;
+    }
+    .header-container {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .header-phone-right {
+        position: static;
+        transform: none;
+        justify-content: center;
+        margin-top: 8px;
+        width: 100%;
+    }
+} 
+
+#header-phone, #header-phone * {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: static !important;
+    height: auto !important;
+    width: auto !important;
+    color: white !important;
+} 
+
+#phone-static {
+    position: absolute;
+    top: 18px;
+    right: 5%;
+    font-size: 1.3rem;
+    font-weight: 700;
+    z-index: 999;
+    background: #28a745;
+    color: white;
+    padding: 8px 18px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(40,167,69,0.3);
+}
+#phone-static a {
+    color: white;
+    text-decoration: underline;
+    font-weight: 700;
+}
+@media (max-width: 600px) {
+    #phone-static {
+        position: static;
+        display: block;
+        margin: 10px auto 0 auto;
+        text-align: center;
+        width: 100%;
+        border-radius: 0;
+    }
+} 
+
+.benefit-card-modern-header {
+    min-height: 140px; /* Adjust as needed for your content */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
 } 
