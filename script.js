@@ -66,32 +66,36 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Military status selection
-    document.querySelectorAll('#funnel-military-form input[name="militaryStatus"]').forEach(input => {
-        input.addEventListener('change', () => {
+    const militaryInputs = document.querySelectorAll('#funnel-military-form input[name="militaryStatus"]');
+    militaryInputs.forEach(input => {
+        input.addEventListener('click', () => {
             funnelData.militaryStatus = input.value;
             setTimeout(() => goToNextStep('funnel-military-form'), 300);
         });
     });
 
     // Branch selection
-    document.querySelectorAll('#funnel-branch-form input[name="branchOfService"]').forEach(input => {
-        input.addEventListener('change', () => {
+    const branchInputs = document.querySelectorAll('#funnel-branch-form input[name="branchOfService"]');
+    branchInputs.forEach(input => {
+        input.addEventListener('click', () => {
             funnelData.branchOfService = input.value;
             setTimeout(() => goToNextStep('funnel-branch-form'), 300);
         });
     });
 
     // Marital status selection
-    document.querySelectorAll('#funnel-marital-form input[name="maritalStatus"]').forEach(input => {
-        input.addEventListener('change', () => {
+    const maritalInputs = document.querySelectorAll('#funnel-marital-form input[name="maritalStatus"]');
+    maritalInputs.forEach(input => {
+        input.addEventListener('click', () => {
             funnelData.maritalStatus = input.value;
             setTimeout(() => goToNextStep('funnel-marital-form'), 300);
         });
     });
 
     // Coverage amount selection
-    document.querySelectorAll('#funnel-coverage-form input[name="coverageAmount"]').forEach(input => {
-        input.addEventListener('change', () => {
+    const coverageInputs = document.querySelectorAll('#funnel-coverage-form input[name="coverageAmount"]');
+    coverageInputs.forEach(input => {
+        input.addEventListener('click', () => {
             funnelData.coverageAmount = input.value;
             setTimeout(() => goToNextStep('funnel-coverage-form'), 300);
         });
@@ -254,6 +258,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         field.classList.remove('error');
     }
+
+    document.querySelectorAll('.funnel-back-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const currentForm = this.closest('form');
+            const backStepId = this.getAttribute('data-back');
+            if (currentForm && backStepId) {
+                currentForm.style.display = 'none';
+                document.getElementById(backStepId).style.display = 'block';
+            }
+        });
+    });
 });
 
 // Form handling functionality

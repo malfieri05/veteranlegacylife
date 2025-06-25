@@ -152,14 +152,14 @@
 <body>
     <!-- Header -->
     <header>
-        <div id="phone-static" style="position:absolute;top:18px;right:5%;font-size:1.3rem;font-weight:700;z-index:999;background:#28a745;color:white;padding:8px 18px;border-radius:8px;box-shadow:0 2px 8px rgba(40,167,69,0.3);">
-            Call Now: <a href="tel:503-764-5097" style="color:white;text-decoration:underline;font-weight:700;">503-764-5097</a>
-        </div>
         <div class="header-container">
             <a href="/" class="brand">
                 <img src="assets/logo.png" alt="Veteran Legacy Life Logo">
                 <span>Veteran Legacy Life</span>
             </a>
+            <div class="header-phone">
+                <a href="tel:5037645097" class="header-phone-number">(503) 764-5097</a>
+            </div>
         </div>
     </header>
 
@@ -182,16 +182,16 @@
                     </div>
                     <div class="insurance-types">
                         <div class="insurance-type">
-                            <i class="fas fa-heart"></i>
-                            <span>Whole Life Insurance</span>
+                            <i class="fas fa-star" style="color:#FFD700;"></i>
+                            <span>No 2 year waiting period!</span>
                         </div>
                         <div class="insurance-type">
-                            <i class="fas fa-shield-alt"></i>
-                            <span>IUL with Living Benefits</span>
+                            <i class="fas fa-star" style="color:#FFD700;"></i>
+                            <span>No Medical Exam Needed!</span>
                         </div>
                         <div class="insurance-type">
-                            <i class="fas fa-clock"></i>
-                            <span>Term Life Insurance</span>
+                            <i class="fas fa-star" style="color:#FFD700;"></i>
+                            <span>Premiums never Increase!</span>
                         </div>
                     </div>
                 </div>
@@ -202,7 +202,7 @@
     <!-- Benefits Section -->
     <section class="benefits" id="benefits">
         <div class="container">
-            <h2 class="section-title">2025 Life Insurance Plans for Veterans, Active Service and Family Members</h2>
+            <h2 class="section-title">Plans for Veterans, Active Service and Family Members</h2>
             <div class="benefits-cards-grid">
                 <div class="benefit-card-modern">
                     <div class="benefit-card-modern-header">
@@ -224,7 +224,7 @@
                         <div class="benefit-icon-modern">
                             <i class="fas fa-clock"></i>
                         </div>
-                        <h3>Term Life Insurance</h3>
+                        <h3>Term Insurance</h3>
                         <p>Affordable coverage for a set period, with options to convert to permanent protection.</p>
                     </div>
                     <ul class="benefit-list">
@@ -239,7 +239,7 @@
                         <div class="benefit-icon-modern">
                             <i class="fas fa-chart-line"></i>
                         </div>
-                        <h3>IUL Life Insurance</h3>
+                        <h3>Indexed Universal Life</h3>
                         <p>Indexed Universal Life with market-linked growth and advanced living benefits.</p>
                     </div>
                     <ul class="benefit-list">
@@ -338,6 +338,7 @@
             <label><input type="radio" name="militaryStatus" value="Discharged"><span>Discharged</span></label>
             <label><input type="radio" name="militaryStatus" value="Spouse/family member"><span>Spouse / Family Member</span></label>
           </div>
+          <button type="button" class="funnel-back-btn" data-back="funnel-state-form"><span class="back-arrow">&#8592;</span>Back</button>
         </form>
         <form id="funnel-branch-form" style="display:none;">
           <h2>Branch of Service</h2>
@@ -350,6 +351,7 @@
             <label><input type="radio" name="branchOfService" value="National Guard"><span>National Guard</span></label>
             <label><input type="radio" name="branchOfService" value="Space Force"><span>Space Force</span></label>
           </div>
+          <button type="button" class="funnel-back-btn" data-back="funnel-military-form"><span class="back-arrow">&#8592;</span>Back</button>
         </form>
         <form id="funnel-marital-form" style="display:none;">
           <h2>Current Marital Status</h2>
@@ -358,6 +360,7 @@
             <label><input type="radio" name="maritalStatus" value="Married"><span>Married</span></label>
             <label><input type="radio" name="maritalStatus" value="Divorced"><span>Divorced</span></label>
           </div>
+          <button type="button" class="funnel-back-btn" data-back="funnel-branch-form"><span class="back-arrow">&#8592;</span>Back</button>
         </form>
         <form id="funnel-coverage-form" style="display:none;">
           <h2>Please Select Your Desired Coverage Amount:</h2>
@@ -368,6 +371,7 @@
             <label><input type="radio" name="coverageAmount" value="100001-250000"><span>$100,001 - $250,000</span></label>
             <label><input type="radio" name="coverageAmount" value="250001+"><span>$250,001+</span></label>
           </div>
+          <button type="button" class="funnel-back-btn" data-back="funnel-marital-form"><span class="back-arrow">&#8592;</span>Back</button>
         </form>
         <form id="funnel-contact-form" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
             <h2>Contact Information</h2>
@@ -411,6 +415,7 @@
                         <span>By checking this box, I consent to receive marketing and promotional messages, including special offers, discounts, new product updates among others. Message frequency may vary. Message & Data rates may apply. Reply HELP for help or STOP to opt-out.</span>
                     </label>
                 </div>
+                <button type="button" class="funnel-back-btn" data-back="funnel-coverage-form"><span class="back-arrow">&#8592;</span>Back</button>
                 <button type="submit" class="cta-button primary">Confirm</button>
             </div>
         </form>
