@@ -62,7 +62,7 @@ p {
 /* New Header Styles */
 header {
     background: white;
-    padding: 0.5rem 5%;
+    padding: 0.2rem 5%;
     border-bottom: 1px solid #e0e0e0;
     position: sticky;
     top: 0;
@@ -75,7 +75,7 @@ header {
     align-items: center;
     max-width: 1300px;
     margin: 0 auto;
-    min-height: 56px;
+    min-height: 40px;
 }
 
 .brand {
@@ -85,8 +85,8 @@ header {
 }
 
 .brand img {
-    height: 42px;
-    margin-right: 14px;
+    height: 60px;
+    margin-right: 4px;
 }
 
 .brand span {
@@ -128,8 +128,8 @@ header {
 .trust-badge {
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(10px);
-    border-radius: 40px;
-    padding: 10px 24px;
+    border-radius: 28px;
+    padding: 6px 16px;
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -139,12 +139,16 @@ header {
     position: relative;
     top: 10px;
     transform: none;
-    font-size: 0.95em;
+    font-size: 0.85em;
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 4px rgba(30, 58, 138, 0.10);
 }
 
 .trust-badge i {
-    color: #FFD700;
-    font-size: 18px;
+    font-size: 1.2em;
+    margin-right: 8px;
 }
 
 .trust-badge span {
@@ -1831,7 +1835,7 @@ html {
 .header-phone-number {
     color: #22304a;
     text-decoration: none;
-    font-weight: 700;
+    font-weight: 500;
     font-size: 1.35em;
     letter-spacing: 1px;
 }
