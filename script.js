@@ -579,112 +579,91 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 7000); // 7 second loading time
     });
 
-    // Also handle the "See Results!" button click
+    // Handle the "See Results!" button click - EXACT ChatGPT structure
     document.getElementById('medical-submit').addEventListener('click', function(e) {
         e.preventDefault();
-        console.log('See Results button clicked');
-        
-        // Trigger the same logic as form submission
-        const selected = document.querySelector('input[name="diabetesMedication"]:checked');
-        if (!selected) {
-            showFieldError(document.querySelector('input[name="diabetesMedication"]'), 'Please select an option');
-            return;
-        } else {
-            clearFieldError(document.querySelector('input[name="diabetesMedication"]'));
+        console.log('🚨 See Results button clicked - showing loading modal immediately');
+
+        // Show the loading modal immediately
+        const loadingModal = document.getElementById('medical-processing-modal');
+        if (loadingModal) {
+            loadingModal.style.display = 'flex';
+            loadingModal.style.zIndex = '9999';
+            console.log('✅ Loading modal displayed');
         }
-        
-        medicalAnswers.diabetesMedication = selected.value;
-        console.log('Medical answers:', medicalAnswers);
-        console.log('User age:', userAge);
-        
-        // Combine all funnel data
-        const completeFormData = {
-            ...funnelData,
-            ...funnelData.contactInfo,
-            ...medicalAnswers,
-            timestamp: new Date().toISOString()
-        };
-        
-        console.log('Complete form data:', completeFormData);
-        
-        // Show loading screen IMMEDIATELY
-        const funnelModal = document.getElementById('funnel-modal');
-        const processingModal = document.getElementById('medical-processing-modal');
-        
-        console.log('🚨 SHOWING LOADING MODAL IMMEDIATELY 🚨');
-        console.log('Funnel modal:', funnelModal);
-        console.log('Processing modal:', processingModal);
-        
-        // Hide funnel modal and show processing modal immediately
-        if (funnelModal) funnelModal.style.display = 'none';
-        if (processingModal) {
-            processingModal.style.display = 'flex';
-            processingModal.style.zIndex = '9999';
-        }
-        
-        // Wrap ALL existing transition logic in setTimeout for 7-second delay
+
+        // Wait 7 seconds before continuing
         setTimeout(() => {
-            console.log('⏰ 7 seconds completed - transitioning to congratulations');
+            console.log('⏰ 7 seconds completed - hiding loading modal');
             
-            // Hide loading screen
-            if (processingModal) {
-                processingModal.style.display = 'none';
+            // Hide the loading modal
+            if (loadingModal) {
+                loadingModal.style.display = 'none';
+                console.log('✅ Loading modal hidden');
             }
+
+            // Now trigger the existing logic to show the "Congratulations" modal
+            showCongratulationsModal();
+        }, 7000);
+    });
+
+    // Function to show congratulations modal (existing logic)
+    function showCongratulationsModal() {
+        console.log('🎉 Showing congratulations modal');
+        
+        // Show congratulations modal
+        const congratsModal = document.getElementById('medical-congrats-modal');
+        if (congratsModal) {
+            congratsModal.style.display = 'flex';
+            congratsModal.style.zIndex = '9999';
+            congratsModal.style.opacity = '1';
+            console.log('✅ Congratulations modal displayed');
+        }
+        
+        // Remove any existing event listeners to prevent duplication
+        const getQuoteBtn = document.getElementById('get-quote-btn');
+        if (getQuoteBtn) {
+            const newGetQuoteBtn = getQuoteBtn.cloneNode(true);
+            getQuoteBtn.parentNode.replaceChild(newGetQuoteBtn, getQuoteBtn);
             
-            // Show congratulations modal
-            const congratsModal = document.getElementById('medical-congrats-modal');
-            console.log('Congratulations modal:', congratsModal);
-            
-            if (congratsModal) {
-                congratsModal.style.display = 'flex';
-                congratsModal.style.zIndex = '9999';
-                congratsModal.style.opacity = '1';
-            }
-            
-            // Remove any existing event listeners to prevent duplication
-            const getQuoteBtn = document.getElementById('get-quote-btn');
-            if (getQuoteBtn) {
-                const newGetQuoteBtn = getQuoteBtn.cloneNode(true);
-                getQuoteBtn.parentNode.replaceChild(newGetQuoteBtn, getQuoteBtn);
+            // Add event listener for the "Complete Application" button
+            newGetQuoteBtn.addEventListener('click', function() {
+                console.log('Complete Application button clicked');
+                if (congratsModal) congratsModal.style.display = 'none';
                 
-                // Add event listener for the "Complete Application" button
-                newGetQuoteBtn.addEventListener('click', function() {
-                    console.log('Complete Application button clicked');
-                    if (congratsModal) congratsModal.style.display = 'none';
-                    
-                    // Proceed to quote tool based on age
-                    if (userAge !== null) {
-                        console.log('Routing based on age:', userAge);
-                        // Route based on age
-                        if (userAge <= 60) {
-                            // Show IUL quoting tool for ages 60 and below
-                            document.getElementById('iul-quote-modal').style.display = 'flex';
-                            document.getElementById('iul-quote-modal').classList.add('active');
-                            // Initialize the IUL quote slider if not already done
-                            if (!window.iulQuoteSlider) {
-                                window.iulQuoteSlider = new IULQuoteSlider();
-                            }
-                        } else {
-                            // Show final expense quoting tool for ages 61 and above
-                            document.getElementById('coverage-slider-modal').style.display = 'flex';
-                            document.getElementById('coverage-slider-modal').classList.add('active');
-                            // Initialize the coverage slider if not already done
-                            if (!window.coverageSlider) {
-                                window.coverageSlider = new CoverageSlider();
-                            }
+                // Proceed to quote tool based on age
+                if (userAge !== null) {
+                    console.log('Routing based on age:', userAge);
+                    // Route based on age
+                    if (userAge <= 60) {
+                        // Show IUL quoting tool for ages 60 and below
+                        document.getElementById('iul-quote-modal').style.display = 'flex';
+                        document.getElementById('iul-quote-modal').classList.add('active');
+                        // Initialize the IUL quote slider if not already done
+                        if (!window.iulQuoteSlider) {
+                            window.iulQuoteSlider = new IULQuoteSlider();
                         }
                     } else {
-                        console.log('No age data, defaulting to final expense');
-                        // Default to final expense if no age data
+                        // Show final expense quoting tool for ages 61 and above
                         document.getElementById('coverage-slider-modal').style.display = 'flex';
                         document.getElementById('coverage-slider-modal').classList.add('active');
+                        // Initialize the coverage slider if not already done
                         if (!window.coverageSlider) {
                             window.coverageSlider = new CoverageSlider();
                         }
                     }
-                });
-            }
-        }, 7000); // 7 second loading time
+                } else {
+                    console.log('No age data, defaulting to final expense');
+                    // Default to final expense if no age data
+                    document.getElementById('coverage-slider-modal').style.display = 'flex';
+                    document.getElementById('coverage-slider-modal').classList.add('active');
+                    if (!window.coverageSlider) {
+                        window.coverageSlider = new CoverageSlider();
+                    }
+                }
+            });
+        }
+    }
     });
 
     // Back button for diabetes step
@@ -975,13 +954,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-
-
-
-
-
-
-});
 
 // Form handling functionality
 function initializeFormHandling() {
