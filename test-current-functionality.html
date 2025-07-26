@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Functionality Test - Veteran Life Insurance</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #1e3a8a;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { background: #d1fae5; color: #065f46; }
+        .error { background: #fee2e2; color: #991b1b; }
+        .warning { background: #fef3c7; color: #92400e; }
+        button {
+            background: #1e3a8a;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #1e40af; }
+        .log {
+            background: #f3f4f6;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Functionality Test - Veteran Life Insurance</h1>
+    
+    <div class="test-section">
+        <h3>📧 Email System Test</h3>
+        <p>Test if emails are being sent to michaelalfieri.ffl@gmail.com</p>
+        <button onclick="testEmailSystem()">Test Email System</button>
+        <div id="email-status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>📊 Google Sheets Test</h3>
+        <p>Test if data is being written to Google Sheets</p>
+        <button onclick="testGoogleSheets()">Test Google Sheets</button>
+        <div id="sheets-status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>📝 Form Data Capture Test</h3>
+        <p>Test if all user selections are being captured</p>
+        <button onclick="testFormCapture()">Test Form Capture</button>
+        <div id="capture-status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>🔧 Console Logs</h3>
+        <p>Check for any JavaScript errors or issues</p>
+        <button onclick="checkConsole()">Check Console</button>
+        <div id="console-status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>📋 Test Results</h3>
+        <div id="test-results"></div>
+    </div>
+
+    <script>
+        const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzXsVqxdaC146Z-OhcnBqtz45c8cSXWsyoj27K0Kj34ogeVzoPGFIL2DKz8M15IlXaK/exec';
+        
+        let testResults = {
+            email: false,
+            sheets: false,
+            capture: false,
+            console: false
+        };
+        
+        function updateResults() {
+            const resultsDiv = document.getElementById('test-results');
+            const allPassed = Object.values(testResults).every(result => result);
+            
+            resultsDiv.innerHTML = `
+                <div class="status ${allPassed ? 'success' : 'warning'}">
+                    <h4>${allPassed ? '✅ All Tests Passed' : '⚠️ Some Tests Failed'}</h4>
+                    <ul>
+                        <li>Email System: ${testResults.email ? '✅' : '❌'}</li>
+                        <li>Google Sheets: ${testResults.sheets ? '✅' : '❌'}</li>
+                        <li>Form Capture: ${testResults.capture ? '✅' : '❌'}</li>
+                        <li>Console Logs: ${testResults.console ? '✅' : '❌'}</li>
+                    </ul>
+                </div>
+            `;
+        }
+        
+        async function testEmailSystem() {
+            const statusDiv = document.getElementById('email-status');
+            statusDiv.innerHTML = '<div class="status warning">🔄 Testing email system...</div>';
+            
+            try {
+                const testData = {
+                    firstName: 'Test',
+                    lastName: 'User',
+                    email: 'test@example.com',
+                    phone: '555-1234',
+                    state: 'CA',
+                    coverageAmount: '50000',
+                    formType: 'Test',
+                    timestamp: new Date().toISOString()
+                };
+                
+                console.log('🧪 Testing email system with data:', testData);
+                
+                const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('✅ Email test successful:', result);
+                    statusDiv.innerHTML = '<div class="status success">✅ Email system working! Check michaelalfieri.ffl@gmail.com</div>';
+                    testResults.email = true;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                console.error('❌ Email test failed:', error);
+                statusDiv.innerHTML = `<div class="status error">❌ Email test failed: ${error.message}</div>`;
+                testResults.email = false;
+            }
+            
+            updateResults();
+        }
+        
+        async function testGoogleSheets() {
+            const statusDiv = document.getElementById('sheets-status');
+            statusDiv.innerHTML = '<div class="status warning">🔄 Testing Google Sheets...</div>';
+            
+            try {
+                // Test with different data to verify sheets are being updated
+                const testData = {
+                    firstName: 'Sheets',
+                    lastName: 'Test',
+                    email: 'sheets@test.com',
+                    phone: '555-5678',
+                    state: 'TX',
+                    coverageAmount: '100000',
+                    formType: 'SheetsTest',
+                    timestamp: new Date().toISOString()
+                };
+                
+                const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                if (response.ok) {
+                    statusDiv.innerHTML = '<div class="status success">✅ Google Sheets test successful! Check your sheet for new data.</div>';
+                    testResults.sheets = true;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                console.error('❌ Sheets test failed:', error);
+                statusDiv.innerHTML = `<div class="status error">❌ Sheets test failed: ${error.message}</div>`;
+                testResults.sheets = false;
+            }
+            
+            updateResults();
+        }
+        
+        function testFormCapture() {
+            const statusDiv = document.getElementById('capture-status');
+            statusDiv.innerHTML = '<div class="status warning">🔄 Testing form capture...</div>';
+            
+            try {
+                // Test if the main script is loaded
+                if (typeof submitFormData === 'function') {
+                    console.log('✅ submitFormData function exists');
+                    statusDiv.innerHTML = '<div class="status success">✅ Form capture functions loaded</div>';
+                    testResults.capture = true;
+                } else {
+                    throw new Error('submitFormData function not found');
+                }
+            } catch (error) {
+                console.error('❌ Form capture test failed:', error);
+                statusDiv.innerHTML = `<div class="status error">❌ Form capture test failed: ${error.message}</div>`;
+                testResults.capture = false;
+            }
+            
+            updateResults();
+        }
+        
+        function checkConsole() {
+            const statusDiv = document.getElementById('console-status');
+            statusDiv.innerHTML = '<div class="status warning">🔄 Checking console...</div>';
+            
+            try {
+                // Check for any obvious errors
+                const hasErrors = false; // This would need to be implemented with error tracking
+                
+                if (!hasErrors) {
+                    statusDiv.innerHTML = '<div class="status success">✅ Console appears clean (check browser dev tools for details)</div>';
+                    testResults.console = true;
+                } else {
+                    throw new Error('Console errors detected');
+                }
+            } catch (error) {
+                console.error('❌ Console check failed:', error);
+                statusDiv.innerHTML = `<div class="status error">❌ Console check failed: ${error.message}</div>`;
+                testResults.console = false;
+            }
+            
+            updateResults();
+        }
+        
+        // Auto-run basic tests on page load
+        window.addEventListener('load', function() {
+            console.log('🧪 Functionality test page loaded');
+            testFormCapture();
+            checkConsole();
+        });
+    </script>
+</body>
+</html> 

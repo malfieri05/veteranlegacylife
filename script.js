@@ -680,7 +680,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
             }
-        }, 2000); // 2 second loading time
+        }, 7000); // 7 second loading time
     });
 
     // Back button for diabetes step
