@@ -586,10 +586,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Show the loading modal immediately
         const loadingModal = document.getElementById('medical-processing-modal');
+        const congratsModal = document.getElementById('medical-congrats-modal');
+        
+        // Hide congratulations modal first (in case it's already visible)
+        if (congratsModal) {
+            congratsModal.style.display = 'none';
+        }
+        
         if (loadingModal) {
             loadingModal.style.display = 'flex';
-            loadingModal.style.zIndex = '9999';
-            console.log('✅ Loading modal displayed');
+            loadingModal.style.zIndex = '10000'; // Higher z-index than congratulations modal
+            console.log('✅ Loading modal displayed with z-index 10000');
         }
 
         // Wait 7 seconds before continuing
