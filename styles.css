@@ -100,6 +100,42 @@ header {
     display: inline-block;
 }
 
+/* Header Navigation */
+.header-nav {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin: 0 2rem;
+}
+
+.nav-link {
+    color: #374151;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: color 0.3s ease;
+    position: relative;
+}
+
+.nav-link:hover {
+    color: #3b6eea;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #3b6eea;
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
 /* Hero Section */
 .hero {
     background: linear-gradient(135deg, #4169E1 0%, #1E3A8A 100%);
@@ -670,6 +706,265 @@ header {
 
 .benefit-list li:hover {
     background: none;
+}
+
+/* Comparison Section */
+.comparison {
+    padding: 80px 0;
+    background: #ffffff;
+}
+
+.comparison-table-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow-x: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.comparison-table th,
+.comparison-table td {
+    padding: 1.5rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: top;
+}
+
+.comparison-table th {
+    background: #1e3a8a;
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 1rem;
+}
+
+.comparison-criteria {
+    background: #1e3a8a !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    width: 25%;
+}
+
+.valife-column {
+    background: #1e3a8a !important;
+    width: 37.5%;
+}
+
+.private-column {
+    background: #1e3a8a !important;
+    width: 37.5%;
+}
+
+.column-header {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.valife-logo,
+.private-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 1.5rem;
+}
+
+.valife-logo {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: white;
+}
+
+.private-logo {
+    background: #ffffff;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #e5e7eb;
+}
+
+.private-logo img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 50%;
+}
+
+.column-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.criteria {
+    font-weight: 600;
+    color: #374151;
+    background: #f9fafb;
+}
+
+.valife-cell {
+    background: #fef2f2;
+}
+
+.private-cell {
+    background: #f0fdf4;
+}
+
+.positive {
+    color: #059669;
+    font-weight: 500;
+}
+
+.negative {
+    color: #dc2626;
+    font-weight: 500;
+}
+
+.neutral {
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.comparison-table tbody tr:hover {
+    background: #f9fafb;
+    transition: background-color 0.2s ease;
+}
+
+/* FAQ Section */
+.faq {
+    padding: 4rem 0;
+    background-color: #f8fafc;
+}
+
+.faq-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.faq-item {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+}
+
+.faq-question {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.faq-question:hover {
+    background-color: #f9fafb;
+}
+
+.faq-question h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #374151;
+    flex: 1;
+}
+
+.faq-question i {
+    color: #6b7280;
+    font-size: 0.9rem;
+    transition: transform 0.3s ease;
+}
+
+.faq-item.active .faq-question i {
+    transform: rotate(180deg);
+}
+
+.faq-answer {
+    padding: 0 1.5rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border-top: 1px solid transparent;
+}
+
+.faq-item.active .faq-answer {
+    padding: 1.5rem;
+    max-height: 1000px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.faq-answer p {
+    margin: 0 0 1rem 0;
+    color: #374151;
+    line-height: 1.6;
+}
+
+.faq-answer ul {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+.faq-answer li {
+    margin-bottom: 0.5rem;
+    color: #374151;
+    line-height: 1.6;
+}
+
+.faq-answer strong {
+    color: #1f2937;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .faq-question h3 {
+        font-size: 1rem;
+    }
+    
+    .faq-question,
+    .faq-item.active .faq-answer {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .comparison-table-container {
+        margin: 0 1rem;
+    }
+    
+    .comparison-table th,
+    .comparison-table td {
+        padding: 1rem 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    .column-header h3 {
+        font-size: 1rem;
+    }
+    
+    .valife-logo,
+    .private-logo {
+        width: 50px;
+        height: 50px;
+        font-size: 1.25rem;
+    }
+    
+    .private-logo img {
+        width: 35px;
+        height: 35px;
+    }
 }
 
 /* Why Choose Us Section */
@@ -1363,6 +1658,7 @@ html {
     overflow-y: auto;
     border: 1.5px solid #e5eaf3;
     font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    position: relative;
 }
 
 .funnel-modal form {
@@ -1435,6 +1731,7 @@ html {
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 2px 10px rgba(30,58,138,0.04);
+    min-height: 48px;
 }
 
 .funnel-military-options label:hover {
@@ -1443,6 +1740,11 @@ html {
 
 .funnel-military-options input[type="radio"] {
     margin-right: 1rem;
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .funnel-military-options input[type="radio"]:checked + span {
@@ -1453,6 +1755,62 @@ html {
 .funnel-military-options label:has(input[type="radio"]:checked) {
     border-color: #2563eb;
     background-color: #eaf1fd;
+}
+
+.funnel-military-options span {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    min-height: 20px;
+}
+
+.funnel-checkbox-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.funnel-checkbox-options label {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border: 1px solid #111;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(30,58,138,0.04);
+    min-height: 48px;
+}
+
+.funnel-checkbox-options label:hover {
+    background-color: #f8f8f8;
+}
+
+.funnel-checkbox-options input[type="checkbox"] {
+    margin-right: 1rem;
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.funnel-checkbox-options input[type="checkbox"]:checked + span {
+    font-weight: 600;
+    color: #4F46E5;
+}
+
+.funnel-checkbox-options label:has(input[type="checkbox"]:checked) {
+    border-color: #2563eb;
+    background-color: #eaf1fd;
+}
+
+.funnel-checkbox-options span {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    min-height: 20px;
 }
 
 /* Contact Form Fields */
@@ -1822,35 +2180,40 @@ html {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    background: #eef2f7;
-    border-radius: 999px;
-    padding: 0.18em 1em;
-    box-shadow: 0 2px 10px rgba(59, 110, 234, 0.07);
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: #22304a;
-    margin-left: 1.5em;
-    border: 1.5px solid rgba(0,0,0,0.18);
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #6b7280;
+    margin-left: 1rem;
+    border: 1px solid #e5e7eb;
     box-sizing: border-box;
 }
 .header-phone-number {
-    color: #22304a;
+    color: #6b7280;
     text-decoration: none;
     font-weight: 500;
-    font-size: 1.35em;
-    letter-spacing: 1px;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    margin-left: 0.5rem;
 }
 .header-phone-number:hover {
-    color: #1e3a8a;
+    color: #374151;
     text-decoration: none;
 }
 @media (max-width: 768px) {
+    .header-nav {
+        display: none;
+    }
+    
     .header-phone {
         margin: 10px auto 0 auto;
         justify-content: center;
         width: max-content;
-        font-size: 0.95rem;
-        padding: 0.18em 0.7em;
+        font-size: 0.85rem;
+        padding: 0.4rem 0.8rem;
     }
     .brand img {
         height: 30px;
@@ -1878,7 +2241,7 @@ html {
 
 .header-phone-icon {
     font-size: 1.7rem;
-    color: #22304a;
+    color: #4285F4;
     margin-right: 0.7em;
     margin-left: 1.2em;
     align-self: center;
@@ -1943,4 +2306,2004 @@ html {
     align-items: center !important;
     margin-left: auto !important;
     margin-right: auto !important;
+}
+
+/* Medical Form Styles */
+.medical-form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.medical-form-fields .form-field {
+    margin-bottom: 0;
+}
+
+.medical-form-fields label {
+    display: block;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.radio-options,
+.checkbox-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.radio-options label,
+.checkbox-options label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    margin-bottom: 0;
+}
+
+.radio-options label:hover,
+.checkbox-options label:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.radio-options input[type="radio"],
+.checkbox-options input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.radio-options input[type="radio"]:checked + span,
+.checkbox-options input[type="checkbox"]:checked + span {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.radio-options label:has(input[type="radio"]:checked),
+.checkbox-options label:has(input[type="checkbox"]:checked) {
+    background: #eff6ff;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 1px var(--primary-color);
+}
+
+.radio-options span,
+.checkbox-options span {
+    flex: 1;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+@media (max-width: 640px) {
+    .radio-options label,
+    .checkbox-options label {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.9rem;
+    }
+    
+    .radio-options span,
+    .checkbox-options span {
+        font-size: 0.9rem;
+    }
 } 
+
+/* --- Premium Medical Funnel Styles --- */
+#funnel-medical-form {
+  background: #fff;
+  border-radius: 32px;
+  box-shadow: 0 8px 40px rgba(30,58,138,0.13), 0 1.5px 8px rgba(30,58,138,0.07);
+  padding: 2.5rem 2.2rem 2.2rem 2.2rem;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeInUp 0.7s cubic-bezier(.23,1.01,.32,1) 1;
+}
+
+#funnel-medical-form .medical-form-fields {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2.2rem;
+  align-items: center;
+}
+
+.funnel-step-title {
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #22304a;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.5px;
+}
+.funnel-step-desc {
+  font-size: 1.13rem;
+  color: #6b7a90;
+  text-align: center;
+  margin-bottom: 2.2rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+#funnel-medical-form .form-field {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 0;
+}
+#funnel-medical-form label {
+  font-size: 1.13rem;
+  font-weight: 600;
+  color: #22304a;
+  margin-bottom: 0.7rem;
+  text-align: center;
+  width: 100%;
+}
+#funnel-medical-form input[type="text"],
+#funnel-medical-form input[type="date"] {
+  width: 100%;
+  max-width: 340px;
+  padding: 0.95em 1.1em;
+  border-radius: 12px;
+  border: 1.5px solid #d1d5db;
+  font-size: 1.13rem;
+  background: #f8fafc;
+  color: #22304a;
+  font-weight: 500;
+  margin-bottom: 0.2rem;
+  transition: border 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1.5px 6px rgba(30,58,138,0.04);
+}
+#funnel-medical-form input[type="text"]:focus,
+#funnel-medical-form input[type="date"]:focus {
+  border: 1.5px solid #3b6eea;
+  outline: none;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(59,110,234,0.09);
+}
+
+.funnel-divider {
+  border: none;
+  border-top: 1.5px solid #e5e7eb;
+  margin: 1.2rem 0 0.7rem 0;
+  width: 100%;
+}
+
+.funnel-military-options,
+.funnel-checkbox-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.1rem 1.5rem;
+  width: 100%;
+}
+.funnel-military-options label,
+.funnel-checkbox-options label {
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  background: #f8fafc;
+  border: 1.5px solid #d1d5db;
+  border-radius: 12px;
+  padding: 0.85em 2.1em;
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: #22304a;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(.23,1.01,.32,1);
+  margin-bottom: 0;
+  min-width: 120px;
+  justify-content: center;
+  box-shadow: 0 1.5px 6px rgba(30,58,138,0.04);
+}
+.funnel-military-options label:hover,
+.funnel-checkbox-options label:hover {
+  background: #eaf1ff;
+  border-color: #3b6eea;
+  color: #1e3a8a;
+}
+.funnel-military-options input[type="radio"],
+.funnel-checkbox-options input[type="checkbox"] {
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border: 2px solid #b6c2d6;
+  border-radius: 50%;
+  background: #fff;
+  margin: 0 0.5em 0 0;
+  position: relative;
+  transition: border 0.18s;
+  outline: none;
+  cursor: pointer;
+  display: inline-block;
+}
+.funnel-checkbox-options input[type="checkbox"] {
+  border-radius: 6px;
+}
+.funnel-military-options input[type="radio"]:checked {
+  border: 2px solid #3b6eea;
+  background: #fff;
+}
+.funnel-checkbox-options input[type="checkbox"]:checked {
+  border: 2px solid #3b6eea;
+  background: #3b6eea;
+}
+.funnel-military-options input[type="radio"]:checked:after {
+  content: '';
+  display: block;
+  width: 10px;
+  height: 10px;
+  background: #3b6eea;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.funnel-checkbox-options input[type="checkbox"]:checked:after {
+  content: '';
+  display: block;
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border-radius: 2px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.funnel-military-options input[type="radio"]:focus,
+.funnel-checkbox-options input[type="checkbox"]:focus {
+  border-color: #3b6eea;
+  box-shadow: 0 0 0 2px #c7d7fa;
+}
+.funnel-military-options input[type="radio"] + span,
+.funnel-checkbox-options input[type="checkbox"] + span {
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: #22304a;
+  letter-spacing: 0.01em;
+  transition: color 0.18s;
+}
+.funnel-military-options label:has(input[type="radio"]:checked),
+.funnel-checkbox-options label:has(input[type="checkbox"]:checked) {
+  background: #eaf1ff;
+  border-color: #3b6eea;
+  color: #1e3a8a;
+  box-shadow: 0 2px 12px rgba(59,110,234,0.09);
+}
+
+#funnel-medical-form .cta-button.primary {
+  width: 100%;
+  max-width: 320px;
+  font-size: 1.25rem;
+  font-weight: 800;
+  padding: 1.1em 0;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #3b6eea 0%, #1e3a8a 100%);
+  color: #fff;
+  box-shadow: 0 4px 24px rgba(59,110,234,0.13);
+  border: none;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  transition: background 0.18s, box-shadow 0.18s, transform 0.13s;
+}
+#funnel-medical-form .cta-button.primary:hover {
+  background: linear-gradient(90deg, #1e3a8a 0%, #3b6eea 100%);
+  box-shadow: 0 8px 32px rgba(59,110,234,0.18);
+  transform: translateY(-2px) scale(1.03);
+}
+#funnel-medical-form .funnel-back-btn {
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: #3b6eea;
+  background: #f8fafc;
+  border: 1.5px solid #d1d5db;
+  border-radius: 10px;
+  padding: 0.7em 1.5em;
+  margin-right: 1.2em;
+  transition: background 0.18s, border 0.18s, color 0.18s;
+  box-shadow: 0 1.5px 6px rgba(30,58,138,0.04);
+}
+#funnel-medical-form .funnel-back-btn:hover {
+  background: #eaf1ff;
+  border-color: #3b6eea;
+  color: #1e3a8a;
+}
+
+@media (max-width: 600px) {
+  #funnel-medical-form {
+    padding: 1.2rem 0.5rem 1.2rem 0.5rem;
+    max-width: 98vw;
+    border-radius: 18px;
+  }
+  .funnel-step-title {
+    font-size: 1.3rem;
+  }
+  .funnel-step-desc {
+    font-size: 1rem;
+  }
+  #funnel-medical-form .cta-button.primary {
+    font-size: 1.08rem;
+    padding: 0.8em 0;
+  }
+  .funnel-military-options label,
+  .funnel-checkbox-options label {
+    font-size: 0.98rem;
+    padding: 0.7em 1em;
+  }
+} 
+
+/* --- Enhanced Medical Checkbox Card Styles --- */
+.funnel-checkbox-options {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  width: 100%;
+}
+.funnel-checkbox-options label {
+  width: 100%;
+  max-width: 420px;
+  min-width: 220px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1.1em;
+  background: #f8fafc;
+  border: 2px solid #d1d5db;
+  border-radius: 18px;
+  padding: 1.1em 1.5em;
+  font-size: 1.13rem;
+  font-weight: 700;
+  color: #22304a;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(.23,1.01,.32,1);
+  box-shadow: 0 1.5px 6px rgba(30,58,138,0.04);
+  margin-bottom: 0;
+  text-align: left;
+}
+.funnel-checkbox-options label:hover,
+.funnel-checkbox-options label:focus-within {
+  background: #eaf1ff;
+  border-color: #3b6eea;
+  color: #1e3a8a;
+  box-shadow: 0 4px 18px rgba(59,110,234,0.10);
+}
+.funnel-checkbox-options label:first-child {
+  margin-top: 0.7em;
+}
+.funnel-checkbox-options label:last-child {
+  margin-bottom: 1.7em;
+}
+.funnel-checkbox-options input[type="checkbox"] {
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  border: 2.5px solid #b6c2d6;
+  border-radius: 50%; /* Make it a circle */
+  background: #fff;
+  margin: 0 1.1em 0 0;
+  position: relative;
+  transition: border 0.18s;
+  outline: none;
+  cursor: pointer;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.funnel-checkbox-options input[type="checkbox"]:checked {
+  border: 2.5px solid #3b6eea;
+  background: #fff;
+}
+.funnel-checkbox-options input[type="checkbox"]:checked:after {
+  content: '';
+  display: block;
+  width: 14px;
+  height: 14px;
+  background: #3b6eea;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.funnel-checkbox-options input[type="checkbox"]:focus {
+  border-color: #3b6eea;
+  box-shadow: 0 0 0 2px #c7d7fa;
+}
+.funnel-checkbox-options span {
+  font-size: 1.13rem;
+  font-weight: 700;
+  color: inherit;
+  letter-spacing: 0.01em;
+  transition: color 0.18s;
+  text-align: left;
+  flex: 1;
+  line-height: 1.4;
+}
+.funnel-checkbox-options label:has(input[type="checkbox"]:checked) {
+  background: #eaf1ff;
+  border-color: #3b6eea;
+  color: #1e3a8a;
+  box-shadow: 0 2px 12px rgba(59,110,234,0.09);
+}
+@media (max-width: 600px) {
+  .funnel-checkbox-options label {
+    max-width: 98vw;
+    font-size: 1rem;
+    padding: 0.8em 0.7em;
+  }
+  .funnel-checkbox-options input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    margin-right: 0.7em;
+  }
+  .funnel-checkbox-options span {
+    font-size: 1rem;
+  }
+} 
+
+.funnel-modal .form-field > label {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #22304a;
+  margin-bottom: 1.1em;
+  text-align: center;
+  display: block;
+} 
+
+#processing-modal, #congrats-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(30, 58, 138, 0.13);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.processing-modal-content, .congrats-modal-content {
+  background: #fff;
+  border-radius: 32px;
+  box-shadow: 0 8px 40px rgba(30,58,138,0.13), 0 1.5px 8px rgba(30,58,138,0.07);
+  padding: 3.2rem 2.5rem 2.5rem 2.5rem;
+  max-width: 420px;
+  width: 95vw;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeInUp 0.7s cubic-bezier(.23,1.01,.32,1) 1;
+}
+.processing-modal-content h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #22304a;
+  margin: 1.5rem 0 0.5rem 0;
+}
+.processing-modal-content p {
+  font-size: 1.15rem;
+  color: #6b7a90;
+  margin-bottom: 0;
+}
+.processing-spinner {
+  width: 56px;
+  height: 56px;
+  border: 6px solid #e0e7ff;
+  border-top: 6px solid #3b6eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1.5rem auto;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.congrats-modal-content h2 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #22c55e;
+  margin: 1.2rem 0 0.5rem 0;
+}
+.congrats-modal-content .congrats-message {
+  font-size: 1.25rem;
+  color: #22304a;
+  font-weight: 600;
+  margin-bottom: 0;
+}
+.congrats-checkmark {
+  margin: 0 auto 1.2rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 600px) {
+  .processing-modal-content, .congrats-modal-content {
+    padding: 1.2rem 0.5rem 1.2rem 0.5rem;
+    max-width: 98vw;
+    border-radius: 18px;
+  }
+  .processing-modal-content h2, .congrats-modal-content h2 {
+    font-size: 1.3rem;
+  }
+  .congrats-modal-content .congrats-message {
+    font-size: 1.05rem;
+  }
+} 
+
+.funnel-progress-tracker {
+  position: absolute;
+  top: 18px;
+  left: 22px;
+  font-size: 1.08rem;
+  color: #b6c2d6;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  opacity: 0.98;
+  z-index: 10;
+  pointer-events: none;
+  background: rgba(255,255,255,0.85);
+  padding: 2px 12px;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(30,58,138,0.04);
+}
+@media (max-width: 600px) {
+  .funnel-progress-tracker {
+    top: 10px;
+    left: 10px;
+    font-size: 0.98rem;
+    padding: 2px 8px;
+  }
+}
+#funnel-medical-tobacco,
+#funnel-medical-conditions,
+#funnel-medical-hospital,
+#funnel-medical-diabetes {
+  position: relative;
+}
+
+
+
+/* Medical Processing Modal - Black/White Style */
+#medical-processing-modal .processing-modal-content {
+  background: #111;
+  color: #fff;
+  border-radius: 32px;
+  box-shadow: 0 8px 40px rgba(30,58,138,0.13), 0 1.5px 8px rgba(30,58,138,0.07);
+  padding: 3.2rem 2.5rem 2.5rem 2.5rem;
+  max-width: 420px;
+  width: 95vw;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeInUp 0.7s cubic-bezier(.23,1.01,.32,1) 1;
+}
+#medical-processing-modal .processing-modal-content h2 {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 1.5rem 0 0.5rem 0;
+}
+#medical-processing-modal .processing-spinner {
+  width: 56px;
+  height: 56px;
+  border: 6px solid #333;
+  border-top: 6px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1.5rem auto;
+}
+@media (max-width: 600px) {
+  #medical-processing-modal .processing-modal-content {
+    padding: 1.2rem 0.5rem 1.2rem 0.5rem;
+    max-width: 98vw;
+    border-radius: 18px;
+  }
+  #medical-processing-modal .processing-modal-content h2 {
+    font-size: 1.3rem;
+  }
+}
+
+/* Progress Tracker Styles */
+.funnel-progress-tracker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    gap: 1rem;
+}
+
+.progress-step {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border: 2px solid #e5e7eb;
+    background: #f9fafb;
+    color: #9ca3af;
+}
+
+.progress-step.completed {
+    background: #10b981;
+    border-color: #10b981;
+    color: white;
+}
+
+.progress-step.active {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+
+.progress-line {
+    width: 2rem;
+    height: 2px;
+    background: #e5e7eb;
+}
+
+.progress-line.completed {
+    background: #10b981;
+}
+
+/* Dropdown Styles */
+.dropdown-container {
+    position: relative;
+    width: 100%;
+}
+
+.dropdown-container input {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+}
+
+.dropdown-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+}
+
+.dropdown-list.show {
+    display: block;
+}
+
+.dropdown-item {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid #f3f4f6;
+    transition: background-color 0.15s ease;
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-item:hover {
+    background-color: #f9fafb;
+}
+
+.dropdown-item.selected {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.dropdown-item.hidden {
+    display: none;
+}
+
+/* Coverage Slider Modal Styles */
+#coverage-slider-modal .coverage-slider-content {
+    background: linear-gradient(135deg, #4f6bb3 0%, #5b7bc7 50%, #7ba3f7 100%);
+    border-radius: 32px;
+    box-shadow: 0 8px 40px rgba(30,58,138,0.13), 0 1.5px 8px rgba(30,58,138,0.07);
+    padding: 2rem;
+    max-width: 90vw;
+    width: 1200px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: fadeInUp 0.7s cubic-bezier(.23,1.01,.32,1) 1;
+}
+
+/* Background shapes */
+.background-shapes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.background-shapes svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0.05;
+    z-index: 0;
+}
+
+/* Page Header */
+.page-header {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    margin-top: 0.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.logo-container {
+    margin-bottom: 1rem;
+}
+
+.header-logo {
+    height: 80px;
+    width: auto;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+/* Main Content */
+.main-content {
+    width: 100%;
+    max-width: 64rem;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+/* Quote Sliders */
+.quote-sliders {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.sliders-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.sliders-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.slider-group {
+    text-align: center;
+}
+
+.slider-label {
+    font-weight: 600;
+    color: #1d4ed8;
+    font-size: 1.125rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.slider-input {
+    width: 100%;
+    accent-color: #1d4ed8;
+}
+
+.gender-options {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.gender-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.gender-option input[type="radio"] {
+    accent-color: #1d4ed8;
+}
+
+/* Quote Display */
+.quote-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quote-card {
+    background: #2563eb;
+    color: white;
+    border-radius: 1rem;
+    padding: 2.5rem;
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+    min-width: 280px;
+}
+
+.quote-card:hover {
+    transform: scale(1.05);
+}
+
+.quote-amount {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.quote-period {
+    font-size: 1.125rem;
+}
+
+.quote-action {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
+    display: inline-block;
+    transition: background 0.2s ease;
+}
+
+.quote-card:hover .quote-action {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.quote-placeholder {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+/* Contact Form */
+.contact-form {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.contact-form h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1d4ed8;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.form-input {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid #bfdbfe;
+    transition: all 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    ring: 2px;
+    ring-color: #60a5fa;
+}
+
+.submit-button {
+    width: 100%;
+    background: #2563eb;
+    color: white;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+    background: #1d4ed8;
+}
+
+.submit-button:disabled {
+    opacity: 0.5;
+}
+
+.form-message {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+}
+
+.form-success {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.form-error {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+/* Secure Quote Modal */
+.secure-quote-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 1rem;
+    backdrop-filter: blur(5px);
+}
+
+.secure-quote-modal .modal-content {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border-radius: 16px;
+    padding: 0;
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+}
+
+.secure-quote-header {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: white;
+    padding: 2rem;
+    position: relative;
+}
+
+.secure-quote-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+}
+
+.modal-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.025em;
+}
+
+.modal-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.125rem;
+    margin: 0;
+}
+
+.secure-quote-body {
+    padding: 2rem;
+}
+
+.quote-summary {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid #e5e7eb;
+}
+
+.quote-summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.quote-summary-item:last-child {
+    border-bottom: none;
+}
+
+.summary-label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.95rem;
+}
+
+.summary-value {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 1.125rem;
+}
+
+.secure-quote-benefits {
+    text-align: left;
+    margin-bottom: 2rem;
+}
+
+.secure-quote-benefits h4 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 1rem;
+}
+
+.secure-quote-benefits ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.secure-quote-benefits li {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+    color: #4b5563;
+    font-size: 0.95rem;
+}
+
+.secure-quote-benefits li i {
+    color: #10b981;
+    margin-right: 0.75rem;
+    font-size: 1rem;
+}
+
+.secure-quote-cta {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid #e5e7eb;
+}
+
+.cta-text {
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+}
+
+.call-note {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin-top: 0.75rem;
+    margin-bottom: 0;
+}
+
+.modal-phone {
+    display: inline-flex;
+    align-items: center;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    margin: 0 auto;
+}
+
+.modal-phone i {
+    margin-right: 0.5rem;
+    font-size: 1.125rem;
+}
+
+.modal-phone:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.125rem;
+    backdrop-filter: blur(10px);
+}
+
+.modal-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+/* Responsive Design for Coverage Slider */
+@media (max-width: 768px) {
+    #coverage-slider-modal .coverage-slider-content {
+        padding: 1rem;
+        max-width: 95vw;
+    }
+    
+    .secure-quote-modal .modal-content {
+        max-width: 95vw;
+        margin: 1rem;
+    }
+    
+    .secure-quote-header {
+        padding: 1.5rem;
+    }
+    
+    .secure-quote-body {
+        padding: 1.5rem;
+    }
+    
+    .modal-title {
+        font-size: 1.5rem;
+    }
+    
+    .secure-quote-icon {
+        font-size: 2.5rem;
+    }
+    
+    .quote-summary {
+        padding: 1rem;
+    }
+    
+    .secure-quote-benefits h4 {
+        font-size: 1.125rem;
+    }
+    
+    .secure-quote-benefits li {
+        font-size: 0.875rem;
+    }
+    
+    .cta-text {
+        font-size: 1rem;
+    }
+    
+    .modal-phone {
+        font-size: 1.125rem;
+        padding: 0.875rem 1.5rem;
+    }
+    
+    .page-header h1 {
+        font-size: 2rem;
+    }
+
+    .sliders-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .question-options {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+/* Quote Action Buttons */
+.quote-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.quote-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    width: 100%;
+}
+
+.quote-action-btn.primary {
+    background: #2563eb;
+    color: white;
+}
+
+.quote-action-btn.primary:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+.quote-action-btn.secondary {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+}
+
+.quote-action-btn.secondary:hover {
+    background: #e5e7eb;
+    color: #1f2937;
+}
+
+.quote-action-btn.tertiary {
+    background: transparent;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+}
+
+.quote-action-btn.tertiary:hover {
+    background: #f9fafb;
+    color: #374151;
+}
+
+.quote-action-btn i {
+    font-size: 0.75rem;
+}
+
+@media (max-width: 768px) {
+    .quote-actions {
+        gap: 0.375rem;
+    }
+    
+    .quote-action-btn {
+        padding: 0.625rem 0.875rem;
+        font-size: 0.8125rem;
+    }
+}
+
+/* Application Page Styles */
+.application-main {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem 0;
+}
+
+.application-page {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.application-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+}
+
+.progress-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    flex: 1;
+    max-width: 120px;
+}
+
+.progress-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 1.5rem;
+    right: -50%;
+    width: 100%;
+    height: 2px;
+    background: #e2e8f0;
+    z-index: 1;
+}
+
+.progress-step.completed:not(:last-child)::after {
+    background: #10b981;
+}
+
+.step-number {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: #f3f4f6;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    z-index: 2;
+    position: relative;
+    border: 2px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.progress-step.completed .step-number {
+    background: #10b981;
+    color: white;
+    border-color: #10b981;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+}
+
+.progress-step.active .step-number {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+}
+
+.step-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #64748b;
+    text-align: center;
+}
+
+.progress-step.completed .step-label,
+.progress-step.active .step-label {
+    color: #1f2937;
+}
+
+.application-header {
+    padding: 3rem 2rem;
+    text-align: center;
+    border-bottom: 1px solid #e2e8f0;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    margin-bottom: 2rem;
+}
+
+.application-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #1f2937;
+    margin-bottom: 1rem;
+    letter-spacing: -0.025em;
+}
+
+.application-header p {
+    color: #6b7280;
+    font-size: 1.25rem;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.application-form {
+    padding: 0 2rem 2rem 2rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    margin: 0 1rem;
+}
+
+/* Make application page look like the modal */
+.application-container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+}
+
+/* Application header section */
+.application-header-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+}
+
+.application-header-section h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.application-header-section p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 1.1rem;
+}
+
+/* Checkbox styling */
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin: 0;
+    width: auto;
+    flex-shrink: 0;
+}
+
+.checkbox-label a {
+    color: #667eea;
+    text-decoration: underline;
+}
+
+.checkbox-label a:hover {
+    color: #5a67d8;
+}
+
+.application-form .form-field {
+    margin-bottom: 1.5rem;
+}
+
+.application-form .form-field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.875rem;
+}
+
+.application-form .form-field input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.application-form .form-field input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.application-form .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .application-form .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.form-section {
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.form-section h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid #2563eb;
+    position: relative;
+}
+
+.form-section h3::before {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: #2563eb;
+    border-radius: 2px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.form-group input,
+.form-group select {
+    padding: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #fafafa;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+    background: #ffffff;
+    transform: translateY(-1px);
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: #374151;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: 0;
+}
+
+.form-actions {
+    margin-top: 3rem;
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 12px;
+    margin: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.form-actions .cta-button {
+    padding: 1.25rem 3rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+    .form-actions .cta-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Professional Application Form Styles for Funnel Modal */
+    #funnel-application-form,
+    #funnel-application-final {
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 0.5rem;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border-radius: 16px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    #funnel-application-form h2,
+    #funnel-application-final h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+        text-align: center;
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b6eea 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    #funnel-application-form p,
+    #funnel-application-final p {
+        font-size: 1rem;
+        color: #64748b;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        font-weight: 500;
+    }
+
+    #funnel-application-form .form-section,
+    #funnel-application-final .form-section {
+        margin-bottom: 1rem;
+        padding: 1rem;
+        background: #ffffff;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    #funnel-application-form .form-section:hover,
+    #funnel-application-final .form-section:hover {
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    #funnel-application-form .form-section h3,
+    #funnel-application-final .form-section h3 {
+        color: #1e293b;
+        font-size: 1.25rem;
+        font-weight: 600;
+        border-bottom: 3px solid #3b6eea;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1.25rem;
+        position: relative;
+    }
+
+    #funnel-application-form .form-section h3::before,
+    #funnel-application-final .form-section h3::before {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: #3b6eea;
+        border-radius: 2px;
+    }
+
+    #funnel-application-form .form-field,
+    #funnel-application-final .form-field {
+        margin-bottom: 0.75rem;
+        position: relative;
+    }
+
+    #funnel-application-form .form-field label,
+    #funnel-application-final .form-field label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #374151;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    #funnel-application-form .form-field input,
+    #funnel-application-form .form-field select,
+    #funnel-application-final .form-field input,
+    #funnel-application-final .form-field select {
+        width: 100%;
+        padding: 1rem 1.25rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        background: #ffffff;
+        color: #1e293b;
+    }
+
+    #funnel-application-form .form-field input:focus,
+    #funnel-application-form .form-field select:focus,
+    #funnel-application-final .form-field input:focus,
+    #funnel-application-final .form-field select:focus {
+        outline: none;
+        border-color: #3b6eea;
+        box-shadow: 0 0 0 4px rgba(59, 110, 234, 0.15);
+        transform: translateY(-1px);
+    }
+
+    #funnel-application-form .form-field input::placeholder,
+    #funnel-application-final .form-field input::placeholder {
+        color: #9ca3af;
+        font-weight: 400;
+    }
+
+    #funnel-application-form .form-field input.error,
+    #funnel-application-final .form-field input.error {
+        border-color: #ef4444;
+    }
+
+    /* Professional Button Styling for Application Form */
+    #funnel-application-form .cta-button,
+    #funnel-application-final .cta-button {
+        background: linear-gradient(135deg, #3b6eea 0%, #1e3a8a 100%);
+        color: white;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(59, 110, 234, 0.3);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    #funnel-application-form .cta-button:hover,
+    #funnel-application-final .cta-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(59, 110, 234, 0.4);
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b6eea 100%);
+    }
+
+    /* Trust Indicators */
+    #funnel-application-form .trust-indicators,
+    #funnel-application-final .trust-indicators {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding: 1rem;
+        background: #f8fafc;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+    }
+
+    #funnel-application-form .trust-indicators i,
+    #funnel-application-final .trust-indicators i {
+        color: #10b981;
+        font-size: 1.25rem;
+    }
+
+    #funnel-application-form .trust-indicators span,
+    #funnel-application-final .trust-indicators span {
+        color: #64748b;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+        #funnel-application-form,
+        #funnel-application-final {
+            padding: 0.25rem;
+            max-height: 95vh;
+        }
+
+        #funnel-application-form h2,
+        #funnel-application-final h2 {
+            font-size: 1.75rem;
+        }
+
+        #funnel-application-form p,
+        #funnel-application-final p {
+            font-size: 1rem;
+        }
+
+        #funnel-application-form .form-section,
+        #funnel-application-final .form-section {
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        #funnel-application-form .form-section h3,
+        #funnel-application-final .form-section h3 {
+            font-size: 1.25rem;
+        }
+
+        #funnel-application-form .form-field input,
+        #funnel-application-form .form-field select,
+        #funnel-application-final .form-field input,
+        #funnel-application-final .form-field select {
+            padding: 0.875rem 1rem;
+        }
+    }
+
+.success-modal {
+    text-align: center;
+    padding: 2rem;
+}
+
+.success-icon {
+    font-size: 4rem;
+    color: #10b981;
+    margin-bottom: 1rem;
+}
+
+.success-modal h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 1rem;
+}
+
+.success-modal p {
+    color: #6b7280;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.success-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .application-container {
+        margin: 1rem;
+        border-radius: 0.5rem;
+    }
+    
+    .progress-bar {
+        padding: 1rem;
+    }
+    
+    .progress-step {
+        max-width: 80px;
+    }
+    
+    .step-number {
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 1rem;
+    }
+    
+    .step-label {
+        font-size: 0.75rem;
+    }
+    
+    .application-header {
+        padding: 1.5rem;
+    }
+    
+    .application-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .application-form {
+        padding: 1.5rem;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .form-section {
+        margin-bottom: 2rem;
+    }
+}
+
+/* Unify IUL quote modal overlay and close button style with funnel modal */
+#iul-quote-modal.modal-overlay {
+  background: rgba(16, 24, 40, 0.85) !important;
+  z-index: 9999;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+#iul-quote-modal.active {
+  display: flex !important;
+}
+#iul-quote-modal .modal-close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #666;
+  cursor: pointer;
+  z-index: 10001;
+}
+/* Ensure modal content is centered and matches funnel modal */
+#iul-quote-modal .coverage-slider-content {
+  margin: 0 auto;
+  box-shadow: 0 8px 32px rgba(16,24,40,0.18);
+  border-radius: 20px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  position: relative;
+  max-width: 900px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 40px;
+}
+/* Add padding to the quote sliders section */
+#iul-quote-modal .quote-sliders {
+  padding: 30px;
+  margin: 20px 0;
+}
+/* Ensure proper spacing for the sliders grid */
+#iul-quote-modal .sliders-grid {
+  gap: 30px;
+  padding: 0;
+}
+/* Add padding to individual slider groups */
+#iul-quote-modal .slider-group {
+  margin-bottom: 20px;
+}
+/* Ensure the quote display has proper padding */
+#iul-quote-modal .quote-display {
+  padding: 20px 0;
+}
