@@ -499,22 +499,24 @@ document.addEventListener('DOMContentLoaded', function() {
         // Send complete funnel data to Google Sheets (email sent automatically)
         await sendCompleteFunnelData();
         
-        // Show loading screen
+        // Show loading screen IMMEDIATELY
         const funnelModal = document.getElementById('funnel-modal');
         const processingModal = document.getElementById('medical-processing-modal');
         
+        console.log('🚨 FORM SUBMISSION - SHOWING LOADING MODAL IMMEDIATELY 🚨');
         console.log('Funnel modal:', funnelModal);
         console.log('Processing modal:', processingModal);
         
+        // Hide funnel modal and show processing modal immediately
         if (funnelModal) funnelModal.style.display = 'none';
         if (processingModal) {
             processingModal.style.display = 'flex';
             processingModal.style.zIndex = '9999';
         }
         
-        // Simulate processing time
+        // Wrap ALL existing transition logic in setTimeout for 7-second delay
         setTimeout(() => {
-            console.log('Processing timeout completed');
+            console.log('⏰ FORM SUBMISSION - 7 seconds completed - transitioning to congratulations');
             
             // Hide loading screen
             if (processingModal) {
@@ -574,7 +576,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
             }
-        }, 2000); // 2 second loading time
+        }, 7000); // 7 second loading time
     });
 
     // Also handle the "See Results!" button click
@@ -605,22 +607,24 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('Complete form data:', completeFormData);
         
-        // Show loading screen
+        // Show loading screen IMMEDIATELY
         const funnelModal = document.getElementById('funnel-modal');
         const processingModal = document.getElementById('medical-processing-modal');
         
+        console.log('🚨 SHOWING LOADING MODAL IMMEDIATELY 🚨');
         console.log('Funnel modal:', funnelModal);
         console.log('Processing modal:', processingModal);
         
+        // Hide funnel modal and show processing modal immediately
         if (funnelModal) funnelModal.style.display = 'none';
         if (processingModal) {
             processingModal.style.display = 'flex';
             processingModal.style.zIndex = '9999';
         }
         
-        // Simulate processing time
+        // Wrap ALL existing transition logic in setTimeout for 7-second delay
         setTimeout(() => {
-            console.log('Processing timeout completed');
+            console.log('⏰ 7 seconds completed - transitioning to congratulations');
             
             // Hide loading screen
             if (processingModal) {
