@@ -71,6 +71,8 @@ function doPost(e) {
       response = handleApplicationSubmission(data, sessionId);
     } else if (formType === 'Partial') {
       response = handlePartialSubmission(data, sessionId);
+    } else if (formType === 'LeadPartial') {
+      response = handleLeadPartialSubmission(data, sessionId);
     } else {
       throw new Error('Invalid form type: ' + formType);
     }
@@ -381,6 +383,96 @@ function handlePartialSubmission(data, sessionId) {
   };
 }
 
+function handleLeadPartialSubmission(data, sessionId) {
+  Logger.log(`[${sessionId}] Starting lead partial submission`);
+  
+  // Check if we have access to a spreadsheet
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  if (!spreadsheet) {
+    Logger.log(`[${sessionId}] ERROR: No active spreadsheet found`);
+    throw new Error('No active spreadsheet found. Please ensure the script is bound to a Google Sheet.');
+  }
+  
+  let sheet = spreadsheet.getActiveSheet();
+  
+  // Parse formData if it's a JSON string
+  let parsedFormData = {};
+  if (data.formData) {
+    try {
+      parsedFormData = JSON.parse(data.formData);
+    } catch (e) {
+      Logger.log(`[${sessionId}] Error parsing formData: ${e.toString()}`);
+      parsedFormData = {};
+    }
+  }
+  
+  // Prepare the row data with all funnel information (flattened structure like old script)
+  const rowData = [
+    new Date(), // Timestamp
+    sessionId, // Session ID for tracking (use the one from request)
+    parsedFormData.contactInfo?.firstName || '',
+    parsedFormData.contactInfo?.lastName || '',
+    parsedFormData.contactInfo?.phone || '',
+    parsedFormData.contactInfo?.email || '',
+    parsedFormData.contactInfo?.dateOfBirth || '',
+    parsedFormData.state || '',
+    parsedFormData.militaryStatus || '',
+    parsedFormData.branchOfService || '',
+    parsedFormData.maritalStatus || '',
+    parsedFormData.coverageAmount || '',
+    parsedFormData.medicalAnswers?.tobaccoUse || '',
+    Array.isArray(parsedFormData.medicalAnswers?.medicalConditions) ? parsedFormData.medicalAnswers.medicalConditions.join(', ') : '',
+    parsedFormData.medicalAnswers?.height || '',
+    parsedFormData.medicalAnswers?.weight || '',
+    parsedFormData.medicalAnswers?.hospitalCare || '',
+    parsedFormData.medicalAnswers?.diabetesMedication || '',
+    data.currentStep || '', // Current step
+    data.stepName || '', // Step name
+    data.formType || 'LeadPartial', // Form type
+    data.userAgent || '',
+    data.referrer || '',
+    data.utmSource || '',
+    data.utmMedium || '',
+    data.utmCampaign || ''
+  ];
+  
+  // Check if session already exists in the sheet
+  let existingRowIndex = -1;
+  const dataRange = sheet.getDataRange();
+  const values = dataRange.getValues();
+  
+  // Session ID is in column B (index 1)
+  for (let i = 1; i < values.length; i++) {
+    if (values[i][1] === sessionId) {
+      existingRowIndex = i + 1; // +1 because sheet rows are 1-indexed
+      break;
+    }
+  }
+  
+  if (existingRowIndex > 0) {
+    // Update existing row
+    Logger.log(`[${sessionId}] Updating existing session row: ${existingRowIndex}`);
+    const range = sheet.getRange(existingRowIndex, 1, 1, rowData.length);
+    range.setValues([rowData]);
+  } else {
+    // Append new row
+    Logger.log(`[${sessionId}] Creating new session row`);
+    sheet.appendRow(rowData);
+  }
+  
+  // Send lead partial notification email
+  sendLeadPartialNotification(data, parsedFormData);
+  
+  Logger.log(`[${sessionId}] Lead partial submission completed successfully`);
+  
+  return {
+    success: true,
+    message: 'Lead partial data captured successfully',
+    sessionId: sessionId,
+    step: data.currentStep
+  };
+}
+
 function setupPartialSheet(sheet) {
   const headers = [
     'Timestamp',
@@ -643,6 +735,96 @@ function sendApplicationNotification(data) {
       
       <hr>
       <p><em>Veteran Life Insurance</em></p>
+    `;
+    
+    MailApp.sendEmail({
+      to: email,
+      subject: confirmationSubject,
+      htmlBody: confirmationBody
+    });
+  }
+}
+
+function sendLeadPartialNotification(data, parsedFormData) {
+  const firstName = parsedFormData.contactInfo?.firstName || 'there';
+  const email = parsedFormData.contactInfo?.email || '';
+  const phone = parsedFormData.contactInfo?.phone || '';
+  const branchOfService = parsedFormData.branchOfService || '';
+  const coverageAmount = parsedFormData.coverageAmount || '';
+  
+  const subject = `New Lead Partial Application: ${firstName}`;
+  
+  const body = `
+    <h2>New Lead Partial Application Received</h2>
+    
+    <h3>Contact Information:</h3>
+    <p><strong>Name:</strong> ${parsedFormData.contactInfo?.firstName || ''} ${parsedFormData.contactInfo?.lastName || ''}</p>
+    <p><strong>Email:</strong> ${email}</p>
+    <p><strong>Phone:</strong> ${phone}</p>
+    <p><strong>Date of Birth:</strong> ${parsedFormData.contactInfo?.dateOfBirth || ''}</p>
+    
+    <h3>Qualification Information:</h3>
+    <p><strong>State:</strong> ${parsedFormData.state || ''}</p>
+    <p><strong>Military Status:</strong> ${parsedFormData.militaryStatus || ''}</p>
+    <p><strong>Branch of Service:</strong> ${branchOfService}</p>
+    <p><strong>Marital Status:</strong> ${parsedFormData.maritalStatus || ''}</p>
+    <p><strong>Coverage Amount:</strong> ${coverageAmount}</p>
+    
+    <h3>Medical Information:</h3>
+    <p><strong>Tobacco Use:</strong> ${parsedFormData.medicalAnswers?.tobaccoUse || ''}</p>
+    <p><strong>Medical Conditions:</strong> ${parsedFormData.medicalAnswers?.medicalConditions?.join(', ') || 'None'}</p>
+    <p><strong>Height:</strong> ${parsedFormData.medicalAnswers?.height || ''}</p>
+    <p><strong>Weight:</strong> ${parsedFormData.medicalAnswers?.weight || ''}</p>
+    <p><strong>Hospital Care:</strong> ${parsedFormData.medicalAnswers?.hospitalCare || ''}</p>
+    <p><strong>Diabetes Medication:</strong> ${parsedFormData.medicalAnswers?.diabetesMedication || ''}</p>
+    
+    <h3>Status:</h3>
+    <p><strong>Status:</strong> Lead Partial Application</p>
+    <p><strong>Step:</strong> ${data.currentStep || ''}</p>
+    <p><strong>Step Name:</strong> ${data.stepName || ''}</p>
+    
+    <hr>
+    <p><em>This lead partial application was submitted through the React Funnel at ${new Date().toLocaleString()}</em></p>
+  `;
+  
+  // Send to admin email
+  const adminEmail = 'lindsey08092@gmail.com';
+  MailApp.sendEmail({
+    to: adminEmail,
+    subject: subject,
+    htmlBody: body
+  });
+  
+  // Send confirmation to lead
+  if (email) {
+    const confirmationSubject = 'Your pre-qualification information has been received';
+    const confirmationBody = `
+      <h2>Thank you, ${firstName}!</h2>
+      
+      <p>We've received your pre-qualification information and are currently processing your details.</p>
+      
+      <h3>What We're Reviewing:</h3>
+      <ul>
+        <li>Your ${branchOfService} service history</li>
+        <li>Medical information and conditions</li>
+        <li>Coverage amount preferences (${coverageAmount})</li>
+        <li>State-specific requirements</li>
+      </ul>
+      
+      <h3>Next Steps:</h3>
+      <ul>
+        <li>Our system is calculating your personalized options</li>
+        <li>We'll review your ${branchOfService} benefits</li>
+        <li>You'll receive your custom quote shortly</li>
+        <li>A licensed agent will contact you within 24 hours</li>
+      </ul>
+      
+      <p><strong>Need immediate assistance?</strong><br>
+      Call us at (555) 123-4567<br>
+      Monday-Friday 8AM-6PM EST</p>
+      
+      <hr>
+      <p><em>Veteran Life Insurance - Honoring Your Service</em></p>
     `;
     
     MailApp.sendEmail({

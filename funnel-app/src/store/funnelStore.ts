@@ -68,6 +68,7 @@ interface FunnelStore {
   currentStep: number
   isModalOpen: boolean
   isLoading: boolean
+  isStreamingLoading: boolean
   
   // Session management
   sessionId: string
@@ -80,8 +81,10 @@ interface FunnelStore {
   openModal: () => void
   closeModal: () => void
   setLoading: (loading: boolean) => void
+  setStreamingLoading: (loading: boolean) => void
   updateFormData: (data: Partial<FormData>) => void
   submitPartial: (currentStep: number, stepName: string) => Promise<void>
+  submitLeadPartial: () => Promise<void>
   submitLead: () => Promise<void>
   submitApplication: () => Promise<void>
   reset: () => void
@@ -144,6 +147,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
   currentStep: 1,
   isModalOpen: false,
   isLoading: false,
+  isStreamingLoading: false,
   sessionId: generateSessionId(),
   formData: initialState,
 
@@ -154,6 +158,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
   closeModal: () => set({ isModalOpen: false }),
   
   setLoading: (loading) => set({ isLoading: loading }),
+  setStreamingLoading: (loading) => set({ isStreamingLoading: loading }),
   
   updateFormData: (data) => set((state) => ({
     formData: { ...state.formData, ...data }
@@ -226,6 +231,16 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
       get().submitLead()
     }
     
+    // Submit lead partial data after step 11 (diabetes medication)
+    if (currentStep === 11) {
+      get().submitLeadPartial()
+      // Start streaming loading for 7-10 seconds
+      set({ isStreamingLoading: true })
+      setTimeout(() => {
+        set({ isStreamingLoading: false })
+      }, 9000) // 9 seconds total
+    }
+    
     // Submit application data after step 15 (success)
     if (currentStep === 15) {
       get().submitApplication()
@@ -241,6 +256,41 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
     }
   },
   
+  submitLeadPartial: async () => {
+    const { formData, sessionId } = get()
+    
+    try {
+      // Convert data to URL-encoded format to avoid CORS preflight (same as old script)
+      const formDataParams = new URLSearchParams()
+      formDataParams.append('formType', 'LeadPartial')
+      formDataParams.append('sessionId', sessionId)
+      formDataParams.append('currentStep', '11') // Diabetes Medication step
+      formDataParams.append('stepName', 'Diabetes Medication')
+      formDataParams.append('formData', JSON.stringify(formData))
+      formDataParams.append('userAgent', navigator.userAgent)
+      formDataParams.append('referrer', document.referrer)
+      formDataParams.append('utmSource', new URLSearchParams(window.location.search).get('utm_source') || '')
+      formDataParams.append('utmMedium', new URLSearchParams(window.location.search).get('utm_medium') || '')
+      formDataParams.append('utmCampaign', new URLSearchParams(window.location.search).get('utm_campaign') || '')
+      
+      const response = await fetch('https://script.google.com/macros/s/AKfycby_sULo99YIinnK3QDE97ERKl8kpKYX2aV-SzNIM_-mn601LcYU5jcTvLJPLUVptBzb/exec', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formDataParams.toString()
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to submit lead partial data')
+      }
+      
+      console.log('Lead partial data submitted successfully')
+    } catch (error) {
+      console.error('Error submitting lead partial data:', error)
+    }
+  },
+
   submitLead: async () => {
     const { formData, sessionId } = get()
     
@@ -336,6 +386,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
     currentStep: 1,
     isModalOpen: false,
     isLoading: false,
+    isStreamingLoading: false,
     sessionId: generateSessionId(),
     formData: initialState
   })
