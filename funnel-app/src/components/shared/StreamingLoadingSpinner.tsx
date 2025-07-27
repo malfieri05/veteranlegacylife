@@ -170,8 +170,8 @@ export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = (
         </div>
       </div>
 
-      {/* Spinner */}
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '2rem' }}>
+      {/* Spinner - Commented out for now, can be re-enabled if needed */}
+      {/* <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '2rem' }}>
         <div 
           style={{
             width: '60px',
@@ -182,7 +182,7 @@ export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = (
             animation: 'spin 1s linear infinite'
           }}
         ></div>
-      </div>
+      </div> */}
 
       <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
         <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>
