@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Veteran Funnel Test</title>
+    <link rel="stylesheet" href="dist/veteran-funnel.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            text-align: center;
+        }
+        .debug {
+            text-align: left;
+            background: #f0f0f0;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        button {
+            background: #3b6eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Debug Veteran Funnel Test</h1>
+    <p>This page will help us debug what's happening with the component.</p>
+    
+    <button onclick="debugWindow()">Debug Window Object</button>
+    <button onclick="testVeteranFunnel()">Test VeteranFunnel</button>
+    <button onclick="loadScript()">Load Script Manually</button>
+    
+    <div class="debug" id="debug">Debug output will appear here...</div>
+
+    <script>
+        function debugWindow() {
+            const debug = document.getElementById('debug');
+            debug.innerHTML = `
+                <strong>Window Object Debug:</strong><br>
+                window.VeteranFunnel: ${typeof window.VeteranFunnel}<br>
+                window.VeteranFunnel type: ${window.VeteranFunnel ? typeof window.VeteranFunnel : 'undefined'}<br>
+                window.VeteranFunnel keys: ${window.VeteranFunnel ? Object.keys(window.VeteranFunnel).join(', ') : 'N/A'}<br>
+                window.VeteranFunnel.open: ${window.VeteranFunnel && window.VeteranFunnel.open ? typeof window.VeteranFunnel.open : 'undefined'}<br>
+                <br>
+                <strong>All window properties containing 'Veteran':</strong><br>
+                ${Object.keys(window).filter(key => key.toLowerCase().includes('veteran')).join(', ')}
+            `;
+        }
+
+        function testVeteranFunnel() {
+            const debug = document.getElementById('debug');
+            try {
+                if (window.VeteranFunnel) {
+                    debug.innerHTML += `<br><strong>VeteranFunnel Test:</strong><br>`;
+                    debug.innerHTML += `VeteranFunnel object exists<br>`;
+                    
+                    if (window.VeteranFunnel.open) {
+                        debug.innerHTML += `open function exists<br>`;
+                        window.VeteranFunnel.open();
+                        debug.innerHTML += `open() called successfully<br>`;
+                    } else {
+                        debug.innerHTML += `ERROR: open function does not exist<br>`;
+                    }
+                    
+                    if (window.VeteranFunnel.isOpen) {
+                        debug.innerHTML += `isOpen function exists<br>`;
+                        const isOpen = window.VeteranFunnel.isOpen();
+                        debug.innerHTML += `isOpen() returned: ${isOpen}<br>`;
+                    } else {
+                        debug.innerHTML += `ERROR: isOpen function does not exist<br>`;
+                    }
+                } else {
+                    debug.innerHTML += `<br><strong>ERROR:</strong> VeteranFunnel not found on window object<br>`;
+                }
+            } catch (error) {
+                debug.innerHTML += `<br><strong>ERROR:</strong> ${error.message}<br>`;
+            }
+        }
+
+        function loadScript() {
+            const debug = document.getElementById('debug');
+            debug.innerHTML += `<br><strong>Loading script manually...</strong><br>`;
+            
+            const script = document.createElement('script');
+            script.src = 'dist/veteran-funnel.iife.js';
+            script.onload = () => {
+                debug.innerHTML += `Script loaded successfully<br>`;
+                setTimeout(() => {
+                    debug.innerHTML += `After load - window.VeteranFunnel: ${typeof window.VeteranFunnel}<br>`;
+                    if (window.VeteranFunnel) {
+                        debug.innerHTML += `VeteranFunnel keys: ${Object.keys(window.VeteranFunnel).join(', ')}<br>`;
+                    }
+                }, 100);
+            };
+            script.onerror = () => {
+                debug.innerHTML += `ERROR: Failed to load script<br>`;
+            };
+            document.head.appendChild(script);
+        }
+
+        // Auto-debug on load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                debugWindow();
+            }, 1000);
+        });
+    </script>
+
+    <script src="dist/veteran-funnel.iife.js"></script>
+</body>
+</html> 

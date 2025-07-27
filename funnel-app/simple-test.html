@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Veteran Funnel Test</title>
+    <link rel="stylesheet" href="dist/veteran-funnel.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            text-align: center;
+        }
+        button {
+            background: #3b6eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .status {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f0f0f0;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple Veteran Funnel Test</h1>
+    <p>Testing if the component loads and works correctly.</p>
+    
+    <button onclick="testOpen()">Open Funnel</button>
+    <button onclick="testClose()">Close Funnel</button>
+    <button onclick="testStatus()">Check Status</button>
+    
+    <div class="status" id="status">Status: Loading...</div>
+
+    <script src="dist/veteran-funnel.iife.js"></script>
+    <script>
+        // Wait for everything to load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                if (window.VeteranFunnel) {
+                    document.getElementById('status').textContent = 'Status: VeteranFunnel loaded successfully!';
+                    console.log('VeteranFunnel object:', window.VeteranFunnel);
+                } else {
+                    document.getElementById('status').textContent = 'Status: ERROR - VeteranFunnel not found!';
+                    console.error('VeteranFunnel not found on window object');
+                }
+            }, 1000);
+        });
+
+        function testOpen() {
+            if (window.VeteranFunnel && window.VeteranFunnel.open) {
+                window.VeteranFunnel.open();
+                document.getElementById('status').textContent = 'Status: Opened funnel';
+            } else {
+                document.getElementById('status').textContent = 'Status: ERROR - Cannot open funnel';
+            }
+        }
+
+        function testClose() {
+            if (window.VeteranFunnel && window.VeteranFunnel.close) {
+                window.VeteranFunnel.close();
+                document.getElementById('status').textContent = 'Status: Closed funnel';
+            } else {
+                document.getElementById('status').textContent = 'Status: ERROR - Cannot close funnel';
+            }
+        }
+
+        function testStatus() {
+            if (window.VeteranFunnel && window.VeteranFunnel.isOpen) {
+                const isOpen = window.VeteranFunnel.isOpen();
+                document.getElementById('status').textContent = `Status: Funnel is ${isOpen ? 'open' : 'closed'}`;
+            } else {
+                document.getElementById('status').textContent = 'Status: ERROR - Cannot check status';
+            }
+        }
+    </script>
+</body>
+</html> 

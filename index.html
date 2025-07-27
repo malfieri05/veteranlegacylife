@@ -18,6 +18,7 @@
     
     <!-- CSS -->
     <link rel="stylesheet" href="styles.css?v=37">
+    <link rel="stylesheet" href="veteran-funnel.css">
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -1129,7 +1130,8 @@
     
     <!-- Legacy Support -->
     <script src="quote-utils.js"></script>
-    <script src="script.js?v=42"></script>
+    <!-- OLD SCRIPT DISABLED - Using React funnel instead -->
+    <!-- <script src="script.js?v=42"></script> -->
     
     <!-- Main Application -->
     <script src="js/main.js"></script>
@@ -1818,6 +1820,42 @@
     </div>
 
     <!-- Application Final Modal (Page 2) -->
+    
+    <!-- React Funnel Component -->
+    <script src="veteran-funnel.iife.js"></script>
+    <script>
+        // Initialize React funnel when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide existing modals to prevent conflicts
+            const existingModals = document.querySelectorAll('#funnel-modal, #load-screen-modal, .secure-quote-modal, #iul-secure-quote-modal');
+            existingModals.forEach(modal => {
+                modal.style.display = 'none';
+                modal.style.visibility = 'hidden';
+                modal.style.opacity = '0';
+                modal.style.pointerEvents = 'none';
+            });
+            
+            // Replace existing funnel triggers with React funnel
+            const qualifyButtons = document.querySelectorAll('.qualify-button, .cta-button.qualify-button, [data-action="open-funnel"]');
+            
+            qualifyButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('🚀 Opening React funnel...');
+                    
+                    // Check if React funnel is available
+                    if (window.VeteranFunnel && typeof window.VeteranFunnel.open === 'function') {
+                        window.VeteranFunnel.open();
+                    } else {
+                        console.error('❌ React funnel not loaded');
+                        // Fallback to original funnel
+                        openFunnelModal();
+                    }
+                });
+            });
+            
+            console.log('✅ React funnel integration ready - existing modals hidden');
+        });
+    </script>
 </body>
-</html> 
 </html> 
