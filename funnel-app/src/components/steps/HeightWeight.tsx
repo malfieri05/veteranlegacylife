@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { useFunnelStore } from '../../store/funnelStore'
+import { FormField } from '../shared/FormField'
 
 export const HeightWeight: React.FC = () => {
   const { formData, updateFormData, goToNextStep, autoAdvanceEnabled, setAutoAdvanceEnabled } = useFunnelStore()
@@ -14,7 +15,7 @@ export const HeightWeight: React.FC = () => {
     }
   }, [formData.medicalAnswers?.height, formData.medicalAnswers?.weight, autoAdvanceEnabled, goToNextStep])
 
-    const handleHeightChange = (value: string) => {
+  const handleHeightChange = (value: string) => {
     updateFormData({ 
       medicalAnswers: { 
         ...formData.medicalAnswers, 
@@ -25,7 +26,7 @@ export const HeightWeight: React.FC = () => {
     setAutoAdvanceEnabled(true)
   }
 
-    const handleWeightChange = (value: string) => {
+  const handleWeightChange = (value: string) => {
     updateFormData({ 
       medicalAnswers: { 
         ...formData.medicalAnswers, 
@@ -36,74 +37,62 @@ export const HeightWeight: React.FC = () => {
     setAutoAdvanceEnabled(true)
   }
 
+  // Height options from script.js
   const heightOptions = [
-    "4'0\"", "4'1\"", "4'2\"", "4'3\"", "4'4\"", "4'5\"", "4'6\"", "4'7\"", "4'8\"", "4'9\"", "4'10\"", "4'11\"",
-    "5'0\"", "5'1\"", "5'2\"", "5'3\"", "5'4\"", "5'5\"", "5'6\"", "5'7\"", "5'8\"", "5'9\"", "5'10\"", "5'11\"",
-    "6'0\"", "6'1\"", "6'2\"", "6'3\"", "6'4\"", "6'5\"", "6'6\"", "6'7\"", "6'8\"", "6'9\"", "6'10\"", "6'11\"",
-    "7'0\""
+    { value: "5'0\"", label: "5'0\"" },
+    { value: "5'1\"", label: "5'1\"" },
+    { value: "5'2\"", label: "5'2\"" },
+    { value: "5'3\"", label: "5'3\"" },
+    { value: "5'4\"", label: "5'4\"" },
+    { value: "5'5\"", label: "5'5\"" },
+    { value: "5'6\"", label: "5'6\"" },
+    { value: "5'7\"", label: "5'7\"" },
+    { value: "5'8\"", label: "5'8\"" },
+    { value: "5'9\"", label: "5'9\"" },
+    { value: "5'10\"", label: "5'10\"" },
+    { value: "5'11\"", label: "5'11\"" },
+    { value: "6'0\"", label: "6'0\"" },
+    { value: "6'1\"", label: "6'1\"" },
+    { value: "6'2\"", label: "6'2\"" },
+    { value: "6'3\"", label: "6'3\"" },
+    { value: "6'4\"", label: "6'4\"" },
+    { value: "6'5\"", label: "6'5\"" },
+    { value: "6'6\"", label: "6'6\"" }
   ]
 
-  const weightOptions = Array.from({ length: 200 }, (_, i) => (i + 100).toString())
+  // Weight options from script.js (100-300 lbs)
+  const weightOptions = Array.from({ length: 201 }, (_, i) => ({
+    value: (i + 100).toString(),
+    label: `${i + 100} lbs`
+  }))
 
   return (
     <div>
       <h2>Medical Questions</h2>
       <p>Let's get some basic health information to find your best options.</p>
       
-      <div className="form-field">
-        <label>Approximate height and weight?</label>
+      <div className="space-y-6">
+        <FormField
+          label="Height (ft/in)"
+          name="height"
+          type="select"
+          value={formData.medicalAnswers?.height || ''}
+          onChange={handleHeightChange}
+          options={heightOptions}
+          required
+          placeholder="Select your height"
+        />
         
-        <div className="form-grid">
-          <div>
-            <label htmlFor="height">Height (ft/in)</label>
-            <input
-              type="text"
-              id="height"
-              name="height"
-              placeholder="Select height..."
-              value={formData.medicalAnswers?.height || ''}
-              onChange={(e) => handleHeightChange(e.target.value)}
-              required
-              autoComplete="off"
-            />
-            <div className="dropdown-list" id="height-dropdown">
-              {heightOptions.map(height => (
-                <div
-                  key={height}
-                  className="dropdown-item"
-                  onClick={() => handleHeightChange(height)}
-                >
-                  {height}
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          <div>
-            <label htmlFor="weight">Weight (lbs)</label>
-            <input
-              type="text"
-              id="weight"
-              name="weight"
-              placeholder="Select weight..."
-              value={formData.medicalAnswers?.weight || ''}
-              onChange={(e) => handleWeightChange(e.target.value)}
-              required
-              autoComplete="off"
-            />
-            <div className="dropdown-list" id="weight-dropdown">
-              {weightOptions.map(weight => (
-                <div
-                  key={weight}
-                  className="dropdown-item"
-                  onClick={() => handleWeightChange(weight)}
-                >
-                  {weight}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        <FormField
+          label="Weight (lbs)"
+          name="weight"
+          type="select"
+          value={formData.medicalAnswers?.weight || ''}
+          onChange={handleWeightChange}
+          options={weightOptions}
+          required
+          placeholder="Select your weight"
+        />
       </div>
     </div>
   )

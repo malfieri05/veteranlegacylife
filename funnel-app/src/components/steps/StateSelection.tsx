@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useFunnelStore } from '../../store/funnelStore'
 import { FormField } from '../shared/FormField'
 
@@ -56,11 +56,22 @@ const states = [
 ]
 
 export const StateSelection: React.FC = () => {
-  const { formData, updateFormData } = useFunnelStore()
+  const { formData, updateFormData, goToNextStep, autoAdvanceEnabled, setAutoAdvanceEnabled } = useFunnelStore()
   
   const handleStateChange = (value: string) => {
     updateFormData({ state: value })
+    setAutoAdvanceEnabled(true)
   }
+
+  // Auto-advance when state is selected
+  useEffect(() => {
+    if (formData.state && autoAdvanceEnabled) {
+      const timer = setTimeout(() => {
+        goToNextStep()
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [formData.state, autoAdvanceEnabled, goToNextStep])
   
   return (
     <div>
