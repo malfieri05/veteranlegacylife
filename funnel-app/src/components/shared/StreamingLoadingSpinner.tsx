@@ -151,7 +151,7 @@ export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = (
       {/* Logo */}
       <div className="mb-8">
         <img 
-          src="/assets/logo.png" 
+          src="assets/logo.png" 
           alt="Veteran Legacy Life Logo" 
           className="h-16 w-auto object-contain mx-auto"
           onError={(e) => {
