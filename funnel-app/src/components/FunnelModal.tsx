@@ -147,20 +147,34 @@ export const FunnelModal: React.FC = () => {
   // Don't render modal content when streaming loading is active
   if (isStreamingLoading) {
     return (
-      <>
-        {/* Streaming Loading Spinner */}
-        <StreamingLoadingSpinner
-          branchOfService={formData.branchOfService || 'Military'}
-          isVisible={isStreamingLoading}
-          onComplete={() => setStreamingLoading(false)}
-                  onStepComplete={() => {
-          // Automatically progress to the next step after loading completes
-          if (currentStep === 11.5) {
-            goToNextStep()
-          }
-        }}
-        />
-      </>
+      <motion.div
+        className="modal-overlay active"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={closeModal}
+      >
+        <motion.div
+          className="modal-content"
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 50, opacity: 0 }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Streaming Loading Spinner */}
+          <StreamingLoadingSpinner
+            branchOfService={formData.branchOfService || 'Military'}
+            isVisible={isStreamingLoading}
+            onComplete={() => setStreamingLoading(false)}
+            onStepComplete={() => {
+              // Automatically progress to the next step after loading completes
+              if (currentStep === 11.5) {
+                goToNextStep()
+              }
+            }}
+          />
+        </motion.div>
+      </motion.div>
     )
   }
 
