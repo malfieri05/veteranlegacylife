@@ -1,6 +1,6 @@
 // API Configuration
 export const API_CONFIG = {
-  GOOGLE_APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbw7s5etMlOlZMZod_lmJb08e1s0t65cAgMiQf-McV4Iz_BEld-6wHIwdkQC5Hcsauyl/exec'
+  GOOGLE_APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbw4-9ngPEZ252AP8mTsaGtLrNQoaerl_qc82vtGkkpsNq0AiwqAIHWe5Lfgx462LBtB/exec'
 }
 
 // Helper function to get the API URL
