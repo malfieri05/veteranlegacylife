@@ -107,19 +107,6 @@ export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = (
 
   if (!isVisible) return null
 
-  const getMessageStyle = () => {
-    switch (messageType) {
-      case 'loading':
-        return 'bg-blue-50 border-l-blue-500'
-      case 'iul':
-        return 'bg-green-50 border-l-green-500'
-      case 'veteran':
-        return 'bg-purple-50 border-l-purple-500'
-      default:
-        return 'bg-blue-50 border-l-blue-500'
-    }
-  }
-
   const getMessageTitle = () => {
     switch (messageType) {
       case 'loading':
@@ -133,27 +120,14 @@ export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = (
     }
   }
 
-  const getMessageTextColor = () => {
-    switch (messageType) {
-      case 'loading':
-        return 'text-blue-700'
-      case 'iul':
-        return 'text-green-700'
-      case 'veteran':
-        return 'text-purple-700'
-      default:
-        return 'text-blue-700'
-    }
-  }
-
   return (
-    <div className="text-center">
+    <div style={{ textAlign: 'center' }}>
       {/* Logo */}
-      <div className="mb-8">
+      <div style={{ marginBottom: '2rem' }}>
         <img 
           src="assets/logo.png" 
           alt="Veteran Legacy Life Logo" 
-          className="h-16 w-auto object-contain mx-auto"
+          style={{ height: '4rem', width: 'auto', objectFit: 'contain', margin: '0 auto' }}
           onError={(e) => {
             // Fallback if logo doesn't load
             e.currentTarget.style.display = 'none'
@@ -162,30 +136,43 @@ export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = (
       </div>
 
       {/* Title */}
-      <div className="mb-8">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-2 leading-relaxed">
+      <div style={{ marginBottom: '2rem' }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.5rem', lineHeight: '1.6' }}>
           Calculating Your Policy Options
         </h2>
-        <p className="text-gray-600">
+        <p style={{ color: '#6b7280' }}>
           Seeing what you qualify for in the {branchOfService}...
         </p>
       </div>
 
       {/* Single Message Display */}
-      <div className="mb-8">
-        <div className={`p-6 rounded-lg border-l-4 ${getMessageStyle()}`}>
-          <h3 className="font-semibold text-gray-800 mb-3 text-lg">{getMessageTitle()}</h3>
-          <p className={`text-base leading-relaxed min-h-[3rem] ${getMessageTextColor()}`}>
+      <div style={{ marginBottom: '2rem' }}>
+        <div style={{ 
+          padding: '1.5rem', 
+          borderRadius: '0.5rem', 
+          borderLeft: '4px solid',
+          ...(messageType === 'loading' ? { background: '#eff6ff', borderLeftColor: '#3b82f6' } : {}),
+          ...(messageType === 'iul' ? { background: '#f0fdf4', borderLeftColor: '#22c55e' } : {}),
+          ...(messageType === 'veteran' ? { background: '#faf5ff', borderLeftColor: '#a855f7' } : {})
+        }}>
+          <h3 style={{ fontWeight: '600', color: '#1f2937', marginBottom: '0.75rem', fontSize: '1.125rem' }}>{getMessageTitle()}</h3>
+          <p style={{ 
+            fontSize: '1rem', 
+            lineHeight: '1.6', 
+            minHeight: '3rem',
+            ...(messageType === 'loading' ? { color: '#1d4ed8' } : {}),
+            ...(messageType === 'iul' ? { color: '#15803d' } : {}),
+            ...(messageType === 'veteran' ? { color: '#7c3aed' } : {})
+          }}>
             {currentMessage}
-            {isTyping && <span className="animate-pulse">|</span>}
+            {isTyping && <span style={{ animation: 'pulse 1s infinite' }}>|</span>}
           </p>
         </div>
       </div>
 
       {/* Spinner */}
-      <div className="flex justify-center items-center mt-8">
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '2rem' }}>
         <div 
-          className="w-15 h-15 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"
           style={{
             width: '60px',
             height: '60px',
@@ -197,8 +184,8 @@ export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = (
         ></div>
       </div>
 
-      <div className="mt-6 text-center">
-        <p className="text-sm text-gray-500">
+      <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+        <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>
           This usually takes 7-10 seconds...
         </p>
       </div>
