@@ -321,18 +321,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
       const formDataParams = new URLSearchParams()
       formDataParams.append('formType', 'Lead')
       formDataParams.append('sessionId', sessionId)
-      
-      // Add all formData properties
-      for (const [key, value] of Object.entries(formData)) {
-        if (Array.isArray(value)) {
-          formDataParams.append(key, value.join(', '))
-        } else if (typeof value === 'object' && value !== null) {
-          formDataParams.append(key, JSON.stringify(value))
-        } else {
-          formDataParams.append(key, value || '')
-        }
-      }
-      
+      formDataParams.append('formData', JSON.stringify(formData))
       formDataParams.append('userAgent', navigator.userAgent)
       formDataParams.append('referrer', document.referrer)
       formDataParams.append('utmSource', new URLSearchParams(window.location.search).get('utm_source') || '')
@@ -368,16 +357,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
       formDataParams.append('formType', 'Application')
       formDataParams.append('sessionId', sessionId)
       
-      // Add all formData properties
-      for (const [key, value] of Object.entries(formData)) {
-        if (Array.isArray(value)) {
-          formDataParams.append(key, value.join(', '))
-        } else if (typeof value === 'object' && value !== null) {
-          formDataParams.append(key, JSON.stringify(value))
-        } else {
-          formDataParams.append(key, value || '')
-        }
-      }
+      formDataParams.append('formData', JSON.stringify(formData))
       
       formDataParams.append('userAgent', navigator.userAgent)
       formDataParams.append('referrer', document.referrer)
