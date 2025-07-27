@@ -54,7 +54,7 @@ Veteran Life Insurance/
 - **Local Development**: Python HTTP server (`python3 -m http.server 8000`)
 
 ## 📊 **Google Apps Script Details**
-- **URL**: `https://script.google.com/macros/s/AKfycby0-3Hd6SR7KJqxSOsjl-zGhTV1F_bvV-x2sERUqLLoLwZacexp-FFdYlyqEEZkImE/exec`
+- **URL**: `https://script.google.com/macros/s/AKfycbyLAFWndHGK5dckYZdHlQXObVjiDjf6jbcxTQuFJia8tTXXmuF4ITmVbx98ij4HacJK/exec`
 - **Spreadsheet ID**: `1MvmvfqRBnt8fjplbRgFIi7BTnzcAGaMNeIDwCHGPis8`
 - **Email Recipient**: `michaelalfieri.ffl@gmail.com`
 
