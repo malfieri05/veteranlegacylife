@@ -7,30 +7,8 @@ interface StreamingLoadingSpinnerProps {
   onStepComplete?: () => void
 }
 
-const loadingMessages = [
-  'Gathering your information and medical details...',
-  'Analyzing your military service and benefits...',
-  'Checking state-specific requirements for your location...',
-  'Generating personalized quotes based on your answers...',
-  'Optimizing coverage options for your family...',
-  'Finalizing your custom policy recommendations...'
-]
-
-const iulBenefits = [
-  'IUL policies provide both death benefit protection and cash value growth potential',
-  'Tax-advantaged growth with flexible premium payments',
-  'Tax-free withdrawals and policy loans available',
-  'IUL policies can complement your existing VA benefits',
-  'Build wealth while protecting your family'
-]
-
-const veteranBenefits = [
-  'Special rates for active duty and veterans',
-  'Flexible underwriting for service-related conditions',
-  'Expedited processing for military families',
-  'Comprehensive coverage options designed for veterans',
-  'Tax advantages that complement your military benefits'
-]
+// Only keep the processing message
+const processingMessage = 'Processing your information and gathering your personalized quote options...'
 
 export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = ({
   branchOfService,
@@ -39,43 +17,32 @@ export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = (
   onStepComplete
 }) => {
   const [currentMessage, setCurrentMessage] = useState('')
-  const [messageType, setMessageType] = useState<'loading' | 'iul' | 'veteran'>('loading')
   const [isTyping, setIsTyping] = useState(false)
+  const [showLoader, setShowLoader] = useState(false)
 
   useEffect(() => {
     if (!isVisible) return
 
-    let messageTimer: NodeJS.Timeout
     let typingTimer: NodeJS.Timeout
-    let messageIndex = 0
-    let allMessages: Array<{ text: string; type: 'loading' | 'iul' | 'veteran' }> = []
-
-    // Combine all messages in sequence
-    loadingMessages.forEach(msg => allMessages.push({ text: msg, type: 'loading' }))
-    iulBenefits.forEach(msg => allMessages.push({ text: msg, type: 'iul' }))
-    veteranBenefits.forEach(msg => allMessages.push({ text: msg, type: 'veteran' }))
+    let loaderTimer: NodeJS.Timeout
 
     const startLoading = () => {
-      const showNextMessage = () => {
-        if (messageIndex < allMessages.length) {
-          const message = allMessages[messageIndex]
-          setMessageType(message.type)
-          typeMessage(message.text, () => {
-            messageIndex++
-            messageTimer = setTimeout(showNextMessage, 1000) // Wait 1 second between messages
-          })
-        } else {
-          // Complete after all messages
-          setTimeout(() => {
-            onComplete()
-            if (onStepComplete) {
-              onStepComplete()
-            }
-          }, 1000)
-        }
-      }
-
-      showNextMessage()
+      // Start typing the message
+      typeMessage(processingMessage, () => {
+        // After typing is complete, show loader for remaining time
+        setShowLoader(true)
+        
+        // Calculate remaining time to make total duration 8 seconds
+        const elapsedTime = processingMessage.length * 30 // 30ms per character
+        const remainingTime = Math.max(8000 - elapsedTime, 2000) // Minimum 2 seconds with loader
+        
+        loaderTimer = setTimeout(() => {
+          onComplete()
+          if (onStepComplete) {
+            onStepComplete()
+          }
+        }, remainingTime)
+      })
     }
 
     const typeMessage = (message: string, callback?: () => void) => {
@@ -100,25 +67,12 @@ export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = (
     startLoading()
 
     return () => {
-      clearTimeout(messageTimer)
       clearTimeout(typingTimer)
+      clearTimeout(loaderTimer)
     }
   }, [isVisible, onComplete])
 
   if (!isVisible) return null
-
-  const getMessageTitle = () => {
-    switch (messageType) {
-      case 'loading':
-        return 'Processing Your Information'
-      case 'iul':
-        return 'IUL Policy Benefits'
-      case 'veteran':
-        return 'Veteran Benefits'
-      default:
-        return 'Processing Your Information'
-    }
-  }
 
   return (
     <div style={{ textAlign: 'center' }}>
@@ -145,24 +99,22 @@ export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = (
         </p>
       </div>
 
-      {/* Single Message Display */}
+      {/* Message Display */}
       <div style={{ marginBottom: '2rem' }}>
         <div style={{ 
           padding: '1.5rem', 
           borderRadius: '0.5rem', 
-          borderLeft: '4px solid',
-          ...(messageType === 'loading' ? { background: '#eff6ff', borderLeftColor: '#3b82f6' } : {}),
-          ...(messageType === 'iul' ? { background: '#f0fdf4', borderLeftColor: '#22c55e' } : {}),
-          ...(messageType === 'veteran' ? { background: '#faf5ff', borderLeftColor: '#a855f7' } : {})
+          background: '#eff6ff', 
+          borderLeft: '4px solid #3b82f6'
         }}>
-          <h3 style={{ fontWeight: '600', color: '#1f2937', marginBottom: '0.75rem', fontSize: '1.125rem' }}>{getMessageTitle()}</h3>
+          <h3 style={{ fontWeight: '600', color: '#1f2937', marginBottom: '0.75rem', fontSize: '1.125rem' }}>
+            Processing Your Information
+          </h3>
           <p style={{ 
             fontSize: '1rem', 
             lineHeight: '1.6', 
             minHeight: '3rem',
-            ...(messageType === 'loading' ? { color: '#1d4ed8' } : {}),
-            ...(messageType === 'iul' ? { color: '#15803d' } : {}),
-            ...(messageType === 'veteran' ? { color: '#7c3aed' } : {})
+            color: '#1d4ed8'
           }}>
             {currentMessage}
             {isTyping && <span style={{ animation: 'pulse 1s infinite' }}>|</span>}
@@ -170,19 +122,27 @@ export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = (
         </div>
       </div>
 
-      {/* Spinner - Commented out for now, can be re-enabled if needed */}
-      {/* <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '2rem' }}>
-        <div 
-          style={{
-            width: '60px',
-            height: '60px',
-            border: '4px solid #e2e8f0',
-            borderTop: '4px solid #3b82f6',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite'
-          }}
-        ></div>
-      </div> */}
+      {/* Tasteful Loader - appears after typing is complete */}
+      {showLoader && (
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          marginTop: '1rem',
+          marginBottom: '1rem'
+        }}>
+          <div 
+            style={{
+              width: '40px',
+              height: '40px',
+              border: '3px solid #e2e8f0',
+              borderTop: '3px solid #3b82f6',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite'
+            }}
+          ></div>
+        </div>
+      )}
 
       <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
         <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>
