@@ -167,58 +167,70 @@ const iulData = {
 // IUL Quote calculation based on age, coverage amount, and gender using actual rate tables
 export const calculateIULQuote = (coverageAmount: number, age: number, gender: string = 'male'): number => {
   try {
+    console.log(`🔍 calculateIULQuote called with: coverageAmount=${coverageAmount}, age=${age}, gender=${gender}`);
+    
     // Get the appropriate gender table
     const genderTable = iulData[gender as keyof typeof iulData];
     if (!genderTable) {
-      console.error('Invalid gender:', gender);
+      console.error('❌ Invalid gender:', gender);
       return 0;
     }
+    
+    console.log(`✅ Gender table found for: ${gender}`);
     
     // Find the appropriate age bracket
     let ageBracket = null;
     const ageBrackets = Object.keys(genderTable);
+    console.log(`🔍 Available age brackets: ${ageBrackets.join(', ')}`);
     
     for (const bracket of ageBrackets) {
       const [minAge, maxAge] = bracket.split('-').map(Number);
+      console.log(`🔍 Checking bracket ${bracket}: ${minAge}-${maxAge}, age=${age}`);
       if (age >= minAge && age <= maxAge) {
         ageBracket = bracket;
+        console.log(`✅ Found matching age bracket: ${ageBracket}`);
         break;
       }
     }
     
     if (!ageBracket) {
-      console.error('Age out of range:', age);
+      console.error('❌ Age out of range:', age);
       return 0;
     }
     
     // Get the coverage ranges for this age bracket
     const coverageRanges = genderTable[ageBracket as keyof typeof genderTable];
     if (!coverageRanges) {
-      console.error('No coverage ranges found for age bracket:', ageBracket);
+      console.error('❌ No coverage ranges found for age bracket:', ageBracket);
       return 0;
     }
+    
+    console.log(`✅ Coverage ranges found for age bracket ${ageBracket}:`, Object.keys(coverageRanges));
     
     // Find the appropriate coverage range
     let selectedPremium = 0;
     
     for (const [range, premium] of Object.entries(coverageRanges)) {
       const [minCoverage, maxCoverage] = range.split('-').map(Number);
+      console.log(`🔍 Checking range ${range}: ${minCoverage}-${maxCoverage}, coverageAmount=${coverageAmount}`);
       if (coverageAmount >= minCoverage && coverageAmount <= maxCoverage) {
         selectedPremium = premium;
+        console.log(`✅ Found matching coverage range: ${range}, premium: ${premium}`);
         break;
       }
     }
     
     if (selectedPremium === 0) {
-      console.error('Coverage amount out of range:', coverageAmount);
+      console.error('❌ Coverage amount out of range:', coverageAmount);
+      console.error('❌ Available ranges:', Object.keys(coverageRanges));
       return 0;
     }
     
-    console.log(`IUL Quote calculated - Age: ${age} (${ageBracket}), Gender: ${gender}, Coverage: ${coverageAmount}, Premium: ${selectedPremium}`);
+    console.log(`💰 IUL Quote calculated - Age: ${age} (${ageBracket}), Gender: ${gender}, Coverage: ${coverageAmount}, Premium: ${selectedPremium}`);
     return selectedPremium;
     
   } catch (error) {
-    console.error('Error calculating IUL quote:', error);
+    console.error('❌ Error calculating IUL quote:', error);
     return 0;
   }
 }

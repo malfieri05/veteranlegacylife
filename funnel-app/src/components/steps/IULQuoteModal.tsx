@@ -46,11 +46,15 @@ export const IULQuoteModal: React.FC = () => {
     setSliderValue(value)
     setCoverageAmount(value)
     console.log(`Slider changed to: ${value}`)
+    // Update quote immediately when slider changes
+    setTimeout(() => updateQuote(), 0)
   }
 
   const handleGenderChange = (gender: string) => {
     setUserGender(gender)
     console.log(`Gender changed to: ${gender}`)
+    // Update quote immediately when gender changes
+    setTimeout(() => updateQuote(), 0)
   }
 
   const handleSecureRate = () => {
