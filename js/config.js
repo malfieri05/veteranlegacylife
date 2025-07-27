@@ -5,7 +5,7 @@ const Config = (function() {
     'use strict';
     
     // Google Apps Script URL
-const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzlqekvfHr3_DRsaX0anQZ0zICzvLOKBvYdj9DGduIUwAcjX-NomQF2h3oWWcqkSoZt/exec';
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw7Ax-Yj5daG3cRfHX73uaLBUc2fz6QA8EdkEKENnPqm8OFJhVImqUH-B8nyOyfJD-D/exec';
     
     // Helper function to get API URL
     function getApiUrl() {
