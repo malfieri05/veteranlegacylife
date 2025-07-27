@@ -356,7 +356,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
     try {
       // Convert data to URL-encoded format to avoid CORS preflight (same as old script)
       const formDataParams = new URLSearchParams()
-      formDataParams.append('formType', 'Funnel') // Changed from 'Application' to 'Funnel' to match Google Apps Script
+      formDataParams.append('formType', 'Application') // Changed back to 'Application' to match Google Apps Script
       formDataParams.append('sessionId', sessionId)
       
       formDataParams.append('formData', JSON.stringify(formData))
