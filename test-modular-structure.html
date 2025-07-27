@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Modular Structure</title>
+</head>
+<body>
+    <h1>Testing Modular Structure</h1>
+    <p>Check the browser console for initialization logs.</p>
+    
+    <!-- Configuration and Utilities -->
+    <script src="js/config.js"></script>
+    <script src="js/utils/dom.js"></script>
+    <script src="js/utils/validation.js"></script>
+    <script src="js/utils/formatting.js"></script>
+    <script src="js/utils/performance.js"></script>
+    <script src="js/utils/features.js"></script>
+    
+    <!-- Core Modules -->
+    <script src="js/modules/api.js"></script>
+    <script src="js/modules/forms.js"></script>
+    <script src="js/modules/modals.js"></script>
+    <script src="js/modules/funnel.js"></script>
+    <script src="js/modules/quotes.js"></script>
+    <script src="js/modules/tracking.js"></script>
+    
+    <!-- Main Application -->
+    <script src="js/main.js"></script>
+    
+    <script>
+        // Test the modular structure
+        console.log('=== TESTING MODULAR STRUCTURE ===');
+        
+        // Test if all modules are available
+        const modules = ['Config', 'DOMUtils', 'ValidationUtils', 'FormattingUtils', 'PerformanceUtils', 'FeatureUtils', 'APIModule', 'FormsModule', 'ModalsModule', 'FunnelModule', 'QuotesModule', 'TrackingModule'];
+        
+        modules.forEach(moduleName => {
+            if (typeof window[moduleName] !== 'undefined') {
+                console.log(`✅ ${moduleName} loaded successfully`);
+            } else {
+                console.error(`❌ ${moduleName} NOT FOUND`);
+            }
+        });
+        
+        // Test configuration
+        if (Config) {
+            console.log('✅ Configuration loaded:', {
+                totalSteps: Config.getTotalSteps(),
+                debugEnabled: Config.isDebugEnabled(),
+                googleScriptUrl: Config.GOOGLE_APPS_SCRIPT_URL ? 'Set' : 'Not set'
+            });
+        }
+        
+        // Test utility functions
+        if (DOMUtils) {
+            console.log('✅ DOM utilities loaded');
+        }
+        
+        if (ValidationUtils) {
+            console.log('✅ Validation utilities loaded');
+        }
+        
+        if (FormattingUtils) {
+            console.log('✅ Formatting utilities loaded');
+        }
+        
+        if (PerformanceUtils) {
+            console.log('✅ Performance utilities loaded');
+        }
+        
+        if (FeatureUtils) {
+            console.log('✅ Feature detection utilities loaded');
+            console.log('📊 Feature report:', FeatureUtils.getFeatureReport());
+        }
+        
+        // Test API module
+        if (APIModule) {
+            console.log('✅ API module loaded');
+        }
+        
+        // Test form module
+        if (FormsModule) {
+            console.log('✅ Forms module loaded');
+        }
+        
+        // Test modal module
+        if (ModalsModule) {
+            console.log('✅ Modals module loaded');
+        }
+        
+        console.log('=== MODULAR STRUCTURE TEST COMPLETED ===');
+    </script>
+</body>
+</html> 

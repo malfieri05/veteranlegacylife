@@ -297,8 +297,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const userAge = window.funnelData.age || 26; // Default to 26 if not set
             console.log('🎯 User age for quote modal:', userAge);
             
-            if (userAge <= 60) {
-                // Show IUL quoting tool for ages 60 and below
+                if (userAge <= 60) {
+                    // Show IUL quoting tool for ages 60 and below
                 const iulModal = document.getElementById('iul-quote-modal');
                 if (iulModal) {
                     iulModal.style.display = 'flex';
@@ -318,9 +318,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         window.iulQuoteSlider.setCoverageSliderRange();
                         window.iulQuoteSlider.updateQuote();
                     }
-                }
-            } else {
-                // Show final expense quoting tool for ages 61 and above
+                    }
+                } else {
+                    // Show final expense quoting tool for ages 61 and above
                 const coverageModal = document.getElementById('coverage-slider-modal');
                 if (coverageModal) {
                     coverageModal.style.display = 'flex';
@@ -812,13 +812,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         coverageModal.classList.add('active');
                         console.log('📊 Coverage Slider modal displayed');
                         
-                        // Initialize the coverage slider
-                        if (!window.coverageSlider) {
-                            window.coverageSlider = new CoverageSlider();
+                // Initialize the coverage slider
+                if (!window.coverageSlider) {
+                    window.coverageSlider = new CoverageSlider();
                         }
-                    }
                 }
-            });
+            }
+        });
         } else {
             console.error('❌ Medical congratulations button not found');
         }
@@ -1593,7 +1593,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Remove after animation
             setTimeout(() => {
-                congratsModal.style.display = 'none';
+            congratsModal.style.display = 'none';
                 console.log('✅ Medical congratulations modal hidden');
             }, 300);
         }
@@ -2106,10 +2106,10 @@ class CoverageSlider {
                         <div class="premium-amount">$${monthlyPremium.toLocaleString()}</div>
                         <p>For $${this.currentValue.toLocaleString()} in coverage</p>
                         <button class="cta-button" onclick="handleCoverageQuoteNow()">Get Your Quote Now</button>
-                    </div>
-                `;
+                </div>
+            `;
                 console.log('✅ Coverage quote display updated successfully');
-            } else {
+        } else {
                 console.error('❌ Coverage quote display element not found');
             }
         } catch (error) {
@@ -2249,8 +2249,8 @@ class IULQuoteSlider {
                 console.log('📊 Coverage slider range set:', coverageRange.min, 'to', coverageRange.max);
             }
 
-            this.setupEventListeners();
-            this.updateQuote();
+        this.setupEventListeners();
+        this.updateQuote();
             console.log('✅ IUL Quote Slider initialized successfully with age:', this.userAge, 'coverage range:', coverageRange);
         } catch (error) {
             console.error('❌ Error initializing IUL Quote Slider:', error);
@@ -2265,30 +2265,30 @@ class IULQuoteSlider {
                     try {
                         this.currentValue = parseInt(this.slider.value);
                         console.log('📊 Coverage slider changed to:', this.currentValue);
-                        this.updateQuote();
+                this.updateQuote();
                     } catch (error) {
                         console.error('❌ Error handling coverage slider change:', error);
-                    }
-                });
+        }
+            });
             } else {
                 console.error('❌ Coverage slider not found');
-            }
+        }
 
             // Age slider is disabled and locked - no event listener needed
 
             // Gender selection (still active)
             const genderInputs = document.querySelectorAll('input[name="gender"]');
-            genderInputs.forEach(input => {
-                input.addEventListener('change', () => {
+        genderInputs.forEach(input => {
+            input.addEventListener('change', () => {
                     try {
                         this.userGender = input.value;
                         console.log('📊 Gender changed to:', this.userGender);
-                        this.updateQuote();
+                this.updateQuote();
                     } catch (error) {
                         console.error('❌ Error handling gender change:', error);
                     }
-                });
             });
+        });
 
             console.log('✅ IUL Quote Slider event listeners set up successfully');
         } catch (error) {
@@ -2308,8 +2308,8 @@ class IULQuoteSlider {
                         <div class="premium-amount" style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">$${monthlyPremium.toLocaleString()}</div>
                         <p class="secure-rate-text" style="font-size: 1rem; color: #ffffff; opacity: 0.9; margin-bottom: 1.5rem;">Secure this rate</p>
                         <button class="cta-button" onclick="handleIULQuoteNow()" style="background: #10b981; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background-color 0.3s ease;">Secure Your Rate</button>
-                    </div>
-                `;
+                </div>
+            `;
                 
                 // Update individual display spans
                 const ageDisplay = document.getElementById('iul-age-display');
@@ -2325,7 +2325,7 @@ class IULQuoteSlider {
                 }
                 
                 console.log('✅ Quote display updated successfully');
-            } else {
+        } else {
                 console.error('❌ Quote display element not found');
             }
         } catch (error) {
@@ -2393,7 +2393,7 @@ class IULQuoteSlider {
             console.error('❌ Error hiding IUL secure quote modal:', error);
         }
     }
-        
+    
     setupModalCloseListener() {
         try {
             const closeBtn = document.querySelector('#iul-secure-quote-modal .close-btn');
@@ -2413,9 +2413,9 @@ class IULQuoteSlider {
             const form = document.getElementById('iul-quote-form');
             if (!form) {
                 console.error('❌ IUL quote form not found');
-                return;
-            }
-            
+        return;
+    }
+    
             const formData = new FormData(form);
             const data = {
                 formType: 'IULQuote',
@@ -2579,7 +2579,7 @@ function initializeMedicalConditionsLogic() {
         }
         
         // Handle medical condition changes
-        function handleMedicalConditionChange() {
+    function handleMedicalConditionChange() {
             const selectedConditions = [];
             checkboxes.forEach(checkbox => {
                 if (checkbox.checked) {
@@ -3557,7 +3557,7 @@ function initializeMedicalConditionsLogic() {
                 // Fallback: manually trigger the application form
                 showNextStepAfterCongrats();
             }
-        } catch (error) {
+                        } catch (error) {
             console.error('❌ Error handling IUL quote now button:', error);
             // Fallback: manually trigger the application form
             showNextStepAfterCongrats();
@@ -3839,7 +3839,7 @@ function initializeMedicalConditionsLogic() {
         try {
             if (window.funnelData && window.funnelData.contactInfo && window.funnelData.contactInfo.dateOfBirth) {
                 const birthDate = new Date(window.funnelData.contactInfo.dateOfBirth);
-                const today = new Date();
+                        const today = new Date();
                 const age = today.getFullYear() - birthDate.getFullYear();
                 const monthDiff = today.getMonth() - birthDate.getMonth();
                 const finalAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) ? age - 1 : age;

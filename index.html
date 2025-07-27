@@ -193,7 +193,7 @@
                     <h1>You May Qualify for New Life Insurance Benefits in 2025</h1>
                     <p>As a resident of your state, you are entitled to check your eligibility for exclusive life insurance benefits designed specifically for our nation's heroes.</p>
                                     <div class="hero-buttons">
-                        <button class="cta-button qualify-button">See If I Qualify <span>→</span></button>
+                                    <button class="cta-button qualify-button">See If I Qualify <span>→</span></button>
                         <button class="cta-button load-screen-button">Load Screen</button>
                     </div>
                     <div class="security-note">
@@ -1111,8 +1111,28 @@
     </div>
 
     <!-- Scripts -->
+    <!-- Configuration and Utilities -->
+    <script src="js/config.js"></script>
+    <script src="js/utils/dom.js"></script>
+    <script src="js/utils/validation.js"></script>
+    <script src="js/utils/formatting.js"></script>
+    <script src="js/utils/performance.js"></script>
+    <script src="js/utils/features.js"></script>
+    
+    <!-- Core Modules -->
+    <script src="js/modules/api.js"></script>
+    <script src="js/modules/forms.js"></script>
+    <script src="js/modules/modals.js"></script>
+    <script src="js/modules/funnel.js"></script>
+    <script src="js/modules/quotes.js"></script>
+    <script src="js/modules/tracking.js"></script>
+    
+    <!-- Legacy Support -->
     <script src="quote-utils.js"></script>
     <script src="script.js?v=42"></script>
+    
+    <!-- Main Application -->
+    <script src="js/main.js"></script>
 
     <div class="hidden-seo-text" style="display:none;">
       <p>
@@ -1302,83 +1322,83 @@
         </div>
     </div>
 
-                <!-- IUL Quote Modal -->
+    <!-- IUL Quote Modal -->
             <div id="iul-quote-modal" class="modal-overlay" style="display:none;z-index:9999;background: rgba(0,0,0,0.9);">
                 <div class="coverage-slider-content" style="max-width: 900px; width: 95%; margin: 2rem auto; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden;">
-                    <!-- Page Header -->
+            <!-- Page Header -->
                     <div class="page-header" style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); padding: 2rem; text-align: center; color: white;">
                         <div class="logo-container" style="margin-bottom: 1rem;">
                             <img src="assets/logo.png" alt="Veteran Legacy Life" class="header-logo" style="height: 50px; filter: brightness(0) invert(1);">
-                        </div>
+                </div>
                         <h1 style="margin: 0; font-size: 2rem; font-weight: 700; color: #ffffff;">Indexed Universal Life Quote</h1>
                         <p style="margin: 1rem 0 0 0; color: #ffffff; font-size: 1.1rem; opacity: 0.95;">Adjust the sliders to find your ideal coverage and estimated monthly premium.</p>
-                    </div>
+            </div>
 
-                    <!-- Main Content -->
+            <!-- Main Content -->
                     <div class="main-content" style="padding: 3rem;">
-                        <!-- Quote Sliders -->
-                        <div class="quote-sliders">
+                <!-- Quote Sliders -->
+                <div class="quote-sliders">
                             <div class="sliders-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start;">
-                                <!-- Sliders -->
-                                <div class="sliders-column">
-                                    <!-- Age Slider -->
+                        <!-- Sliders -->
+                        <div class="sliders-column">
+                            <!-- Age Slider -->
                                     <div class="slider-group" style="margin-bottom: 2rem;">
                                         <label class="slider-label" style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Age: <span id="iul-age-display">50</span></label>
-                                        <input
-                                            type="range"
-                                            min="40"
-                                            max="60"
-                                            value="50"
-                                            id="iul-age-slider"
-                                            class="slider-input"
+                                <input
+                                    type="range"
+                                    min="40"
+                                    max="60"
+                                    value="50"
+                                    id="iul-age-slider"
+                                    class="slider-input"
                                             style="width: 100%; height: 8px; border-radius: 4px; background: #e5e7eb; outline: none; -webkit-appearance: none; opacity: 0.5; pointer-events: none;"
                                             disabled
-                                        />
+                                />
                                         <p style="font-size: 0.9rem; color: #6b7280; margin-top: 0.5rem; font-style: italic;">Age is calculated from your birthday</p>
-                                    </div>
+                            </div>
 
-                                    <!-- Coverage Slider -->
+                            <!-- Coverage Slider -->
                                     <div class="slider-group" style="margin-bottom: 2rem;">
                                         <label class="slider-label" style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Coverage: <span id="iul-coverage-display">$50,000</span></label>
-                                        <input
-                                            type="range"
-                                            min="50000"
-                                            max="250000"
-                                            step="5000"
-                                            value="50000"
-                                            id="iul-coverage-slider"
-                                            class="slider-input"
+                                <input
+                                    type="range"
+                                    min="50000"
+                                    max="250000"
+                                    step="5000"
+                                    value="50000"
+                                    id="iul-coverage-slider"
+                                    class="slider-input"
                                             style="width: 100%; height: 8px; border-radius: 4px; background: #e5e7eb; outline: none; -webkit-appearance: none;"
-                                        />
-                                    </div>
+                                />
+                            </div>
 
-                                    <!-- Gender Selection -->
-                                    <div class="slider-group">
+                            <!-- Gender Selection -->
+                            <div class="slider-group">
                                         <label class="slider-label" style="display: block; font-weight: 600; color: #374151; margin-bottom: 1rem;">Gender:</label>
                                         <div class="gender-options" style="display: flex; gap: 2rem;">
                                             <label class="gender-option" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
                                                 <input type="radio" name="iul-gender" value="male" checked style="margin: 0;" />
                                                 <span>Male</span>
-                                            </label>
+                                    </label>
                                             <label class="gender-option" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
                                                 <input type="radio" name="iul-gender" value="female" style="margin: 0;" />
                                                 <span>Female</span>
-                                            </label>
-                                        </div>
-                                    </div>
+                                    </label>
                                 </div>
+                            </div>
+                        </div>
 
-                                <!-- Quote Display -->
-                                <div class="quote-display">
+                        <!-- Quote Display -->
+                        <div class="quote-display">
                                     <div class="quote-card" id="iul-quote-card" style="background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); color: white; padding: 2rem; border-radius: 15px; text-align: center; min-height: 200px; display: flex; flex-direction: column; justify-content: center;">
                                         <div class="quote-placeholder" style="font-size: 1.1rem; color: #ffffff; opacity: 0.9;">Adjust sliders to get your IUL rate!</div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
     <!-- Application Form Modal -->
     <div id="application-modal" class="modal-overlay" style="display:none;z-index:9999;">
