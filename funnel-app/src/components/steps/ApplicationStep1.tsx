@@ -42,6 +42,15 @@ export const ApplicationStep1: React.FC = () => {
     })
   }
 
+  const handleDriversLicenseChange = (value: string) => {
+    updateFormData({
+      applicationData: {
+        ...formData.applicationData,
+        driversLicense: value
+      }
+    })
+  }
+
   return (
     <div>
       <h2>Application Step 1</h2>
@@ -159,6 +168,22 @@ export const ApplicationStep1: React.FC = () => {
               <option value="Pending">Pending</option>
             </select>
           </div>
+        </div>
+      </div>
+
+      <div className="form-field">
+        <h3>Drivers License Information</h3>
+        <div>
+          <label htmlFor="driversLicense">Drivers License Number *</label>
+          <input
+            type="text"
+            id="driversLicense"
+            name="driversLicense"
+            value={formData.applicationData?.driversLicense || ''}
+            onChange={(e) => handleDriversLicenseChange(e.target.value)}
+            placeholder="Enter your drivers license number"
+            required
+          />
         </div>
       </div>
 

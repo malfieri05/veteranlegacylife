@@ -19,6 +19,34 @@ function doPost(e) {
       }
     }
     
+    // Parse JSON formData if it exists (for React app)
+    let parsedFormData = {};
+    if (data.formData) {
+      try {
+        parsedFormData = JSON.parse(data.formData);
+      } catch (error) {
+        console.log('Error parsing formData JSON:', error);
+      }
+    }
+    
+    // Helper function to extract values from both direct data and parsed formData
+    const extractValue = (key, defaultValue = '') => {
+      return data[key] || parsedFormData[key] || defaultValue;
+    };
+    
+    const extractNestedValue = (path, defaultValue = '') => {
+      const keys = path.split('.');
+      let value = parsedFormData;
+      for (const key of keys) {
+        if (value && typeof value === 'object' && key in value) {
+          value = value[key];
+        } else {
+          return defaultValue;
+        }
+      }
+      return value || defaultValue;
+    };
+    
     // Get the active spreadsheet
     const spreadsheetId = '1MvmvfqRBnt8fjplbRgFIi7BTnzcAGaMNeIDwCHGPis8';
     const sheet = SpreadsheetApp.openById(spreadsheetId).getActiveSheet();
@@ -28,41 +56,42 @@ function doPost(e) {
       new Date(), // Timestamp
       data.sessionId || '', // Session ID for tracking
       // Phase 1 - Pre-Qualification Data
-      data.state || '',
-      data.militaryStatus || '',
-      data.branchOfService || '',
-      data.maritalStatus || '',
-      data.coverageAmount || '',
-      data.firstName || '',
-      data.lastName || '',
-      data.email || '',
-      data.phone || '',
-      data.dateOfBirth || '',
-      data.tobaccoUse || '',
-      data.medicalConditions || '', // Already a string from frontend
-      data.height || '',
-      data.weight || '',
-      data.hospitalCare || '',
-      data.diabetesMedication || '',
+      extractValue('state'),
+      extractValue('militaryStatus'),
+      extractValue('branchOfService'),
+      extractValue('maritalStatus'),
+      extractValue('coverageAmount'),
+      extractNestedValue('contactInfo.firstName'),
+      extractNestedValue('contactInfo.lastName'),
+      extractNestedValue('contactInfo.email'),
+      extractNestedValue('contactInfo.phone'),
+      extractNestedValue('contactInfo.dateOfBirth'),
+      extractNestedValue('medicalAnswers.tobaccoUse'),
+      extractNestedValue('medicalAnswers.medicalConditions'),
+      extractNestedValue('medicalAnswers.height'),
+      extractNestedValue('medicalAnswers.weight'),
+      extractNestedValue('medicalAnswers.hospitalCare'),
+      extractNestedValue('medicalAnswers.diabetesMedication'),
       // Phase 2 - Application Data (ALL FIELDS)
-      data.addressStreet || '',
-      data.addressCity || '',
-      data.addressState || '',
-      data.addressZip || '',
-      data.beneficiaryName || '',
-      data.beneficiaryRelationship || '',
-      data.vaNumber || '',
-      data.serviceConnected || '',
-      data.ssn || '',
-      data.bankName || '',
-      data.routingNumber || '',
-      data.accountNumber || '',
-      data.policyDate || '',
-      data.quoteAmount || '',
-      data.monthlyPremium || '',
-      data.userAge || '',
-      data.userGender || '',
-      data.quoteType || '',
+      extractNestedValue('applicationData.address.street'),
+      extractNestedValue('applicationData.address.city'),
+      extractNestedValue('applicationData.address.state'),
+      extractNestedValue('applicationData.address.zipCode'),
+      extractNestedValue('applicationData.beneficiary.name'),
+      extractNestedValue('applicationData.beneficiary.relationship'),
+      extractNestedValue('applicationData.vaInfo.vaNumber'),
+      extractNestedValue('applicationData.vaInfo.serviceConnected'),
+      extractNestedValue('applicationData.driversLicense'),
+      extractNestedValue('applicationData.ssn'),
+      extractNestedValue('applicationData.banking.bankName'),
+      extractNestedValue('applicationData.banking.routingNumber'),
+      extractNestedValue('applicationData.banking.accountNumber'),
+      extractNestedValue('applicationData.policyDate'),
+      extractNestedValue('applicationData.quoteData.coverageAmount'),
+      extractNestedValue('applicationData.quoteData.monthlyPremium'),
+      extractNestedValue('applicationData.quoteData.userAge'),
+      extractNestedValue('applicationData.quoteData.userGender'),
+      extractNestedValue('applicationData.quoteData.quoteType'),
       // Tracking Data
       data.currentStep || '',
       data.stepName || '',

@@ -34,6 +34,7 @@ export interface ApplicationData {
     vaNumber: string
     serviceConnected: string
   }
+  driversLicense: string
   ssn: string
   banking: {
     accountNumber: string
@@ -133,6 +134,7 @@ const initialState: FormData = {
       vaNumber: '',
       serviceConnected: ''
     },
+    driversLicense: '',
     ssn: '',
     banking: {
       accountNumber: '',
