@@ -8,7 +8,7 @@ interface StreamingLoadingSpinnerProps {
 }
 
 const loadingMessages = [
-  'Calculating your policy options...',
+  'Loading your policy options...',
   'Analyzing your military benefits...',
   'Reviewing your medical information...',
   'Checking state-specific requirements...',
@@ -22,7 +22,9 @@ const iulTips = [
   'Your military service may qualify you for special veteran discounts',
   'IUL policies can provide tax-advantaged growth and flexible premium payments',
   'Many veterans find IUL policies complement their existing VA benefits',
-  'IUL policies can help protect your family while building wealth over time'
+  'IUL policies can help protect your family while building wealth over time',
+  'IUL benefits include tax-free withdrawals and flexible premium payments',
+  'Veterans often qualify for special rates on IUL policies'
 ]
 
 const veteranBenefits = [
@@ -30,7 +32,9 @@ const veteranBenefits = [
   'Waived medical exams for qualified applicants',
   'Flexible underwriting for service-related conditions',
   'Expedited processing for military families',
-  'Comprehensive coverage options designed for veterans'
+  'Comprehensive coverage options designed for veterans',
+  'IUL benefits specifically designed for military families',
+  'Tax advantages that complement your military benefits'
 ]
 
 export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = ({
