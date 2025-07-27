@@ -7,6 +7,9 @@ export const FinalSuccessModal: React.FC = () => {
   const firstName = formData.contactInfo?.firstName || 'there'
   const monthlyPremium = formData.applicationData?.quoteData?.monthlyPremium || 0
   const coverageAmount = formData.applicationData?.quoteData?.coverageAmount || 0
+  const userAge = formData.applicationData?.quoteData?.userAge || 0
+  const userGender = formData.applicationData?.quoteData?.userGender || ''
+  const quoteType = formData.applicationData?.quoteData?.quoteType || 'IUL'
 
   return (
     <div style={{ textAlign: 'center', padding: '2rem' }}>
@@ -35,6 +38,23 @@ export const FinalSuccessModal: React.FC = () => {
         }}>
           Your application has been submitted successfully! A licensed insurance representative will contact you within 24 hours to finalize your policy.
         </p>
+        
+        {/* Prominent Quote Display */}
+        <div style={{ 
+          background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', 
+          color: 'white',
+          padding: '1.5rem',
+          borderRadius: '12px',
+          marginBottom: '2rem',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+        }}>
+          <div style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+            ${monthlyPremium.toLocaleString()}/month
+          </div>
+          <p style={{ fontSize: '1rem', opacity: 0.9, margin: '0' }}>
+            for ${coverageAmount.toLocaleString()} in coverage
+          </p>
+        </div>
       </div>
 
       <div style={{ 
@@ -64,7 +84,13 @@ export const FinalSuccessModal: React.FC = () => {
             <strong>Coverage Amount:</strong> ${coverageAmount.toLocaleString()}
           </div>
           <div>
-            <strong>Policy Type:</strong> IUL
+            <strong>Policy Type:</strong> {quoteType}
+          </div>
+          <div>
+            <strong>Age:</strong> {userAge}
+          </div>
+          <div>
+            <strong>Gender:</strong> {userGender === 'male' ? 'Male' : 'Female'}
           </div>
           <div>
             <strong>Application Status:</strong> Submitted
