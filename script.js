@@ -12,7 +12,7 @@
 // 6. Set "Execute as" to "Me"
 // 7. Set "Who has access" to "Anyone"
 // 8. Click "Deploy" and copy the URL below
-const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyyEbKokJLvJQgYeBt1z1v8GzvZpV4hk9nu6FvTEZ6n1CTW5h1ZWPUyp_TiR0D8ecSS/exec';
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyGyM8VQ_wRWSZRD3xiniaov45n-_sa3LbSPFniYYUxTYcIR8mPN-WDmpeYPM89VU7_/exec';
 
 // Test function to verify Google Apps Script connection
 async function testGoogleAppsScript() {

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CORS Test</title>
+</head>
+<body>
+    <h1>CORS Test for Google Apps Script</h1>
+    <button onclick="testCORS()">Test CORS</button>
+    <div id="result"></div>
+
+    <script>
+        async function testCORS() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing CORS...';
+            
+            try {
+                const response = await fetch('https://script.google.com/macros/s/AKfycbyGyM8VQ_wRWSZRD3xiniaov45n-_sa3LbSPFniYYUxTYcIR8mPN-WDmpeYPM89VU7_/exec', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        formType: 'Partial',
+                        currentStep: 1,
+                        stepName: 'Test',
+                        formData: { test: 'data' }
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `<p style="color: green;">✅ CORS Test SUCCESS!</p><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                } else {
+                    resultDiv.innerHTML = `<p style="color: red;">❌ HTTP Error: ${response.status}</p>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">❌ CORS Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html> 
