@@ -950,25 +950,25 @@ function sendLeadNotification(data) {
     <h2>New React Funnel Lead Received</h2>
     
     <h3>Contact Information:</h3>
-    <p><strong>Name:</strong> ${data.contactInfo?.firstName || ''} ${data.contactInfo?.lastName || ''}</p>
+    <p><strong>Name:</strong> ${parsedFormData.contactInfo?.firstName || ''} ${parsedFormData.contactInfo?.lastName || ''}</p>
     <p><strong>Email:</strong> ${email}</p>
     <p><strong>Phone:</strong> ${phone}</p>
-    <p><strong>Date of Birth:</strong> ${data.contactInfo?.dateOfBirth || ''}</p>
+    <p><strong>Date of Birth:</strong> ${parsedFormData.contactInfo?.dateOfBirth || ''}</p>
     
     <h3>Qualification Information:</h3>
-    <p><strong>State:</strong> ${data.state || ''}</p>
-    <p><strong>Military Status:</strong> ${data.militaryStatus || ''}</p>
-    <p><strong>Branch of Service:</strong> ${data.branchOfService || ''}</p>
-    <p><strong>Marital Status:</strong> ${data.maritalStatus || ''}</p>
+    <p><strong>State:</strong> ${parsedFormData.state || data.state || ''}</p>
+    <p><strong>Military Status:</strong> ${parsedFormData.militaryStatus || data.militaryStatus || ''}</p>
+    <p><strong>Branch of Service:</strong> ${parsedFormData.branchOfService || data.branchOfService || ''}</p>
+    <p><strong>Marital Status:</strong> ${parsedFormData.maritalStatus || data.maritalStatus || ''}</p>
     <p><strong>Coverage Amount:</strong> ${coverageAmount}</p>
     
     <h3>Medical Information:</h3>
-    <p><strong>Tobacco Use:</strong> ${data.medicalAnswers?.tobaccoUse || ''}</p>
-    <p><strong>Medical Conditions:</strong> ${data.medicalAnswers?.medicalConditions?.join(', ') || 'None'}</p>
-    <p><strong>Height:</strong> ${data.medicalAnswers?.height || ''}</p>
-    <p><strong>Weight:</strong> ${data.medicalAnswers?.weight || ''}</p>
-    <p><strong>Hospital Care:</strong> ${data.medicalAnswers?.hospitalCare || ''}</p>
-    <p><strong>Diabetes Medication:</strong> ${data.medicalAnswers?.diabetesMedication || ''}</p>
+    <p><strong>Tobacco Use:</strong> ${parsedFormData.medicalAnswers?.tobaccoUse || ''}</p>
+    <p><strong>Medical Conditions:</strong> ${parsedFormData.medicalAnswers?.medicalConditions?.join(', ') || 'None'}</p>
+    <p><strong>Height:</strong> ${parsedFormData.medicalAnswers?.height || ''}</p>
+    <p><strong>Weight:</strong> ${parsedFormData.medicalAnswers?.weight || ''}</p>
+    <p><strong>Hospital Care:</strong> ${parsedFormData.medicalAnswers?.hospitalCare || ''}</p>
+    <p><strong>Diabetes Medication:</strong> ${parsedFormData.medicalAnswers?.diabetesMedication || ''}</p>
     
     <h3>Status:</h3>
     <p><strong>Status:</strong> Pre-Qualified</p>
@@ -1050,37 +1050,37 @@ function sendApplicationNotification(data, sessionId) {
     <h2>New React Funnel Application Received</h2>
     
     <h3>Contact Information:</h3>
-    <p><strong>Name:</strong> ${data.contactInfo?.firstName || ''} ${data.contactInfo?.lastName || ''}</p>
+    <p><strong>Name:</strong> ${parsedFormData.contactInfo?.firstName || ''} ${parsedFormData.contactInfo?.lastName || ''}</p>
     <p><strong>Email:</strong> ${email}</p>
-    <p><strong>Phone:</strong> ${data.contactInfo?.phone || ''}</p>
-    <p><strong>Date of Birth:</strong> ${data.contactInfo?.dateOfBirth || ''}</p>
+    <p><strong>Phone:</strong> ${parsedFormData.contactInfo?.phone || ''}</p>
+    <p><strong>Date of Birth:</strong> ${parsedFormData.contactInfo?.dateOfBirth || ''}</p>
     
     <h3>Address Information:</h3>
-    <p><strong>Street:</strong> ${data.applicationData?.address?.street || ''}</p>
-    <p><strong>City:</strong> ${data.applicationData?.address?.city || ''}</p>
-    <p><strong>State:</strong> ${data.applicationData?.address?.state || ''}</p>
-    <p><strong>ZIP Code:</strong> ${data.applicationData?.address?.zipCode || ''}</p>
+    <p><strong>Street:</strong> ${parsedFormData.applicationData?.address?.street || ''}</p>
+    <p><strong>City:</strong> ${parsedFormData.applicationData?.address?.city || ''}</p>
+    <p><strong>State:</strong> ${parsedFormData.applicationData?.address?.state || ''}</p>
+    <p><strong>ZIP Code:</strong> ${parsedFormData.applicationData?.address?.zipCode || ''}</p>
     
     <h3>Beneficiary Information:</h3>
-    <p><strong>Name:</strong> ${data.applicationData?.beneficiary?.name || ''}</p>
-    <p><strong>Relationship:</strong> ${data.applicationData?.beneficiary?.relationship || ''}</p>
+    <p><strong>Name:</strong> ${parsedFormData.applicationData?.beneficiary?.name || ''}</p>
+    <p><strong>Relationship:</strong> ${parsedFormData.applicationData?.beneficiary?.relationship || ''}</p>
     
     <h3>VA Information:</h3>
-    <p><strong>VA Number:</strong> ${data.applicationData?.vaInfo?.vaNumber || 'Not provided'}</p>
-    <p><strong>Service Connected Disability:</strong> ${data.applicationData?.vaInfo?.serviceConnected || 'Not specified'}</p>
+    <p><strong>VA Number:</strong> ${parsedFormData.applicationData?.vaInfo?.vaNumber || 'Not provided'}</p>
+    <p><strong>Service Connected Disability:</strong> ${parsedFormData.applicationData?.vaInfo?.serviceConnected || 'Not specified'}</p>
     
     <h3>Quote Information:</h3>
     <p><strong>Coverage Amount:</strong> $${coverageAmount.toLocaleString()}</p>
     <p><strong>Monthly Premium:</strong> $${monthlyPremium.toLocaleString()}</p>
-    <p><strong>Age:</strong> ${data.applicationData?.quoteData?.userAge || ''}</p>
-    <p><strong>Gender:</strong> ${data.applicationData?.quoteData?.userGender || ''}</p>
-    <p><strong>Quote Type:</strong> ${data.applicationData?.quoteData?.quoteType || ''}</p>
+    <p><strong>Age:</strong> ${parsedFormData.applicationData?.quoteData?.userAge || ''}</p>
+    <p><strong>Gender:</strong> ${parsedFormData.applicationData?.quoteData?.userGender || ''}</p>
+    <p><strong>Quote Type:</strong> ${parsedFormData.applicationData?.quoteData?.quoteType || ''}</p>
     
     <h3>Policy Information:</h3>
-    <p><strong>Policy Date:</strong> ${data.applicationData?.policyDate || ''}</p>
-    <p><strong>Bank Name:</strong> ${data.applicationData?.banking?.bankName || ''}</p>
-    <p><strong>Routing Number:</strong> ${data.applicationData?.banking?.routingNumber || ''}</p>
-    <p><strong>Account Number:</strong> ${data.applicationData?.banking?.accountNumber || ''}</p>
+    <p><strong>Policy Date:</strong> ${parsedFormData.applicationData?.policyDate || ''}</p>
+    <p><strong>Bank Name:</strong> ${parsedFormData.applicationData?.banking?.bankName || ''}</p>
+    <p><strong>Routing Number:</strong> ${parsedFormData.applicationData?.banking?.routingNumber || ''}</p>
+    <p><strong>Account Number:</strong> ${parsedFormData.applicationData?.banking?.accountNumber || ''}</p>
     
     <h3>Status:</h3>
     <p><strong>Status:</strong> Application Submitted</p>
