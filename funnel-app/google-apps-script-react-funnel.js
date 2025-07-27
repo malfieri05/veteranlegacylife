@@ -335,11 +335,11 @@ function handleApplicationSubmission(data, sessionId) {
     sheet.appendRow(rowData);
   }
   
-  // Update session status to completed
-  updateSessionStatus(sessionId, 'completed', parsedFormData);
+  // Send completion email BEFORE marking as completed
+  const emailSent = sendApplicationNotification(data, sessionId);
   
-  // Send email notification
-  sendApplicationNotification(data, sessionId);
+  // THEN update session status to completed
+  updateSessionStatus(sessionId, 'completed');
   
   Logger.log(`[${sessionId}] Application submission completed successfully`);
   
@@ -711,6 +711,21 @@ function getStatusFromFormType(formType) {
   }
 }
 
+// Helper function to find session row (reduces duplicate code)
+function findSessionRow(sessionId, sheet) {
+  const dataRange = sheet.getDataRange();
+  const values = dataRange.getValues();
+  
+  for (let i = 1; i < values.length; i++) {
+    const existingSessionId = values[i][SHEET_COLUMNS.SESSION_ID - 1];
+    if (existingSessionId && sessionId && existingSessionId.toString() === sessionId.toString()) {
+      return i + 1; // 1-based row index
+    }
+  }
+  
+  return -1; // Not found
+}
+
 // Session tracking functions
 function updateSessionStatus(sessionId, status, data = {}) {
   Logger.log(`[${sessionId}] Updating session status to: ${status}`);
@@ -911,10 +926,23 @@ function sendPartialLeadEmail(data, sessionId) {
 }
 
 function sendLeadNotification(data) {
-  const firstName = data.contactInfo?.firstName || 'there';
-  const email = data.contactInfo?.email || '';
-  const phone = data.contactInfo?.phone || '';
-  const coverageAmount = data.coverageAmount || '';
+  // Parse form data properly
+  let parsedFormData = {};
+  if (data.formData) {
+    try {
+      parsedFormData = typeof data.formData === 'string' 
+        ? JSON.parse(data.formData) 
+        : data.formData;
+    } catch (e) {
+      Logger.log(`Error parsing formData: ${e.toString()}`);
+      parsedFormData = {};
+    }
+  }
+  
+  const firstName = parsedFormData.contactInfo?.firstName || 'there';
+  const email = parsedFormData.contactInfo?.email || '';
+  const phone = parsedFormData.contactInfo?.phone || '';
+  const coverageAmount = parsedFormData.coverageAmount || data.coverageAmount || '';
   
   const subject = `New React Funnel Lead: ${firstName}`;
   
@@ -998,10 +1026,23 @@ function sendApplicationNotification(data, sessionId) {
     return false;
   }
   
-  const firstName = data.contactInfo?.firstName || 'there';
-  const email = data.contactInfo?.email || '';
-  const coverageAmount = data.applicationData?.quoteData?.coverageAmount || '';
-  const monthlyPremium = data.applicationData?.quoteData?.monthlyPremium || '';
+  // Parse form data properly
+  let parsedFormData = {};
+  if (data.formData) {
+    try {
+      parsedFormData = typeof data.formData === 'string' 
+        ? JSON.parse(data.formData) 
+        : data.formData;
+    } catch (e) {
+      Logger.log(`Error parsing formData: ${e.toString()}`);
+      parsedFormData = {};
+    }
+  }
+  
+  const firstName = parsedFormData.contactInfo?.firstName || 'there';
+  const email = parsedFormData.contactInfo?.email || '';
+  const coverageAmount = parsedFormData.applicationData?.quoteData?.coverageAmount || '';
+  const monthlyPremium = parsedFormData.applicationData?.quoteData?.monthlyPremium || '';
   
   const subject = `New React Funnel Application: ${firstName}`;
   
@@ -1107,11 +1148,14 @@ function sendApplicationNotification(data, sessionId) {
 function handleAbandonmentDetection(sessionId) {
   Logger.log(`[${sessionId}] Abandonment detected, checking if partial email should be sent`);
   
-  // Check if session has phone number captured
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   if (!spreadsheet) {
     Logger.log(`[${sessionId}] ERROR: No active spreadsheet found for abandonment check`);
-    return false;
+    return {
+      success: false,
+      message: 'No active spreadsheet found',
+      sessionId: sessionId
+    };
   }
   
   let sheet = spreadsheet.getActiveSheet();
@@ -1121,7 +1165,7 @@ function handleAbandonmentDetection(sessionId) {
   // Find existing session row
   let existingRowIndex = -1;
   for (let i = 1; i < values.length; i++) {
-    const existingSessionId = values[i][1];
+    const existingSessionId = values[i][SHEET_COLUMNS.SESSION_ID - 1];
     if (existingSessionId && sessionId && existingSessionId.toString() === sessionId.toString()) {
       existingRowIndex = i + 1;
       break;
@@ -1129,45 +1173,61 @@ function handleAbandonmentDetection(sessionId) {
   }
   
   if (existingRowIndex > 0) {
-    const statusColumn = SHEET_COLUMNS.STATUS;
-    const sessionStatus = sheet.getRange(existingRowIndex, statusColumn).getValue();
+    const sessionStatus = sheet.getRange(existingRowIndex, SHEET_COLUMNS.STATUS).getValue();
     
     if (sessionStatus === 'phone_captured') {
       Logger.log(`[${sessionId}] Phone captured session abandoned, sending partial email`);
       
-      // Get session data for email
+      // Get session data for email (FIXED array indexing)
       const sessionData = {
         contactInfo: {
-          firstName: values[existingRowIndex - 1][SHEET_COLUMNS.FIRST_NAME] || '',
-          lastName: values[existingRowIndex - 1][SHEET_COLUMNS.LAST_NAME] || '',
-          email: values[existingRowIndex - 1][SHEET_COLUMNS.EMAIL] || '',
-          phone: values[existingRowIndex - 1][SHEET_COLUMNS.PHONE] || '',
-          dateOfBirth: values[existingRowIndex - 1][SHEET_COLUMNS.DOB] || ''
+          firstName: values[existingRowIndex - 1][SHEET_COLUMNS.FIRST_NAME - 1] || '',
+          lastName: values[existingRowIndex - 1][SHEET_COLUMNS.LAST_NAME - 1] || '',
+          email: values[existingRowIndex - 1][SHEET_COLUMNS.EMAIL - 1] || '',
+          phone: values[existingRowIndex - 1][SHEET_COLUMNS.PHONE - 1] || '',
+          dateOfBirth: values[existingRowIndex - 1][SHEET_COLUMNS.DOB - 1] || ''
         },
-        state: values[existingRowIndex - 1][SHEET_COLUMNS.STATE] || '',
-        militaryStatus: values[existingRowIndex - 1][SHEET_COLUMNS.MILITARY_STATUS] || '',
-        branchOfService: values[existingRowIndex - 1][SHEET_COLUMNS.BRANCH] || '',
-        maritalStatus: values[existingRowIndex - 1][SHEET_COLUMNS.MARITAL_STATUS] || '',
-        coverageAmount: values[existingRowIndex - 1][SHEET_COLUMNS.COVERAGE_AMOUNT] || '',
+        state: values[existingRowIndex - 1][SHEET_COLUMNS.STATE - 1] || '',
+        militaryStatus: values[existingRowIndex - 1][SHEET_COLUMNS.MILITARY_STATUS - 1] || '',
+        branchOfService: values[existingRowIndex - 1][SHEET_COLUMNS.BRANCH - 1] || '',
+        maritalStatus: values[existingRowIndex - 1][SHEET_COLUMNS.MARITAL_STATUS - 1] || '',
+        coverageAmount: values[existingRowIndex - 1][SHEET_COLUMNS.COVERAGE_AMOUNT - 1] || '',
         medicalAnswers: {
-          tobaccoUse: values[existingRowIndex - 1][SHEET_COLUMNS.TOBACCO_USE] || '',
-          medicalConditions: values[existingRowIndex - 1][SHEET_COLUMNS.MEDICAL_CONDITIONS] ? values[existingRowIndex - 1][SHEET_COLUMNS.MEDICAL_CONDITIONS].split(', ') : [],
-          height: values[existingRowIndex - 1][SHEET_COLUMNS.HEIGHT] || '',
-          weight: values[existingRowIndex - 1][SHEET_COLUMNS.WEIGHT] || '',
-          hospitalCare: values[existingRowIndex - 1][SHEET_COLUMNS.HOSPITAL_CARE] || '',
-          diabetesMedication: values[existingRowIndex - 1][SHEET_COLUMNS.DIABETES_MEDICATION] || ''
+          tobaccoUse: values[existingRowIndex - 1][SHEET_COLUMNS.TOBACCO_USE - 1] || '',
+          medicalConditions: values[existingRowIndex - 1][SHEET_COLUMNS.MEDICAL_CONDITIONS - 1] ? 
+            values[existingRowIndex - 1][SHEET_COLUMNS.MEDICAL_CONDITIONS - 1].split(', ') : [],
+          height: values[existingRowIndex - 1][SHEET_COLUMNS.HEIGHT - 1] || '',
+          weight: values[existingRowIndex - 1][SHEET_COLUMNS.WEIGHT - 1] || '',
+          hospitalCare: values[existingRowIndex - 1][SHEET_COLUMNS.HOSPITAL_CARE - 1] || '',
+          diabetesMedication: values[existingRowIndex - 1][SHEET_COLUMNS.DIABETES_MEDICATION - 1] || ''
         }
       };
       
       // Send partial email
-      return sendPartialLeadEmail(sessionData, sessionId);
+      const emailSent = sendPartialLeadEmail(sessionData, sessionId);
+      return {
+        success: true,
+        message: emailSent ? 'Partial email sent successfully' : 'Partial email failed to send',
+        sessionId: sessionId,
+        emailSent: emailSent
+      };
     } else {
       Logger.log(`[${sessionId}] Session status is ${sessionStatus}, no partial email sent`);
-      return false;
+      return {
+        success: true,
+        message: `Session status is ${sessionStatus}, no partial email needed`,
+        sessionId: sessionId,
+        emailSent: false
+      };
     }
   } else {
     Logger.log(`[${sessionId}] Session not found for abandonment check`);
-    return false;
+    return {
+      success: false,
+      message: 'Session not found',
+      sessionId: sessionId,
+      emailSent: false
+    };
   }
 }
 
@@ -1327,4 +1387,95 @@ function testDoPost() {
   Logger.log('Testing doPost with mock data...');
   const result = doPost(mockEvent);
   Logger.log('Test result: ' + result.getContent());
+}
+
+// Test functions for email triggers
+function testEmailTriggers() {
+  Logger.log('=== TESTING EMAIL TRIGGERS ===');
+  
+  // Test 1: Create a session with phone captured
+  const testSessionId = 'TEST_ABANDON_' + Utilities.getUuid();
+  const testData = {
+    formType: 'Partial',
+    currentStep: 5,
+    sessionId: testSessionId,
+    formData: JSON.stringify({
+      contactInfo: {
+        firstName: 'John',
+        lastName: 'Test',
+        email: 'test@example.com',
+        phone: '555-1234'
+      },
+      state: 'CA',
+      militaryStatus: 'Veteran',
+      branchOfService: 'Army',
+      coverageAmount: '$100,000'
+    })
+  };
+  
+  // This should mark phone_captured but NOT send email
+  Logger.log('Step 1: Processing partial submission (should NOT send email)');
+  const partialResult = handlePartialSubmission(testData, testSessionId);
+  Logger.log('Partial result:', partialResult);
+  
+  // This should send partial email
+  Logger.log('Step 2: Processing abandonment (SHOULD send email)');
+  const abandonResult = handleAbandonmentDetection(testSessionId);
+  Logger.log('Abandon result:', abandonResult);
+  
+  // Test 3: Try to send again (should be blocked)
+  Logger.log('Step 3: Try abandonment again (should be blocked)');
+  const blockedResult = handleAbandonmentDetection(testSessionId);
+  Logger.log('Blocked result:', blockedResult);
+  
+  Logger.log('=== EMAIL TRIGGER TESTS COMPLETE ===');
+}
+
+function testApplicationCompletion() {
+  Logger.log('=== TESTING APPLICATION COMPLETION ===');
+  
+  const testSessionId = 'TEST_COMPLETE_' + Utilities.getUuid();
+  const testData = {
+    formType: 'Application',
+    sessionId: testSessionId,
+    formData: JSON.stringify({
+      contactInfo: {
+        firstName: 'Jane',
+        lastName: 'Complete',
+        email: 'complete@example.com',
+        phone: '555-5678'
+      },
+      applicationData: {
+        quoteData: {
+          coverageAmount: 100000,
+          monthlyPremium: 150
+        }
+      }
+    })
+  };
+  
+  Logger.log('Processing application completion (SHOULD send completion email)');
+  const result = handleApplicationSubmission(testData, testSessionId);
+  Logger.log('Completion result:', result);
+  
+  Logger.log('=== APPLICATION COMPLETION TEST COMPLETE ===');
+}
+
+function cleanupTestSessions() {
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = spreadsheet.getActiveSheet();
+  const dataRange = sheet.getDataRange();
+  const values = dataRange.getValues();
+  
+  let deletedCount = 0;
+  for (let i = values.length - 1; i >= 1; i--) {
+    const sessionId = values[i][SHEET_COLUMNS.SESSION_ID - 1];
+    if (sessionId && sessionId.startsWith('TEST_')) {
+      sheet.deleteRow(i + 1);
+      deletedCount++;
+      Logger.log(`Deleted test session: ${sessionId}`);
+    }
+  }
+  
+  Logger.log(`Cleanup complete. Deleted ${deletedCount} test sessions.`);
 } 
