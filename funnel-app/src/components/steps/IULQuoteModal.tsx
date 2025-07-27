@@ -25,12 +25,17 @@ export const IULQuoteModal: React.FC = () => {
       const amount = parseInt(formData.coverageAmount.replace(/[$,]/g, ''))
       setCoverageAmount(amount)
     }
+  }, [formData.contactInfo?.dateOfBirth, formData.coverageAmount])
 
+  // Update quote when coverage, age, or gender changes
+  useEffect(() => {
     updateQuote()
-  }, [])
+  }, [coverageAmount, userAge, userGender])
 
   const updateQuote = () => {
+    console.log(`Calculating quote - Age: ${userAge}, Gender: ${userGender}, Coverage: ${coverageAmount}`)
     const premium = calculateIULQuote(coverageAmount, userAge, userGender)
+    console.log(`Quote calculated - Premium: ${premium}`)
     setMonthlyPremium(premium)
   }
 

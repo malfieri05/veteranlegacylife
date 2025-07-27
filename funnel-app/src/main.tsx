@@ -44,21 +44,25 @@ if (document.readyState === 'loading') {
 // Create and expose the global API
 const VeteranFunnel = {
   open: () => {
+    // Use the store directly without hooks
     const store = useFunnelStore.getState()
     store.openModal()
   },
   
   close: () => {
+    // Use the store directly without hooks
     const store = useFunnelStore.getState()
     store.closeModal()
   },
   
   isOpen: () => {
+    // Use the store directly without hooks
     const store = useFunnelStore.getState()
     return store.isModalOpen
   },
   
   reset: () => {
+    // Use the store directly without hooks
     const store = useFunnelStore.getState()
     store.reset()
   }
