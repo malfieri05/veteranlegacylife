@@ -995,6 +995,9 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('funnelData:', window.funnelData);
             console.log('medicalAnswers:', medicalAnswers);
             
+            // Collect application data from forms
+            collectApplicationData();
+            
             // Calculate age from date of birth
             let calculatedAge = null;
             if (window.funnelData.contactInfo?.dateOfBirth) {
@@ -1007,21 +1010,17 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const completeData = {
                 sessionId: window.sessionId,
-                firstName: window.funnelData.contactInfo?.firstName || '',
-                lastName: window.funnelData.contactInfo?.lastName || '',
-                phone: window.funnelData.contactInfo?.phone || '',
-                email: window.funnelData.contactInfo?.email || '',
-                dateOfBirth: window.funnelData.contactInfo?.dateOfBirth || '',
-                age: calculatedAge || userAge || '',
-                transactionalConsent: window.funnelData.contactInfo?.transactionalConsent || false,
-                marketingConsent: window.funnelData.contactInfo?.marketingConsent || false,
-                
+                // Phase 1 - Pre-Qualification Data
                 state: window.funnelData.state || '',
                 militaryStatus: window.funnelData.militaryStatus || '',
                 branchOfService: window.funnelData.branchOfService || '',
                 maritalStatus: window.funnelData.maritalStatus || '',
                 coverageAmount: window.funnelData.coverageAmount || '',
-                
+                firstName: window.funnelData.contactInfo?.firstName || '',
+                lastName: window.funnelData.contactInfo?.lastName || '',
+                email: window.funnelData.contactInfo?.email || '',
+                phone: window.funnelData.contactInfo?.phone || '',
+                dateOfBirth: window.funnelData.contactInfo?.dateOfBirth || '',
                 tobaccoUse: medicalAnswers.tobaccoUse || '',
                 medicalConditions: medicalAnswers.medicalConditions || [],
                 height: medicalAnswers.height || '',
@@ -1029,8 +1028,35 @@ document.addEventListener('DOMContentLoaded', function() {
                 hospitalCare: medicalAnswers.hospitalCare || '',
                 diabetesMedication: medicalAnswers.diabetesMedication || '',
                 
+                // Phase 2 - Application Data (ALL FIELDS)
+                addressStreet: window.applicationData?.address?.street || '',
+                addressCity: window.applicationData?.address?.city || '',
+                addressState: window.applicationData?.address?.state || '',
+                addressZip: window.applicationData?.address?.zipCode || '',
+                beneficiaryName: window.applicationData?.beneficiary?.name || '',
+                beneficiaryRelationship: window.applicationData?.beneficiary?.relationship || '',
+                vaNumber: window.applicationData?.vaInfo?.vaNumber || '',
+                serviceConnected: window.applicationData?.vaInfo?.serviceConnected || '',
+                ssn: window.applicationData?.ssn || '',
+                bankName: window.applicationData?.banking?.bankName || '',
+                routingNumber: window.applicationData?.banking?.routingNumber || '',
+                accountNumber: window.applicationData?.banking?.accountNumber || '',
+                policyDate: window.applicationData?.policyDate || '',
+                quoteAmount: window.applicationData?.quoteData?.coverageAmount || '',
+                monthlyPremium: window.applicationData?.quoteData?.monthlyPremium || '',
+                userAge: calculatedAge || window.applicationData?.quoteData?.userAge || '',
+                userGender: window.applicationData?.quoteData?.userGender || '',
+                quoteType: window.applicationData?.quoteData?.quoteType || '',
+                
+                // Tracking Data
+                currentStep: 'Complete',
+                stepName: 'Complete Funnel',
                 formType: 'Funnel',
-                funnelProgress: 'Complete',
+                userAgent: navigator.userAgent,
+                referrer: document.referrer,
+                utmSource: new URLSearchParams(window.location.search).get('utm_source') || '',
+                utmMedium: new URLSearchParams(window.location.search).get('utm_medium') || '',
+                utmCampaign: new URLSearchParams(window.location.search).get('utm_campaign') || '',
                 timestamp: new Date().toISOString()
             };
             
@@ -2967,6 +2993,99 @@ function initializeMedicalConditionsLogic() {
         }
     }
 
+    // Initialize global application data storage
+    window.applicationData = {
+        address: {
+            street: '',
+            city: '',
+            state: '',
+            zipCode: ''
+        },
+        beneficiary: {
+            name: '',
+            relationship: ''
+        },
+        vaInfo: {
+            vaNumber: '',
+            serviceConnected: ''
+        },
+        ssn: '',
+        banking: {
+            bankName: '',
+            routingNumber: '',
+            accountNumber: ''
+        },
+        policyDate: '',
+        quoteData: {
+            coverageAmount: '',
+            monthlyPremium: '',
+            userAge: '',
+            userGender: '',
+            quoteType: ''
+        }
+    };
+    
+    // Function to collect application data from forms
+    function collectApplicationData() {
+        console.log('📝 Collecting application data from forms...');
+        
+        // Collect address data from application form
+        const addressStreet = document.querySelector('input[name="app-street"]')?.value || '';
+        const addressCity = document.querySelector('input[name="app-city"]')?.value || '';
+        const addressState = document.querySelector('input[name="app-state"]')?.value || '';
+        const addressZip = document.querySelector('input[name="app-zip"]')?.value || '';
+        
+        // Collect beneficiary data
+        const beneficiaryName = document.querySelector('input[name="app-beneficiary-name"]')?.value || '';
+        const beneficiaryRelationship = document.querySelector('select[name="app-beneficiary-relationship"]')?.value || '';
+        
+        // Collect VA data
+        const vaNumber = document.querySelector('input[name="app-va-number"]')?.value || '';
+        const serviceConnected = document.querySelector('select[name="app-service-connected"]')?.value || '';
+        
+        // Collect financial data
+        const ssn = document.querySelector('input[name="app-ssn"]')?.value || '';
+        const bankName = document.querySelector('input[name="app-bank-name"]')?.value || '';
+        const routingNumber = document.querySelector('input[name="app-routing"]')?.value || '';
+        const accountNumber = document.querySelector('input[name="app-account"]')?.value || '';
+        const policyDate = document.querySelector('input[name="app-policy-start-date"]')?.value || '';
+        
+        // Update global application data
+        window.applicationData = {
+            address: {
+                street: addressStreet,
+                city: addressCity,
+                state: addressState,
+                zipCode: addressZip
+            },
+            beneficiary: {
+                name: beneficiaryName,
+                relationship: beneficiaryRelationship
+            },
+            vaInfo: {
+                vaNumber: vaNumber,
+                serviceConnected: serviceConnected
+            },
+            ssn: ssn,
+            banking: {
+                bankName: bankName,
+                routingNumber: routingNumber,
+                accountNumber: accountNumber
+            },
+            policyDate: policyDate,
+            quoteData: {
+                coverageAmount: window.funnelData?.coverageAmount || '',
+                monthlyPremium: window.funnelData?.monthlyPremium || '',
+                userAge: window.funnelData?.age || '',
+                userGender: window.funnelData?.gender || '',
+                quoteType: 'IUL'
+            }
+        };
+        
+        console.log('📝 Application data collected:', window.applicationData);
+        return window.applicationData;
+    }
+    
     // Initialize application form navigation
     initializeApplicationFormNavigation();
     

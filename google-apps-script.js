@@ -23,30 +23,55 @@ function doPost(e) {
     const spreadsheetId = '1MvmvfqRBnt8fjplbRgFIi7BTnzcAGaMNeIDwCHGPis8';
     const sheet = SpreadsheetApp.openById(spreadsheetId).getActiveSheet();
     
-    // Prepare the row data with all funnel information (flattened structure)
+    // Prepare the row data with ALL 34+ fields (complete structure)
     const rowData = [
       new Date(), // Timestamp
       data.sessionId || '', // Session ID for tracking
-      data.firstName || '',
-      data.lastName || '',
-      data.phone || '',
-      data.email || '',
-      data.dateOfBirth || '',
+      // Phase 1 - Pre-Qualification Data
       data.state || '',
       data.militaryStatus || '',
       data.branchOfService || '',
       data.maritalStatus || '',
       data.coverageAmount || '',
+      data.firstName || '',
+      data.lastName || '',
+      data.email || '',
+      data.phone || '',
+      data.dateOfBirth || '',
       data.tobaccoUse || '',
       data.medicalConditions || '', // Already a string from frontend
       data.height || '',
       data.weight || '',
       data.hospitalCare || '',
       data.diabetesMedication || '',
-      data.transactionalConsent || false,
-      data.marketingConsent || false,
-      data.funnelProgress || 'Complete',
-      data.formType || 'Unknown' // Track if partial or complete
+      // Phase 2 - Application Data (ALL FIELDS)
+      data.addressStreet || '',
+      data.addressCity || '',
+      data.addressState || '',
+      data.addressZip || '',
+      data.beneficiaryName || '',
+      data.beneficiaryRelationship || '',
+      data.vaNumber || '',
+      data.serviceConnected || '',
+      data.ssn || '',
+      data.bankName || '',
+      data.routingNumber || '',
+      data.accountNumber || '',
+      data.policyDate || '',
+      data.quoteAmount || '',
+      data.monthlyPremium || '',
+      data.userAge || '',
+      data.userGender || '',
+      data.quoteType || '',
+      // Tracking Data
+      data.currentStep || '',
+      data.stepName || '',
+      data.formType || 'Unknown',
+      data.userAgent || '',
+      data.referrer || '',
+      data.utmSource || '',
+      data.utmMedium || '',
+      data.utmCampaign || ''
     ];
     
     // Check if session already exists in the sheet
