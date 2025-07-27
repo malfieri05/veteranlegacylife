@@ -179,6 +179,25 @@ function handleLeadSubmission(data, sessionId) {
     parsedFormData.medicalAnswers?.weight || '',
     parsedFormData.medicalAnswers?.hospitalCare || '',
     parsedFormData.medicalAnswers?.diabetesMedication || '',
+    // Application Data (Phase 2) - ALL FIELDS
+    parsedFormData.applicationData?.address?.street || '',
+    parsedFormData.applicationData?.address?.city || '',
+    parsedFormData.applicationData?.address?.state || '',
+    parsedFormData.applicationData?.address?.zipCode || '',
+    parsedFormData.applicationData?.beneficiary?.name || '',
+    parsedFormData.applicationData?.beneficiary?.relationship || '',
+    parsedFormData.applicationData?.vaInfo?.vaNumber || '',
+    parsedFormData.applicationData?.vaInfo?.serviceConnected || '',
+    parsedFormData.applicationData?.ssn || '',
+    parsedFormData.applicationData?.banking?.bankName || '',
+    parsedFormData.applicationData?.banking?.routingNumber || '',
+    parsedFormData.applicationData?.banking?.accountNumber || '',
+    parsedFormData.applicationData?.policyDate || '',
+    parsedFormData.applicationData?.quoteData?.coverageAmount || '',
+    parsedFormData.applicationData?.quoteData?.monthlyPremium || '',
+    parsedFormData.applicationData?.quoteData?.userAge || '',
+    parsedFormData.applicationData?.quoteData?.userGender || '',
+    parsedFormData.applicationData?.quoteData?.quoteType || '',
     'Pre-Qualified', // Status
     data.userAgent || '',
     data.referrer || '',
@@ -319,26 +338,47 @@ function handlePartialSubmission(data, sessionId) {
     }
   }
   
-  // Prepare the row data with all funnel information (flattened structure like old script)
+  // Prepare the row data with ALL funnel information (complete structure)
   const rowData = [
     new Date(), // Timestamp
     sessionId, // Session ID for tracking (use the one from request)
-    parsedFormData.contactInfo?.firstName || '',
-    parsedFormData.contactInfo?.lastName || '',
-    parsedFormData.contactInfo?.phone || '',
-    parsedFormData.contactInfo?.email || '',
-    parsedFormData.contactInfo?.dateOfBirth || '',
+    // Phase 1 - Pre-Qualification Data
     parsedFormData.state || '',
     parsedFormData.militaryStatus || '',
     parsedFormData.branchOfService || '',
     parsedFormData.maritalStatus || '',
     parsedFormData.coverageAmount || '',
+    parsedFormData.contactInfo?.firstName || '',
+    parsedFormData.contactInfo?.lastName || '',
+    parsedFormData.contactInfo?.email || '',
+    parsedFormData.contactInfo?.phone || '',
+    parsedFormData.contactInfo?.dateOfBirth || '',
     parsedFormData.medicalAnswers?.tobaccoUse || '',
     Array.isArray(parsedFormData.medicalAnswers?.medicalConditions) ? parsedFormData.medicalAnswers.medicalConditions.join(', ') : '',
     parsedFormData.medicalAnswers?.height || '',
     parsedFormData.medicalAnswers?.weight || '',
     parsedFormData.medicalAnswers?.hospitalCare || '',
     parsedFormData.medicalAnswers?.diabetesMedication || '',
+    // Phase 2 - Application Data (ALL FIELDS)
+    parsedFormData.applicationData?.address?.street || '',
+    parsedFormData.applicationData?.address?.city || '',
+    parsedFormData.applicationData?.address?.state || '',
+    parsedFormData.applicationData?.address?.zipCode || '',
+    parsedFormData.applicationData?.beneficiary?.name || '',
+    parsedFormData.applicationData?.beneficiary?.relationship || '',
+    parsedFormData.applicationData?.vaInfo?.vaNumber || '',
+    parsedFormData.applicationData?.vaInfo?.serviceConnected || '',
+    parsedFormData.applicationData?.ssn || '',
+    parsedFormData.applicationData?.banking?.bankName || '',
+    parsedFormData.applicationData?.banking?.routingNumber || '',
+    parsedFormData.applicationData?.banking?.accountNumber || '',
+    parsedFormData.applicationData?.policyDate || '',
+    parsedFormData.applicationData?.quoteData?.coverageAmount || '',
+    parsedFormData.applicationData?.quoteData?.monthlyPremium || '',
+    parsedFormData.applicationData?.quoteData?.userAge || '',
+    parsedFormData.applicationData?.quoteData?.userGender || '',
+    parsedFormData.applicationData?.quoteData?.quoteType || '',
+    // Tracking Data
     data.currentStep || '', // Current step
     data.stepName || '', // Step name
     data.formType || 'Partial', // Form type
@@ -406,26 +446,47 @@ function handleLeadPartialSubmission(data, sessionId) {
     }
   }
   
-  // Prepare the row data with all funnel information (flattened structure like old script)
+  // Prepare the row data with ALL funnel information (complete structure)
   const rowData = [
     new Date(), // Timestamp
     sessionId, // Session ID for tracking (use the one from request)
-    parsedFormData.contactInfo?.firstName || '',
-    parsedFormData.contactInfo?.lastName || '',
-    parsedFormData.contactInfo?.phone || '',
-    parsedFormData.contactInfo?.email || '',
-    parsedFormData.contactInfo?.dateOfBirth || '',
+    // Phase 1 - Pre-Qualification Data
     parsedFormData.state || '',
     parsedFormData.militaryStatus || '',
     parsedFormData.branchOfService || '',
     parsedFormData.maritalStatus || '',
     parsedFormData.coverageAmount || '',
+    parsedFormData.contactInfo?.firstName || '',
+    parsedFormData.contactInfo?.lastName || '',
+    parsedFormData.contactInfo?.email || '',
+    parsedFormData.contactInfo?.phone || '',
+    parsedFormData.contactInfo?.dateOfBirth || '',
     parsedFormData.medicalAnswers?.tobaccoUse || '',
     Array.isArray(parsedFormData.medicalAnswers?.medicalConditions) ? parsedFormData.medicalAnswers.medicalConditions.join(', ') : '',
     parsedFormData.medicalAnswers?.height || '',
     parsedFormData.medicalAnswers?.weight || '',
     parsedFormData.medicalAnswers?.hospitalCare || '',
     parsedFormData.medicalAnswers?.diabetesMedication || '',
+    // Phase 2 - Application Data (ALL FIELDS)
+    parsedFormData.applicationData?.address?.street || '',
+    parsedFormData.applicationData?.address?.city || '',
+    parsedFormData.applicationData?.address?.state || '',
+    parsedFormData.applicationData?.address?.zipCode || '',
+    parsedFormData.applicationData?.beneficiary?.name || '',
+    parsedFormData.applicationData?.beneficiary?.relationship || '',
+    parsedFormData.applicationData?.vaInfo?.vaNumber || '',
+    parsedFormData.applicationData?.vaInfo?.serviceConnected || '',
+    parsedFormData.applicationData?.ssn || '',
+    parsedFormData.applicationData?.banking?.bankName || '',
+    parsedFormData.applicationData?.banking?.routingNumber || '',
+    parsedFormData.applicationData?.banking?.accountNumber || '',
+    parsedFormData.applicationData?.policyDate || '',
+    parsedFormData.applicationData?.quoteData?.coverageAmount || '',
+    parsedFormData.applicationData?.quoteData?.monthlyPremium || '',
+    parsedFormData.applicationData?.quoteData?.userAge || '',
+    parsedFormData.applicationData?.quoteData?.userGender || '',
+    parsedFormData.applicationData?.quoteData?.quoteType || '',
+    // Tracking Data
     data.currentStep || '', // Current step
     data.stepName || '', // Step name
     data.formType || 'LeadPartial', // Form type
@@ -477,25 +538,7 @@ function setupPartialSheet(sheet) {
   const headers = [
     'Timestamp',
     'Session ID',
-    'Current Step',
-    'Step Name',
-    'Form Data (JSON)',
-    'User Agent',
-    'Referrer',
-    'UTM Source',
-    'UTM Medium',
-    'UTM Campaign'
-  ];
-  
-  sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-  sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
-  sheet.autoResizeColumns(1, headers.length);
-}
-
-function setupLeadSheet(sheet) {
-  const headers = [
-    'Timestamp',
-    'Session ID',
+    // Phase 1 - Pre-Qualification Data
     'State',
     'Military Status',
     'Branch of Service',
@@ -512,6 +555,81 @@ function setupLeadSheet(sheet) {
     'Weight',
     'Hospital Care',
     'Diabetes Medication',
+    // Phase 2 - Application Data (ALL FIELDS)
+    'Street Address',
+    'City',
+    'State (Application)',
+    'ZIP Code',
+    'Beneficiary Name',
+    'Beneficiary Relationship',
+    'VA Number',
+    'Service Connected Disability',
+    'SSN',
+    'Bank Name',
+    'Routing Number',
+    'Account Number',
+    'Policy Date',
+    'Quote Coverage Amount',
+    'Quote Monthly Premium',
+    'Quote User Age',
+    'Quote User Gender',
+    'Quote Type',
+    // Tracking Data
+    'Current Step',
+    'Step Name',
+    'Form Type',
+    'User Agent',
+    'Referrer',
+    'UTM Source',
+    'UTM Medium',
+    'UTM Campaign'
+  ];
+  
+  sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+  sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
+  sheet.autoResizeColumns(1, headers.length);
+}
+
+function setupLeadSheet(sheet) {
+  const headers = [
+    'Timestamp',
+    'Session ID',
+    // Phase 1 - Pre-Qualification Data
+    'State',
+    'Military Status',
+    'Branch of Service',
+    'Marital Status',
+    'Coverage Amount',
+    'First Name',
+    'Last Name',
+    'Email',
+    'Phone',
+    'Date of Birth',
+    'Tobacco Use',
+    'Medical Conditions',
+    'Height',
+    'Weight',
+    'Hospital Care',
+    'Diabetes Medication',
+    // Phase 2 - Application Data (ALL FIELDS)
+    'Street Address',
+    'City',
+    'State (Application)',
+    'ZIP Code',
+    'Beneficiary Name',
+    'Beneficiary Relationship',
+    'VA Number',
+    'Service Connected Disability',
+    'SSN',
+    'Bank Name',
+    'Routing Number',
+    'Account Number',
+    'Policy Date',
+    'Quote Coverage Amount',
+    'Quote Monthly Premium',
+    'Quote User Age',
+    'Quote User Gender',
+    'Quote Type',
     'Status',
     'User Agent',
     'Referrer',
