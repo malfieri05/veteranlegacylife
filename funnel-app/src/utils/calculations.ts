@@ -12,25 +12,183 @@ export const calculateAge = (birthDate: string): number => {
   return age
 }
 
-// IUL Quote calculation based on age, coverage amount, and gender
-export const calculateIULQuote = (coverageAmount: number, age: number, gender: string = 'male'): number => {
-  // Base rates per $1000 of coverage (simplified calculation)
-  const baseRates: { [key: number]: number } = {
-    18: 0.85, 19: 0.87, 20: 0.89, 21: 0.91, 22: 0.93, 23: 0.95, 24: 0.97, 25: 0.99,
-    26: 1.01, 27: 1.03, 28: 1.05, 29: 1.07, 30: 1.09, 31: 1.11, 32: 1.13, 33: 1.15,
-    34: 1.17, 35: 1.19, 36: 1.21, 37: 1.23, 38: 1.25, 39: 1.27, 40: 1.29, 41: 1.31,
-    42: 1.33, 43: 1.35, 44: 1.37, 45: 1.39, 46: 1.41, 47: 1.43, 48: 1.45, 49: 1.47,
-    50: 1.49, 51: 1.51, 52: 1.53, 53: 1.55, 54: 1.57, 55: 1.59, 56: 1.61, 57: 1.63,
-    58: 1.65, 59: 1.67, 60: 1.69, 61: 1.71, 62: 1.73, 63: 1.75, 64: 1.77, 65: 1.79,
-    66: 1.81, 67: 1.83, 68: 1.85, 69: 1.87, 70: 1.89, 71: 1.91, 72: 1.93, 73: 1.95,
-    74: 1.97, 75: 1.99, 76: 2.01, 77: 2.03, 78: 2.05, 79: 2.07, 80: 2.09
+// IUL rate table data
+const iulData = {
+  male: {
+    "18-25": {
+      "100000-250000": 85,
+      "251000-500000": 165,
+      "501000-1000000": 325,
+      "1001000-2000000": 650,
+      "2001000-5000000": 1625
+    },
+    "26-30": {
+      "100000-250000": 95,
+      "251000-500000": 185,
+      "501000-1000000": 365,
+      "1001000-2000000": 730,
+      "2001000-5000000": 1825
+    },
+    "31-35": {
+      "100000-250000": 110,
+      "251000-500000": 215,
+      "501000-1000000": 425,
+      "1001000-2000000": 850,
+      "2001000-5000000": 2125
+    },
+    "36-40": {
+      "100000-250000": 130,
+      "251000-500000": 255,
+      "501000-1000000": 505,
+      "1001000-2000000": 1010,
+      "2001000-5000000": 2525
+    },
+    "41-45": {
+      "100000-250000": 155,
+      "251000-500000": 305,
+      "501000-1000000": 605,
+      "1001000-2000000": 1210,
+      "2001000-5000000": 3025
+    },
+    "46-50": {
+      "100000-250000": 185,
+      "251000-500000": 365,
+      "501000-1000000": 725,
+      "1001000-2000000": 1450,
+      "2001000-5000000": 3625
+    },
+    "51-55": {
+      "100000-250000": 225,
+      "251000-500000": 445,
+      "501000-1000000": 885,
+      "1001000-2000000": 1770,
+      "2001000-5000000": 4425
+    },
+    "56-60": {
+      "100000-250000": 275,
+      "251000-500000": 545,
+      "501000-1000000": 1085,
+      "1001000-2000000": 2170,
+      "2001000-5000000": 5425
+    }
+  },
+  female: {
+    "18-25": {
+      "100000-250000": 75,
+      "251000-500000": 145,
+      "501000-1000000": 285,
+      "1001000-2000000": 570,
+      "2001000-5000000": 1425
+    },
+    "26-30": {
+      "100000-250000": 85,
+      "251000-500000": 165,
+      "501000-1000000": 325,
+      "1001000-2000000": 650,
+      "2001000-5000000": 1625
+    },
+    "31-35": {
+      "100000-250000": 95,
+      "251000-500000": 185,
+      "501000-1000000": 365,
+      "1001000-2000000": 730,
+      "2001000-5000000": 1825
+    },
+    "36-40": {
+      "100000-250000": 110,
+      "251000-500000": 215,
+      "501000-1000000": 425,
+      "1001000-2000000": 850,
+      "2001000-5000000": 2125
+    },
+    "41-45": {
+      "100000-250000": 130,
+      "251000-500000": 255,
+      "501000-1000000": 505,
+      "1001000-2000000": 1010,
+      "2001000-5000000": 2525
+    },
+    "46-50": {
+      "100000-250000": 155,
+      "251000-500000": 305,
+      "501000-1000000": 605,
+      "1001000-2000000": 1210,
+      "2001000-5000000": 3025
+    },
+    "51-55": {
+      "100000-250000": 185,
+      "251000-500000": 365,
+      "501000-1000000": 725,
+      "1001000-2000000": 1450,
+      "2001000-5000000": 3625
+    },
+    "56-60": {
+      "100000-250000": 225,
+      "251000-500000": 445,
+      "501000-1000000": 885,
+      "1001000-2000000": 1770,
+      "2001000-5000000": 4425
+    }
   }
-  
-  const rate = baseRates[age] || baseRates[80] // Default to highest rate if age not found
-  const genderMultiplier = gender === 'female' ? 0.9 : 1.0 // Females get 10% discount
-  const monthlyPremium = (coverageAmount / 1000) * rate * genderMultiplier
-  
-  return Math.round(monthlyPremium * 100) / 100 // Round to 2 decimal places
+}
+
+// IUL Quote calculation based on age, coverage amount, and gender using actual rate tables
+export const calculateIULQuote = (coverageAmount: number, age: number, gender: string = 'male'): number => {
+  try {
+    // Get the appropriate gender table
+    const genderTable = iulData[gender as keyof typeof iulData];
+    if (!genderTable) {
+      console.error('Invalid gender:', gender);
+      return 0;
+    }
+    
+    // Find the appropriate age bracket
+    let ageBracket = null;
+    const ageBrackets = Object.keys(genderTable);
+    
+    for (const bracket of ageBrackets) {
+      const [minAge, maxAge] = bracket.split('-').map(Number);
+      if (age >= minAge && age <= maxAge) {
+        ageBracket = bracket;
+        break;
+      }
+    }
+    
+    if (!ageBracket) {
+      console.error('Age out of range:', age);
+      return 0;
+    }
+    
+    // Get the coverage ranges for this age bracket
+    const coverageRanges = genderTable[ageBracket as keyof typeof genderTable];
+    if (!coverageRanges) {
+      console.error('No coverage ranges found for age bracket:', ageBracket);
+      return 0;
+    }
+    
+    // Find the appropriate coverage range
+    let selectedPremium = 0;
+    
+    for (const [range, premium] of Object.entries(coverageRanges)) {
+      const [minCoverage, maxCoverage] = range.split('-').map(Number);
+      if (coverageAmount >= minCoverage && coverageAmount <= maxCoverage) {
+        selectedPremium = premium;
+        break;
+      }
+    }
+    
+    if (selectedPremium === 0) {
+      console.error('Coverage amount out of range:', coverageAmount);
+      return 0;
+    }
+    
+    console.log(`IUL Quote calculated - Age: ${age} (${ageBracket}), Gender: ${gender}, Coverage: ${coverageAmount}, Premium: ${selectedPremium}`);
+    return selectedPremium;
+    
+  } catch (error) {
+    console.error('Error calculating IUL quote:', error);
+    return 0;
+  }
 }
 
 // Determine insurance type based on age

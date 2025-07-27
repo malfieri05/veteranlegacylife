@@ -2362,18 +2362,62 @@ class IULQuoteSlider {
         
     getIULQuote() {
         try {
-            // IUL rate calculation based on age and gender
             const age = this.userAge || 30;
             const gender = this.userGender || 'male';
+            const coverage = this.currentValue || 50000;
             
-            // Simplified IUL rate calculation
-            const baseRate = gender === 'female' ? 0.04 : 0.05;
-            const ageMultiplier = Math.max(1, age / 30);
-            const coverageMultiplier = this.currentValue / 100000;
+            // Get the appropriate gender table
+            const genderTable = iulData[gender];
+            if (!genderTable) {
+                console.error('❌ Invalid gender:', gender);
+                return 0;
+            }
             
-            const monthlyPremium = Math.round(this.currentValue * baseRate * ageMultiplier * coverageMultiplier);
-            console.log('💰 IUL Quote calculated:', monthlyPremium);
-            return monthlyPremium;
+            // Find the appropriate age bracket
+            let ageBracket = null;
+            const ageBrackets = Object.keys(genderTable);
+            
+            for (const bracket of ageBrackets) {
+                const [minAge, maxAge] = bracket.split('-').map(Number);
+                if (age >= minAge && age <= maxAge) {
+                    ageBracket = bracket;
+                    break;
+                }
+            }
+            
+            if (!ageBracket) {
+                console.error('❌ Age out of range:', age);
+                return 0;
+            }
+            
+            // Get the coverage ranges for this age bracket
+            const coverageRanges = genderTable[ageBracket];
+            if (!coverageRanges) {
+                console.error('❌ No coverage ranges found for age bracket:', ageBracket);
+                return 0;
+            }
+            
+            // Find the appropriate coverage range
+            let selectedRange = null;
+            let selectedPremium = 0;
+            
+            for (const [range, premium] of Object.entries(coverageRanges)) {
+                const [minCoverage, maxCoverage] = range.split('-').map(Number);
+                if (coverage >= minCoverage && coverage <= maxCoverage) {
+                    selectedRange = range;
+                    selectedPremium = premium;
+                    break;
+                }
+            }
+            
+            if (!selectedRange) {
+                console.error('❌ Coverage amount out of range:', coverage);
+                return 0;
+            }
+            
+            console.log(`💰 IUL Quote calculated - Age: ${age} (${ageBracket}), Gender: ${gender}, Coverage: ${coverage} (${selectedRange}), Premium: ${selectedPremium}`);
+            return selectedPremium;
+            
         } catch (error) {
             console.error('❌ Error calculating IUL quote:', error);
             return 0;
