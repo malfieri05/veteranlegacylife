@@ -176,7 +176,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
       formDataParams.append('utmMedium', new URLSearchParams(window.location.search).get('utm_medium') || '')
       formDataParams.append('utmCampaign', new URLSearchParams(window.location.search).get('utm_campaign') || '')
       
-      const response = await fetch('https://script.google.com/macros/s/AKfycbyGyM8VQ_wRWSZRD3xiniaov45n-_sa3LbSPFniYYUxTYcIR8mPN-WDmpeYPM89VU7_/exec', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycby_sULo99YIinnK3QDE97ERKl8kpKYX2aV-SzNIM_-mn601LcYU5jcTvLJPLUVptBzb/exec', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -267,7 +267,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
       formDataParams.append('utmMedium', new URLSearchParams(window.location.search).get('utm_medium') || '')
       formDataParams.append('utmCampaign', new URLSearchParams(window.location.search).get('utm_campaign') || '')
       
-      const response = await fetch('https://script.google.com/macros/s/AKfycbyGyM8VQ_wRWSZRD3xiniaov45n-_sa3LbSPFniYYUxTYcIR8mPN-WDmpeYPM89VU7_/exec', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycby_sULo99YIinnK3QDE97ERKl8kpKYX2aV-SzNIM_-mn601LcYU5jcTvLJPLUVptBzb/exec', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -313,7 +313,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
       formDataParams.append('utmMedium', new URLSearchParams(window.location.search).get('utm_medium') || '')
       formDataParams.append('utmCampaign', new URLSearchParams(window.location.search).get('utm_campaign') || '')
       
-      const response = await fetch('https://script.google.com/macros/s/AKfycbyGyM8VQ_wRWSZRD3xiniaov45n-_sa3LbSPFniYYUxTYcIR8mPN-WDmpeYPM89VU7_/exec', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycby_sULo99YIinnK3QDE97ERKl8kpKYX2aV-SzNIM_-mn601LcYU5jcTvLJPLUVptBzb/exec', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',

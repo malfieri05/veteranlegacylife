@@ -5,7 +5,7 @@ const Config = (function() {
     'use strict';
     
     // Google Apps Script URL
-    const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyGyM8VQ_wRWSZRD3xiniaov45n-_sa3LbSPFniYYUxTYcIR8mPN-WDmpeYPM89VU7_/exec';
+    const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby_sULo99YIinnK3QDE97ERKl8kpKYX2aV-SzNIM_-mn601LcYU5jcTvLJPLUVptBzb/exec';
     
     // Funnel steps configuration
     const FUNNEL_STEPS = {
