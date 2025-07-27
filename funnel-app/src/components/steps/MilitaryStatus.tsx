@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useFunnelStore } from '../../store/funnelStore'
 
 const militaryOptions = [
@@ -10,37 +10,33 @@ const militaryOptions = [
   { value: 'Other', label: 'Other' }
 ]
 
-const branchOptions = [
-  { value: 'Army', label: 'Army' },
-  { value: 'Navy', label: 'Navy' },
-  { value: 'Air Force', label: 'Air Force' },
-  { value: 'Marines', label: 'Marines' },
-  { value: 'Coast Guard', label: 'Coast Guard' },
-  { value: 'Space Force', label: 'Space Force' },
-  { value: 'Other', label: 'Other' }
-]
-
 export const MilitaryStatus: React.FC = () => {
-  const { formData, updateFormData } = useFunnelStore()
+  const { formData, updateFormData, goToNextStep } = useFunnelStore()
+
+  // Auto-continue when a selection is made
+  useEffect(() => {
+    if (formData.militaryStatus) {
+      const timer = setTimeout(() => {
+        goToNextStep()
+      }, 500) // Small delay for better UX
+      return () => clearTimeout(timer)
+    }
+  }, [formData.militaryStatus, goToNextStep])
   
   const handleMilitaryStatusChange = (value: string) => {
     updateFormData({ militaryStatus: value })
   }
   
-  const handleBranchChange = (value: string) => {
-    updateFormData({ branchOfService: value })
-  }
-  
   return (
     <div>
-      <h2>Military Service Information</h2>
-      <p>Please tell us about your military service to help us provide the best options for you.</p>
+      <h2>Military Status</h2>
+      <p>Please select your military status.</p>
       
       <div className="form-field">
         <label>Military Status *</label>
         <div className="radio-options">
           {militaryOptions.map((option) => (
-            <label key={option.value}>
+            <label key={option.value} className="radio-option">
               <input
                 type="radio"
                 name="militaryStatus"
@@ -53,26 +49,6 @@ export const MilitaryStatus: React.FC = () => {
           ))}
         </div>
       </div>
-      
-      {formData.militaryStatus && formData.militaryStatus !== 'Other' && (
-        <div className="form-field">
-          <label>Branch of Service *</label>
-          <div className="radio-options">
-            {branchOptions.map((option) => (
-              <label key={option.value}>
-                <input
-                  type="radio"
-                  name="branchOfService"
-                  value={option.value}
-                  checked={formData.branchOfService === option.value}
-                  onChange={(e) => handleBranchChange(e.target.value)}
-                />
-                <span>{option.label}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   )
 } 

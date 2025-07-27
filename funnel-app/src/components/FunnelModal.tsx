@@ -6,6 +6,7 @@ import { Button } from './shared/Button'
 import { StreamingLoadingSpinner } from './shared/StreamingLoadingSpinner'
 import { StateSelection } from './steps/StateSelection'
 import { MilitaryStatus } from './steps/MilitaryStatus'
+import { BranchOfService } from './steps/BranchOfService'
 import { MaritalStatus } from './steps/MaritalStatus'
 import { CoverageAmount } from './steps/CoverageAmount'
 import { ContactInfo } from './steps/ContactInfo'
@@ -21,7 +22,7 @@ import { ApplicationStep2 } from './steps/ApplicationStep2'
 import { FinalSuccessModal } from './steps/FinalSuccessModal'
 import { validateContactInfo } from '../utils/validation'
 
-const TOTAL_STEPS = 12
+const TOTAL_STEPS = 13
 
 export const FunnelModal: React.FC = () => {
   const { 
@@ -42,30 +43,32 @@ export const FunnelModal: React.FC = () => {
       case 2:
         return <MilitaryStatus />
       case 3:
-        return <MaritalStatus />
+        return <BranchOfService />
       case 4:
-        return <CoverageAmount />
+        return <MaritalStatus />
       case 5:
-        return <ContactInfo />
+        return <CoverageAmount />
       case 6:
-        return <TobaccoUse />
+        return <ContactInfo />
       case 7:
-        return <MedicalConditions />
+        return <TobaccoUse />
       case 8:
-        return <HeightWeight />
+        return <MedicalConditions />
       case 9:
-        return <HospitalCare />
+        return <HeightWeight />
       case 10:
-        return <DiabetesMedication />
+        return <HospitalCare />
       case 11:
-        return <PreQualifiedSuccess />
+        return <DiabetesMedication />
       case 12:
-        return <IULQuoteModal />
+        return <PreQualifiedSuccess />
       case 13:
-        return <ApplicationStep1 />
+        return <IULQuoteModal />
       case 14:
-        return <ApplicationStep2 />
+        return <ApplicationStep1 />
       case 15:
+        return <ApplicationStep2 />
+      case 16:
         return <FinalSuccessModal />
       default:
         return <div>
@@ -80,29 +83,31 @@ export const FunnelModal: React.FC = () => {
       case 1:
         return !!formData.state
       case 2:
-        return !!formData.militaryStatus && (formData.militaryStatus === 'Other' || !!formData.branchOfService)
+        return !!formData.militaryStatus
       case 3:
-        return !!formData.maritalStatus
+        return !!formData.branchOfService
       case 4:
-        return !!formData.coverageAmount
+        return !!formData.maritalStatus
       case 5:
+        return !!formData.coverageAmount
+      case 6:
         const validation = validateContactInfo(formData.contactInfo)
         return validation.isValid
-      case 6:
-        return !!formData.medicalAnswers?.tobaccoUse
       case 7:
-        return formData.medicalAnswers?.medicalConditions && formData.medicalAnswers.medicalConditions.length > 0
+        return !!formData.medicalAnswers?.tobaccoUse
       case 8:
-        return !!formData.medicalAnswers?.height && !!formData.medicalAnswers?.weight
+        return formData.medicalAnswers?.medicalConditions && formData.medicalAnswers.medicalConditions.length > 0
       case 9:
-        return !!formData.medicalAnswers?.hospitalCare
+        return !!formData.medicalAnswers?.height && !!formData.medicalAnswers?.weight
       case 10:
-        return !!formData.medicalAnswers?.diabetesMedication
-      case 10.5:
-        return false // Loading step - no manual progression
+        return !!formData.medicalAnswers?.hospitalCare
       case 11:
-        return true // Success step - can always proceed
+        return !!formData.medicalAnswers?.diabetesMedication
+      case 11.5:
+        return false // Loading step - no manual progression
       case 12:
+        return true // Success step - can always proceed
+      case 13:
         return true // IUL Quote Modal - can always proceed
       case 14:
         return !!formData.applicationData?.address?.street && 
@@ -147,7 +152,7 @@ export const FunnelModal: React.FC = () => {
           onComplete={() => setStreamingLoading(false)}
                   onStepComplete={() => {
           // Automatically progress to the next step after loading completes
-          if (currentStep === 10.5) {
+          if (currentStep === 11.5) {
             goToNextStep()
           }
         }}

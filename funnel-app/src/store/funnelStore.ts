@@ -232,16 +232,16 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
       get().submitLead()
     }
     
-    // After step 10 (Diabetes Medication), go to loading step (10.5) and submit lead partial
-    if (currentStep === 10) {
+    // After step 11 (Diabetes Medication), go to loading step (11.5) and submit lead partial
+    if (currentStep === 11) {
       get().submitLeadPartial()
-      set({ currentStep: 10.5, isStreamingLoading: true })
+      set({ currentStep: 11.5, isStreamingLoading: true })
       return
     }
     
-    // After loading step (10.5), go to step 11 (Pre-Qualified Success)
-    if (currentStep === 10.5) {
-      set({ isStreamingLoading: false, currentStep: 11 })
+    // After loading step (11.5), go to step 12 (Pre-Qualified Success)
+    if (currentStep === 11.5) {
+      set({ isStreamingLoading: false, currentStep: 12 })
       return
     }
     
@@ -257,12 +257,12 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
     const { currentStep } = get()
     if (currentStep > 1) {
       // Handle special case for loading step
-      if (currentStep === 11) {
-        // If we're on step 11 (Pre-Qualified Success), go back to step 10 (Diabetes Medication)
-        set({ currentStep: 10 })
-      } else if (currentStep === 10.5) {
-        // If we're on loading step, go back to step 10 (Diabetes Medication)
-        set({ currentStep: 10, isStreamingLoading: false })
+      if (currentStep === 12) {
+        // If we're on step 12 (Pre-Qualified Success), go back to step 11 (Diabetes Medication)
+        set({ currentStep: 11 })
+      } else if (currentStep === 11.5) {
+        // If we're on loading step, go back to step 11 (Diabetes Medication)
+        set({ currentStep: 11, isStreamingLoading: false })
       } else {
         set({ currentStep: currentStep - 1 })
       }
