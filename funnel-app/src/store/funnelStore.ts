@@ -69,6 +69,9 @@ interface FunnelStore {
   isModalOpen: boolean
   isLoading: boolean
   
+  // Session management
+  sessionId: string
+  
   // Form data
   formData: FormData
   
@@ -132,10 +135,16 @@ const initialState: FormData = {
   }
 }
 
+// Generate a unique session ID for this funnel session
+const generateSessionId = () => {
+  return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+};
+
 export const useFunnelStore = create<FunnelStore>((set, get) => ({
   currentStep: 1,
   isModalOpen: false,
   isLoading: false,
+  sessionId: generateSessionId(),
   formData: initialState,
 
   setCurrentStep: (step) => set({ currentStep: step }),
@@ -151,12 +160,13 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
   })),
   
   submitPartial: async (currentStep: number, stepName: string) => {
-    const { formData } = get()
+    const { formData, sessionId } = get()
     
     try {
       // Convert data to URL-encoded format to avoid CORS preflight (same as old script)
       const formDataParams = new URLSearchParams()
       formDataParams.append('formType', 'Partial')
+      formDataParams.append('sessionId', sessionId)
       formDataParams.append('currentStep', currentStep.toString())
       formDataParams.append('stepName', stepName)
       formDataParams.append('formData', JSON.stringify(formData))
@@ -232,12 +242,13 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
   },
   
   submitLead: async () => {
-    const { formData } = get()
+    const { formData, sessionId } = get()
     
     try {
       // Convert data to URL-encoded format to avoid CORS preflight (same as old script)
       const formDataParams = new URLSearchParams()
       formDataParams.append('formType', 'Lead')
+      formDataParams.append('sessionId', sessionId)
       
       // Add all formData properties
       for (const [key, value] of Object.entries(formData)) {
@@ -277,12 +288,13 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
   },
   
   submitApplication: async () => {
-    const { formData } = get()
+    const { formData, sessionId } = get()
     
     try {
       // Convert data to URL-encoded format to avoid CORS preflight (same as old script)
       const formDataParams = new URLSearchParams()
       formDataParams.append('formType', 'Application')
+      formDataParams.append('sessionId', sessionId)
       
       // Add all formData properties
       for (const [key, value] of Object.entries(formData)) {
@@ -324,6 +336,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
     currentStep: 1,
     isModalOpen: false,
     isLoading: false,
+    sessionId: generateSessionId(),
     formData: initialState
   })
 })) 
