@@ -1,8 +1,18 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useFunnelStore } from '../../store/funnelStore'
 
 export const HeightWeight: React.FC = () => {
-  const { formData, updateFormData } = useFunnelStore()
+  const { formData, updateFormData, goToNextStep } = useFunnelStore()
+
+  // Auto-continue when both height and weight are filled
+  useEffect(() => {
+    if (formData.medicalAnswers?.height && formData.medicalAnswers?.weight) {
+      const timer = setTimeout(() => {
+        goToNextStep()
+      }, 500) // Small delay for better UX
+      return () => clearTimeout(timer)
+    }
+  }, [formData.medicalAnswers?.height, formData.medicalAnswers?.weight, goToNextStep])
 
   const handleHeightChange = (value: string) => {
     updateFormData({

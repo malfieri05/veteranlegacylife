@@ -1,8 +1,18 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useFunnelStore } from '../../store/funnelStore'
 
 export const DiabetesMedication: React.FC = () => {
-  const { formData, updateFormData } = useFunnelStore()
+  const { formData, updateFormData, goToNextStep } = useFunnelStore()
+
+  // Auto-continue when a selection is made
+  useEffect(() => {
+    if (formData.medicalAnswers?.diabetesMedication) {
+      const timer = setTimeout(() => {
+        goToNextStep()
+      }, 500) // Small delay for better UX
+      return () => clearTimeout(timer)
+    }
+  }, [formData.medicalAnswers?.diabetesMedication, goToNextStep])
 
   const handleDiabetesChange = (value: string) => {
     updateFormData({
