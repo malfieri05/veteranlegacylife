@@ -8,6 +8,7 @@ export const IULQuoteModal: React.FC = () => {
   const [monthlyPremium, setMonthlyPremium] = useState(0)
   const [userAge, setUserAge] = useState(30)
   const [userGender, setUserGender] = useState('male')
+  const [sliderValue, setSliderValue] = useState(50000)
 
   useEffect(() => {
     // Calculate age from date of birth
@@ -24,6 +25,7 @@ export const IULQuoteModal: React.FC = () => {
     if (formData.coverageAmount) {
       const amount = parseInt(formData.coverageAmount.replace(/[$,]/g, ''))
       setCoverageAmount(amount)
+      setSliderValue(amount)
     }
   }, [formData.contactInfo?.dateOfBirth, formData.coverageAmount])
 
@@ -39,14 +41,16 @@ export const IULQuoteModal: React.FC = () => {
     setMonthlyPremium(premium)
   }
 
-  const handleCoverageChange = (value: number) => {
+  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value)
+    setSliderValue(value)
     setCoverageAmount(value)
-    updateQuote()
+    console.log(`Slider changed to: ${value}`)
   }
 
   const handleGenderChange = (gender: string) => {
     setUserGender(gender)
-    updateQuote()
+    console.log(`Gender changed to: ${gender}`)
   }
 
   const handleSecureRate = () => {
@@ -66,14 +70,22 @@ export const IULQuoteModal: React.FC = () => {
     goToNextStep()
   }
 
-  const coverageOptions = [
-    { value: 25000, label: '$25,000' },
-    { value: 50000, label: '$50,000' },
-    { value: 100000, label: '$100,000' },
-    { value: 250000, label: '$250,000' },
-    { value: 500000, label: '$500,000' },
-    { value: 1000000, label: '$1,000,000' }
-  ]
+  // Get coverage range based on previous selection
+  const getCoverageRange = () => {
+    if (formData.coverageAmount) {
+      const amount = parseInt(formData.coverageAmount.replace(/[$,]/g, ''))
+      if (amount <= 50000) {
+        return { min: 25000, max: 100000 }
+      } else if (amount <= 100000) {
+        return { min: 50000, max: 250000 }
+      } else {
+        return { min: 100000, max: 1000000 }
+      }
+    }
+    return { min: 25000, max: 100000 } // Default range
+  }
+
+  const coverageRange = getCoverageRange()
 
   return (
     <div style={{ textAlign: 'center', padding: '2rem' }}>
@@ -113,25 +125,39 @@ export const IULQuoteModal: React.FC = () => {
 
       <div style={{ marginBottom: '2rem' }}>
         <h3>Adjust Your Coverage</h3>
-        <div style={{ marginBottom: '1rem' }}>
-          <label>Coverage Amount:</label>
-          <select 
-            value={coverageAmount}
-            onChange={(e) => handleCoverageChange(parseInt(e.target.value))}
-            style={{ marginLeft: '1rem', padding: '0.5rem' }}
-          >
-            {coverageOptions.map(option => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+        
+        {/* Coverage Slider */}
+        <div style={{ marginBottom: '2rem' }}>
+          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+            Coverage Amount: ${sliderValue.toLocaleString()}
+          </label>
+          <input
+            type="range"
+            min={coverageRange.min}
+            max={coverageRange.max}
+            step={5000}
+            value={sliderValue}
+            onChange={handleSliderChange}
+            style={{
+              width: '100%',
+              height: '8px',
+              borderRadius: '4px',
+              background: '#e5e7eb',
+              outline: 'none',
+              cursor: 'pointer'
+            }}
+          />
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.5rem', fontSize: '0.875rem', color: '#6b7280' }}>
+            <span>${coverageRange.min.toLocaleString()}</span>
+            <span>${coverageRange.max.toLocaleString()}</span>
+          </div>
         </div>
         
+        {/* Gender Selection */}
         <div>
-          <label>Gender:</label>
-          <div style={{ display: 'inline-flex', gap: '1rem', marginLeft: '1rem' }}>
-            <label>
+          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Gender:</label>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
               <input
                 type="radio"
                 name="gender"
@@ -141,7 +167,7 @@ export const IULQuoteModal: React.FC = () => {
               />
               Male
             </label>
-            <label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
               <input
                 type="radio"
                 name="gender"
