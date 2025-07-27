@@ -78,18 +78,32 @@ function doPost(e) {
     const sessionId = data.sessionId;
     let existingRowIndex = -1;
     
+    console.log('Looking for session ID:', sessionId);
+    
     if (sessionId) {
       // Find existing row with this session ID
       const dataRange = sheet.getDataRange();
       const values = dataRange.getValues();
       
+      console.log('Total rows in sheet:', values.length);
+      
       // Session ID is in column B (index 1)
       for (let i = 1; i < values.length; i++) {
-        if (values[i][1] === sessionId) {
+        const existingSessionId = values[i][1];
+        console.log(`Row ${i + 1}: "${existingSessionId}" vs "${sessionId}"`);
+        
+        if (existingSessionId === sessionId) {
           existingRowIndex = i + 1; // +1 because sheet rows are 1-indexed
+          console.log('Found matching session at row:', existingRowIndex);
           break;
         }
       }
+      
+      if (existingRowIndex === -1) {
+        console.log('No existing session found - will create new row');
+      }
+    } else {
+      console.log('No session ID provided - will create new row');
     }
     
     if (existingRowIndex > 0) {
@@ -143,7 +157,7 @@ function doPost(e) {
         
         MailApp.sendEmail(emailAddress, subject, message);
         
-    } else if (data.formType === 'Funnel') {
+    } else if (data.formType === 'Funnel' || data.formType === 'Application') {
         // Email: "User completed funnel" (existing logic)
         const subject = '✅ New Lead Completed - Veteran Legacy Life';
         const message = `
@@ -165,6 +179,15 @@ function doPost(e) {
           Weight: ${data.weight || ''}
           Hospital Care: ${data.hospitalCare || ''}
           Diabetes Medication: ${data.diabetesMedication || ''}
+          
+          Application Information:
+          - Address: ${data.addressStreet || ''}, ${data.addressCity || ''}, ${data.addressState || ''} ${data.addressZip || ''}
+          - Beneficiary: ${data.beneficiaryName || ''} (${data.beneficiaryRelationship || ''})
+          - VA Number: ${data.vaNumber || 'Not provided'}
+          - Service Connected: ${data.serviceConnected || 'Not specified'}
+          - SSN: ${data.ssn ? 'Provided' : 'Not provided'}
+          - Bank: ${data.bankName || ''}
+          - Quote: $${data.quoteAmount || ''} coverage, $${data.monthlyPremium || ''}/month
           
           View all leads in the Google Sheet: https://docs.google.com/spreadsheets/d/1MvmvfqRBnt8fjplbRgFIi7BTnzcAGaMNeIDwCHGPis8/edit
         `;
