@@ -22,7 +22,7 @@ import { ApplicationStep2 } from './steps/ApplicationStep2'
 import { FinalSuccessModal } from './steps/FinalSuccessModal'
 import { validateContactInfo } from '../utils/validation'
 
-const TOTAL_STEPS = 13
+const TOTAL_STEPS = 16
 
 export const FunnelModal: React.FC = () => {
   const { 
@@ -117,7 +117,7 @@ export const FunnelModal: React.FC = () => {
                !!formData.applicationData?.address?.zipCode &&
                !!formData.applicationData?.beneficiary?.name &&
                !!formData.applicationData?.beneficiary?.relationship
-      case 14:
+      case 15:
         return !!formData.applicationData?.ssn &&
                !!formData.applicationData?.banking?.bankName &&
                !!formData.applicationData?.banking?.routingNumber &&
