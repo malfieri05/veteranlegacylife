@@ -3,6 +3,73 @@
  * Captures all questions from both pre-qualification and application phases
  */
 
+// Column reference map for unified sheet structure
+const SHEET_COLUMNS = {
+  // Core (1-4)
+  TIMESTAMP: 1,
+  SESSION_ID: 2,
+  STATUS: 3,
+  LAST_ACTIVITY: 4,
+  
+  // Contact (5-9)
+  FIRST_NAME: 5,
+  LAST_NAME: 6,
+  EMAIL: 7,
+  PHONE: 8,
+  DOB: 9,
+  
+  // Pre-qualification (10-14)
+  STATE: 10,
+  MILITARY_STATUS: 11,
+  BRANCH: 12,
+  MARITAL_STATUS: 13,
+  COVERAGE_AMOUNT: 14,
+  
+  // Medical (15-20)
+  TOBACCO_USE: 15,
+  MEDICAL_CONDITIONS: 16,
+  HEIGHT: 17,
+  WEIGHT: 18,
+  HOSPITAL_CARE: 19,
+  DIABETES_MEDICATION: 20,
+  
+  // Application (21-32)
+  STREET_ADDRESS: 21,
+  CITY: 22,
+  APPLICATION_STATE: 23,
+  ZIP_CODE: 24,
+  BENEFICIARY_NAME: 25,
+  BENEFICIARY_RELATIONSHIP: 26,
+  VA_NUMBER: 27,
+  SERVICE_CONNECTED: 28,
+  SSN: 29,
+  BANK_NAME: 30,
+  ROUTING_NUMBER: 31,
+  ACCOUNT_NUMBER: 32,
+  
+  // Quote (33-38)
+  POLICY_DATE: 33,
+  QUOTE_COVERAGE: 34,
+  QUOTE_PREMIUM: 35,
+  QUOTE_AGE: 36,
+  QUOTE_GENDER: 37,
+  QUOTE_TYPE: 38,
+  
+  // Tracking (39-46)
+  CURRENT_STEP: 39,
+  STEP_NAME: 40,
+  FORM_TYPE: 41,
+  USER_AGENT: 42,
+  REFERRER: 43,
+  UTM_SOURCE: 44,
+  UTM_MEDIUM: 45,
+  UTM_CAMPAIGN: 46,
+  
+  // Email Status (47-48)
+  PARTIAL_EMAIL_SENT: 47,
+  COMPLETED_EMAIL_SENT: 48
+};
+
 function doPost(e) {
   const timestamp = new Date();
   
@@ -161,52 +228,8 @@ function handleLeadSubmission(data, sessionId) {
     }
   }
   
-  const timestamp = new Date();
-  const rowData = [
-    timestamp, // Timestamp
-    sessionId, // Session ID (use the one from request)
-    data.state || parsedFormData.state || '',
-    data.militaryStatus || parsedFormData.militaryStatus || '',
-    data.branchOfService || parsedFormData.branchOfService || '',
-    data.maritalStatus || parsedFormData.maritalStatus || '',
-    data.coverageAmount || parsedFormData.coverageAmount || '',
-    parsedFormData.contactInfo?.firstName || '',
-    parsedFormData.contactInfo?.lastName || '',
-    parsedFormData.contactInfo?.email || '',
-    parsedFormData.contactInfo?.phone || '',
-    parsedFormData.contactInfo?.dateOfBirth || '',
-    parsedFormData.medicalAnswers?.tobaccoUse || '',
-    Array.isArray(parsedFormData.medicalAnswers?.medicalConditions) ? parsedFormData.medicalAnswers.medicalConditions.join(', ') : '',
-    parsedFormData.medicalAnswers?.height || '',
-    parsedFormData.medicalAnswers?.weight || '',
-    parsedFormData.medicalAnswers?.hospitalCare || '',
-    parsedFormData.medicalAnswers?.diabetesMedication || '',
-    // Application Data (Phase 2) - ALL FIELDS
-    parsedFormData.applicationData?.address?.street || '',
-    parsedFormData.applicationData?.address?.city || '',
-    parsedFormData.applicationData?.address?.state || '',
-    parsedFormData.applicationData?.address?.zipCode || '',
-    parsedFormData.applicationData?.beneficiary?.name || '',
-    parsedFormData.applicationData?.beneficiary?.relationship || '',
-    parsedFormData.applicationData?.vaInfo?.vaNumber || '',
-    parsedFormData.applicationData?.vaInfo?.serviceConnected || '',
-    parsedFormData.applicationData?.ssn || '',
-    parsedFormData.applicationData?.banking?.bankName || '',
-    parsedFormData.applicationData?.banking?.routingNumber || '',
-    parsedFormData.applicationData?.banking?.accountNumber || '',
-    parsedFormData.applicationData?.policyDate || '',
-    parsedFormData.applicationData?.quoteData?.coverageAmount || '',
-    parsedFormData.applicationData?.quoteData?.monthlyPremium || '',
-    parsedFormData.applicationData?.quoteData?.userAge || '',
-    parsedFormData.applicationData?.quoteData?.userGender || '',
-    parsedFormData.applicationData?.quoteData?.quoteType || '',
-    'Pre-Qualified', // Status
-    data.userAgent || '',
-    data.referrer || '',
-    data.utmSource || '',
-    data.utmMedium || '',
-    data.utmCampaign || ''
-  ];
+  // Use unified row data builder
+  const rowData = buildUnifiedRowData(data, sessionId);
   
   // Check if session already exists in the sheet
   let existingRowIndex = -1;
@@ -276,41 +299,8 @@ function handleApplicationSubmission(data, sessionId) {
     }
   }
   
-  const timestamp = new Date();
-  const rowData = [
-    timestamp, // Timestamp
-    sessionId, // Session ID (use the one from request)
-    parsedFormData.contactInfo?.firstName || '',
-    parsedFormData.contactInfo?.lastName || '',
-    parsedFormData.contactInfo?.email || '',
-    parsedFormData.contactInfo?.phone || '',
-    parsedFormData.contactInfo?.dateOfBirth || '',
-    parsedFormData.applicationData?.address?.street || '',
-    parsedFormData.applicationData?.address?.city || '',
-    parsedFormData.applicationData?.address?.state || '',
-    parsedFormData.applicationData?.address?.zipCode || '',
-    parsedFormData.applicationData?.beneficiary?.name || '',
-    parsedFormData.applicationData?.beneficiary?.relationship || '',
-    parsedFormData.applicationData?.vaInfo?.vaNumber || '',
-    parsedFormData.applicationData?.vaInfo?.serviceConnected || '',
-    parsedFormData.applicationData?.driversLicense || '',
-    parsedFormData.applicationData?.ssn || '',
-    parsedFormData.applicationData?.banking?.bankName || '',
-    parsedFormData.applicationData?.banking?.routingNumber || '',
-    parsedFormData.applicationData?.banking?.accountNumber || '',
-    parsedFormData.applicationData?.policyDate || '',
-    parsedFormData.applicationData?.quoteData?.coverageAmount || '',
-    parsedFormData.applicationData?.quoteData?.monthlyPremium || '',
-    parsedFormData.applicationData?.quoteData?.userAge || '',
-    parsedFormData.applicationData?.quoteData?.userGender || '',
-    parsedFormData.applicationData?.quoteData?.quoteType || '',
-    'Submitted', // Status
-    data.userAgent || '',
-    data.referrer || '',
-    data.utmSource || '',
-    data.utmMedium || '',
-    data.utmCampaign || ''
-  ];
+  // Use unified row data builder
+  const rowData = buildUnifiedRowData(data, sessionId);
   
   // Check if session already exists in the sheet
   let existingRowIndex = -1;
@@ -383,57 +373,8 @@ function handlePartialSubmission(data, sessionId) {
     }
   }
   
-  // Prepare the row data with ALL funnel information (complete structure)
-  const rowData = [
-    new Date(), // Timestamp
-    sessionId, // Session ID for tracking (use the one from request)
-    // Phase 1 - Pre-Qualification Data
-    parsedFormData.state || '',
-    parsedFormData.militaryStatus || '',
-    parsedFormData.branchOfService || '',
-    parsedFormData.maritalStatus || '',
-    parsedFormData.coverageAmount || '',
-    parsedFormData.contactInfo?.firstName || '',
-    parsedFormData.contactInfo?.lastName || '',
-    parsedFormData.contactInfo?.email || '',
-    parsedFormData.contactInfo?.phone || '',
-    parsedFormData.contactInfo?.dateOfBirth || '',
-    parsedFormData.medicalAnswers?.tobaccoUse || '',
-    Array.isArray(parsedFormData.medicalAnswers?.medicalConditions) ? parsedFormData.medicalAnswers.medicalConditions.join(', ') : '',
-    parsedFormData.medicalAnswers?.height || '',
-    parsedFormData.medicalAnswers?.weight || '',
-    parsedFormData.medicalAnswers?.hospitalCare || '',
-    parsedFormData.medicalAnswers?.diabetesMedication || '',
-    // Phase 2 - Application Data (ALL FIELDS)
-    parsedFormData.applicationData?.address?.street || '',
-    parsedFormData.applicationData?.address?.city || '',
-    parsedFormData.applicationData?.address?.state || '',
-    parsedFormData.applicationData?.address?.zipCode || '',
-    parsedFormData.applicationData?.beneficiary?.name || '',
-    parsedFormData.applicationData?.beneficiary?.relationship || '',
-    parsedFormData.applicationData?.vaInfo?.vaNumber || '',
-    parsedFormData.applicationData?.vaInfo?.serviceConnected || '',
-    parsedFormData.applicationData?.driversLicense || '',
-    parsedFormData.applicationData?.ssn || '',
-    parsedFormData.applicationData?.banking?.bankName || '',
-    parsedFormData.applicationData?.banking?.routingNumber || '',
-    parsedFormData.applicationData?.banking?.accountNumber || '',
-    parsedFormData.applicationData?.policyDate || '',
-    parsedFormData.applicationData?.quoteData?.coverageAmount || '',
-    parsedFormData.applicationData?.quoteData?.monthlyPremium || '',
-    parsedFormData.applicationData?.quoteData?.userAge || '',
-    parsedFormData.applicationData?.quoteData?.userGender || '',
-    parsedFormData.applicationData?.quoteData?.quoteType || '',
-    // Tracking Data
-    data.currentStep || '', // Current step
-    data.stepName || '', // Step name
-    data.formType || 'Partial', // Form type
-    data.userAgent || '',
-    data.referrer || '',
-    data.utmSource || '',
-    data.utmMedium || '',
-    data.utmCampaign || ''
-  ];
+  // Use unified row data builder
+  const rowData = buildUnifiedRowData(data, sessionId);
   
   // Check if session already exists in the sheet
   let existingRowIndex = -1;
@@ -511,57 +452,8 @@ function handleLeadPartialSubmission(data, sessionId) {
     }
   }
   
-  // Prepare the row data with ALL funnel information (complete structure)
-  const rowData = [
-    new Date(), // Timestamp
-    sessionId, // Session ID for tracking (use the one from request)
-    // Phase 1 - Pre-Qualification Data
-    parsedFormData.state || '',
-    parsedFormData.militaryStatus || '',
-    parsedFormData.branchOfService || '',
-    parsedFormData.maritalStatus || '',
-    parsedFormData.coverageAmount || '',
-    parsedFormData.contactInfo?.firstName || '',
-    parsedFormData.contactInfo?.lastName || '',
-    parsedFormData.contactInfo?.email || '',
-    parsedFormData.contactInfo?.phone || '',
-    parsedFormData.contactInfo?.dateOfBirth || '',
-    parsedFormData.medicalAnswers?.tobaccoUse || '',
-    Array.isArray(parsedFormData.medicalAnswers?.medicalConditions) ? parsedFormData.medicalAnswers.medicalConditions.join(', ') : '',
-    parsedFormData.medicalAnswers?.height || '',
-    parsedFormData.medicalAnswers?.weight || '',
-    parsedFormData.medicalAnswers?.hospitalCare || '',
-    parsedFormData.medicalAnswers?.diabetesMedication || '',
-    // Phase 2 - Application Data (ALL FIELDS)
-    parsedFormData.applicationData?.address?.street || '',
-    parsedFormData.applicationData?.address?.city || '',
-    parsedFormData.applicationData?.address?.state || '',
-    parsedFormData.applicationData?.address?.zipCode || '',
-    parsedFormData.applicationData?.beneficiary?.name || '',
-    parsedFormData.applicationData?.beneficiary?.relationship || '',
-    parsedFormData.applicationData?.vaInfo?.vaNumber || '',
-    parsedFormData.applicationData?.vaInfo?.serviceConnected || '',
-    parsedFormData.applicationData?.driversLicense || '',
-    parsedFormData.applicationData?.ssn || '',
-    parsedFormData.applicationData?.banking?.bankName || '',
-    parsedFormData.applicationData?.banking?.routingNumber || '',
-    parsedFormData.applicationData?.banking?.accountNumber || '',
-    parsedFormData.applicationData?.policyDate || '',
-    parsedFormData.applicationData?.quoteData?.coverageAmount || '',
-    parsedFormData.applicationData?.quoteData?.monthlyPremium || '',
-    parsedFormData.applicationData?.quoteData?.userAge || '',
-    parsedFormData.applicationData?.quoteData?.userGender || '',
-    parsedFormData.applicationData?.quoteData?.quoteType || '',
-    // Tracking Data
-    data.currentStep || '', // Current step
-    data.stepName || '', // Step name
-    data.formType || 'LeadPartial', // Form type
-    data.userAgent || '',
-    data.referrer || '',
-    data.utmSource || '',
-    data.utmMedium || '',
-    data.utmCampaign || ''
-  ];
+  // Use unified row data builder
+  const rowData = buildUnifiedRowData(data, sessionId);
   
   // Check if session already exists in the sheet
   let existingRowIndex = -1;
@@ -609,31 +501,41 @@ function handleLeadPartialSubmission(data, sessionId) {
   };
 }
 
-function setupPartialSheet(sheet) {
+// Unified sheet setup function - replaces all previous setup functions
+function setupUnifiedSheet(sheet) {
   const headers = [
+    // Core Tracking (Columns 1-4)
     'Timestamp',
-    'Session ID',
-    // Phase 1 - Pre-Qualification Data
-    'State',
-    'Military Status',
-    'Branch of Service',
-    'Marital Status',
-    'Coverage Amount',
+    'Session ID', 
+    'Status',
+    'Last Activity',
+    
+    // Contact Information (Columns 5-9)
     'First Name',
-    'Last Name',
+    'Last Name', 
     'Email',
     'Phone',
     'Date of Birth',
+    
+    // Pre-Qualification Data (Columns 10-14)
+    'State',
+    'Military Status',
+    'Branch of Service',
+    'Marital Status', 
+    'Coverage Amount',
+    
+    // Medical Information (Columns 15-20)
     'Tobacco Use',
     'Medical Conditions',
     'Height',
     'Weight',
     'Hospital Care',
     'Diabetes Medication',
-    // Phase 2 - Application Data (ALL FIELDS)
+    
+    // Application Data (Columns 21-32)
     'Street Address',
     'City',
-    'State (Application)',
+    'Application State',
     'ZIP Code',
     'Beneficiary Name',
     'Beneficiary Relationship',
@@ -643,13 +545,16 @@ function setupPartialSheet(sheet) {
     'Bank Name',
     'Routing Number',
     'Account Number',
+    
+    // Quote Information (Columns 33-38)
     'Policy Date',
     'Quote Coverage Amount',
     'Quote Monthly Premium',
     'Quote User Age',
     'Quote User Gender',
     'Quote Type',
-    // Tracking Data
+    
+    // Tracking Data (Columns 39-46)
     'Current Step',
     'Step Name',
     'Form Type',
@@ -658,116 +563,152 @@ function setupPartialSheet(sheet) {
     'UTM Source',
     'UTM Medium',
     'UTM Campaign',
-    'Session Status',
-    'Last Activity',
+    
+    // Email Status (Columns 47-48)
     'Partial Email Sent',
     'Completed Email Sent'
   ];
   
+  // TOTAL: 48 columns exactly
+  
   sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
   sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
   sheet.autoResizeColumns(1, headers.length);
+  
+  Logger.log(`Sheet setup complete with ${headers.length} columns`);
+  return headers.length;
 }
 
-function setupLeadSheet(sheet) {
-  const headers = [
-    'Timestamp',
-    'Session ID',
-    // Phase 1 - Pre-Qualification Data
-    'State',
-    'Military Status',
-    'Branch of Service',
-    'Marital Status',
-    'Coverage Amount',
-    'First Name',
-    'Last Name',
-    'Email',
-    'Phone',
-    'Date of Birth',
-    'Tobacco Use',
-    'Medical Conditions',
-    'Height',
-    'Weight',
-    'Hospital Care',
-    'Diabetes Medication',
-    // Phase 2 - Application Data (ALL FIELDS)
-    'Street Address',
-    'City',
-    'State (Application)',
-    'ZIP Code',
-    'Beneficiary Name',
-    'Beneficiary Relationship',
-    'VA Number',
-    'Service Connected Disability',
-    'SSN',
-    'Bank Name',
-    'Routing Number',
-    'Account Number',
-    'Policy Date',
-    'Quote Coverage Amount',
-    'Quote Monthly Premium',
-    'Quote User Age',
-    'Quote User Gender',
-    'Quote Type',
-    'Status',
-    'User Agent',
-    'Referrer',
-    'UTM Source',
-    'UTM Medium',
-    'UTM Campaign',
-    'Session Status',
-    'Last Activity',
-    'Partial Email Sent',
-    'Completed Email Sent'
-  ];
+// Validation function to verify sheet structure
+function validateSheetStructure() {
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = spreadsheet.getActiveSheet();
   
-  sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-  sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
-  sheet.autoResizeColumns(1, headers.length);
+  // Check if headers exist
+  const headerRange = sheet.getRange(1, 1, 1, 48);
+  const headers = headerRange.getValues()[0];
+  
+  Logger.log(`Current sheet has ${headers.length} columns`);
+  Logger.log(`Expected: 48 columns`);
+  
+  if (headers.length !== 48) {
+    Logger.log('❌ SHEET STRUCTURE MISMATCH');
+    Logger.log('Run setupUnifiedSheet() to fix');
+    return false;
+  }
+  
+  Logger.log('✅ Sheet structure is correct');
+  return true;
 }
 
-function setupApplicationSheet(sheet) {
-  const headers = [
-    'Timestamp',
-    'Session ID',
-    'First Name',
-    'Last Name',
-    'Email',
-    'Phone',
-    'Date of Birth',
-    'Street Address',
-    'City',
-    'State',
-    'ZIP Code',
-    'Beneficiary Name',
-    'Beneficiary Relationship',
-    'VA Number',
-    'Service Connected Disability',
-    'SSN',
-    'Bank Name',
-    'Routing Number',
-    'Account Number',
-    'Policy Date',
-    'Coverage Amount',
-    'Monthly Premium',
-    'Age',
-    'Gender',
-    'Quote Type',
-    'Status',
-    'User Agent',
-    'Referrer',
-    'UTM Source',
-    'UTM Medium',
-    'UTM Campaign',
-    'Session Status',
-    'Last Activity',
-    'Partial Email Sent',
-    'Completed Email Sent'
-  ];
+// Function to reset sheet structure
+function resetSheetStructure() {
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = spreadsheet.getActiveSheet();
   
-  sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-  sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
-  sheet.autoResizeColumns(1, headers.length);
+  // Clear existing headers
+  sheet.getRange(1, 1, 1, sheet.getLastColumn()).clear();
+  
+  // Setup new unified structure
+  setupUnifiedSheet(sheet);
+  
+  Logger.log('Sheet structure reset to unified format');
+}
+
+// Unified data row builder - replaces all different rowData arrays
+function buildUnifiedRowData(data, sessionId) {
+  // Parse form data once
+  let parsedFormData = {};
+  if (data.formData) {
+    try {
+      parsedFormData = typeof data.formData === 'string' 
+        ? JSON.parse(data.formData) 
+        : data.formData;
+    } catch (e) {
+      Logger.log(`[${sessionId}] Error parsing formData: ${e.toString()}`);
+      parsedFormData = {};
+    }
+  }
+  
+  // Build exactly 48 values in correct order
+  const rowData = new Array(48).fill(''); // Initialize all 48 columns
+  
+  // Core (1-4)
+  rowData[SHEET_COLUMNS.TIMESTAMP - 1] = new Date();
+  rowData[SHEET_COLUMNS.SESSION_ID - 1] = sessionId;
+  rowData[SHEET_COLUMNS.STATUS - 1] = getStatusFromFormType(data.formType);
+  rowData[SHEET_COLUMNS.LAST_ACTIVITY - 1] = new Date();
+  
+  // Contact (5-9)
+  rowData[SHEET_COLUMNS.FIRST_NAME - 1] = parsedFormData.contactInfo?.firstName || '';
+  rowData[SHEET_COLUMNS.LAST_NAME - 1] = parsedFormData.contactInfo?.lastName || '';
+  rowData[SHEET_COLUMNS.EMAIL - 1] = parsedFormData.contactInfo?.email || '';
+  rowData[SHEET_COLUMNS.PHONE - 1] = parsedFormData.contactInfo?.phone || '';
+  rowData[SHEET_COLUMNS.DOB - 1] = parsedFormData.contactInfo?.dateOfBirth || '';
+  
+  // Pre-qualification (10-14)
+  rowData[SHEET_COLUMNS.STATE - 1] = parsedFormData.state || data.state || '';
+  rowData[SHEET_COLUMNS.MILITARY_STATUS - 1] = parsedFormData.militaryStatus || data.militaryStatus || '';
+  rowData[SHEET_COLUMNS.BRANCH - 1] = parsedFormData.branchOfService || data.branchOfService || '';
+  rowData[SHEET_COLUMNS.MARITAL_STATUS - 1] = parsedFormData.maritalStatus || data.maritalStatus || '';
+  rowData[SHEET_COLUMNS.COVERAGE_AMOUNT - 1] = parsedFormData.coverageAmount || data.coverageAmount || '';
+  
+  // Medical (15-20)
+  rowData[SHEET_COLUMNS.TOBACCO_USE - 1] = parsedFormData.medicalAnswers?.tobaccoUse || '';
+  rowData[SHEET_COLUMNS.MEDICAL_CONDITIONS - 1] = Array.isArray(parsedFormData.medicalAnswers?.medicalConditions) 
+    ? parsedFormData.medicalAnswers.medicalConditions.join(', ') : '';
+  rowData[SHEET_COLUMNS.HEIGHT - 1] = parsedFormData.medicalAnswers?.height || '';
+  rowData[SHEET_COLUMNS.WEIGHT - 1] = parsedFormData.medicalAnswers?.weight || '';
+  rowData[SHEET_COLUMNS.HOSPITAL_CARE - 1] = parsedFormData.medicalAnswers?.hospitalCare || '';
+  rowData[SHEET_COLUMNS.DIABETES_MEDICATION - 1] = parsedFormData.medicalAnswers?.diabetesMedication || '';
+  
+  // Application (21-32)
+  rowData[SHEET_COLUMNS.STREET_ADDRESS - 1] = parsedFormData.applicationData?.address?.street || '';
+  rowData[SHEET_COLUMNS.CITY - 1] = parsedFormData.applicationData?.address?.city || '';
+  rowData[SHEET_COLUMNS.APPLICATION_STATE - 1] = parsedFormData.applicationData?.address?.state || '';
+  rowData[SHEET_COLUMNS.ZIP_CODE - 1] = parsedFormData.applicationData?.address?.zipCode || '';
+  rowData[SHEET_COLUMNS.BENEFICIARY_NAME - 1] = parsedFormData.applicationData?.beneficiary?.name || '';
+  rowData[SHEET_COLUMNS.BENEFICIARY_RELATIONSHIP - 1] = parsedFormData.applicationData?.beneficiary?.relationship || '';
+  rowData[SHEET_COLUMNS.VA_NUMBER - 1] = parsedFormData.applicationData?.vaInfo?.vaNumber || '';
+  rowData[SHEET_COLUMNS.SERVICE_CONNECTED - 1] = parsedFormData.applicationData?.vaInfo?.serviceConnected || '';
+  rowData[SHEET_COLUMNS.SSN - 1] = parsedFormData.applicationData?.ssn || '';
+  rowData[SHEET_COLUMNS.BANK_NAME - 1] = parsedFormData.applicationData?.banking?.bankName || '';
+  rowData[SHEET_COLUMNS.ROUTING_NUMBER - 1] = parsedFormData.applicationData?.banking?.routingNumber || '';
+  rowData[SHEET_COLUMNS.ACCOUNT_NUMBER - 1] = parsedFormData.applicationData?.banking?.accountNumber || '';
+  
+  // Quote (33-38)
+  rowData[SHEET_COLUMNS.POLICY_DATE - 1] = parsedFormData.applicationData?.policyDate || '';
+  rowData[SHEET_COLUMNS.QUOTE_COVERAGE - 1] = parsedFormData.applicationData?.quoteData?.coverageAmount || '';
+  rowData[SHEET_COLUMNS.QUOTE_PREMIUM - 1] = parsedFormData.applicationData?.quoteData?.monthlyPremium || '';
+  rowData[SHEET_COLUMNS.QUOTE_AGE - 1] = parsedFormData.applicationData?.quoteData?.userAge || '';
+  rowData[SHEET_COLUMNS.QUOTE_GENDER - 1] = parsedFormData.applicationData?.quoteData?.userGender || '';
+  rowData[SHEET_COLUMNS.QUOTE_TYPE - 1] = parsedFormData.applicationData?.quoteData?.quoteType || '';
+  
+  // Tracking (39-46)
+  rowData[SHEET_COLUMNS.CURRENT_STEP - 1] = data.currentStep || '';
+  rowData[SHEET_COLUMNS.STEP_NAME - 1] = data.stepName || '';
+  rowData[SHEET_COLUMNS.FORM_TYPE - 1] = data.formType || '';
+  rowData[SHEET_COLUMNS.USER_AGENT - 1] = data.userAgent || '';
+  rowData[SHEET_COLUMNS.REFERRER - 1] = data.referrer || '';
+  rowData[SHEET_COLUMNS.UTM_SOURCE - 1] = data.utmSource || '';
+  rowData[SHEET_COLUMNS.UTM_MEDIUM - 1] = data.utmMedium || '';
+  rowData[SHEET_COLUMNS.UTM_CAMPAIGN - 1] = data.utmCampaign || '';
+  
+  // Email Status (47-48)
+  rowData[SHEET_COLUMNS.PARTIAL_EMAIL_SENT - 1] = 'FALSE';
+  rowData[SHEET_COLUMNS.COMPLETED_EMAIL_SENT - 1] = 'FALSE';
+  
+  return rowData;
+}
+
+function getStatusFromFormType(formType) {
+  switch (formType) {
+    case 'Lead': return 'Pre-Qualified';
+    case 'Application': return 'Submitted';
+    case 'Partial': return 'Active';
+    case 'LeadPartial': return 'Active';
+    default: return 'Unknown';
+  }
 }
 
 // Session tracking functions
@@ -796,10 +737,10 @@ function updateSessionStatus(sessionId, status, data = {}) {
   
   if (existingRowIndex > 0) {
     // Update session status in the row
-    const statusColumn = 45; // Add status column after existing columns
-    const lastActivityColumn = 46; // Add last activity column
-    const partialEmailSentColumn = 47; // Add partial email flag
-    const completedEmailSentColumn = 48; // Add completed email flag
+    const statusColumn = SHEET_COLUMNS.STATUS;
+    const lastActivityColumn = SHEET_COLUMNS.LAST_ACTIVITY;
+    const partialEmailSentColumn = SHEET_COLUMNS.PARTIAL_EMAIL_SENT;
+    const completedEmailSentColumn = SHEET_COLUMNS.COMPLETED_EMAIL_SENT;
     
     sheet.getRange(existingRowIndex, statusColumn).setValue(status);
     sheet.getRange(existingRowIndex, lastActivityColumn).setValue(new Date());
@@ -844,8 +785,8 @@ function checkSessionEmailStatus(sessionId, emailType) {
   }
   
   if (existingRowIndex > 0) {
-    const partialEmailSentColumn = 47;
-    const completedEmailSentColumn = 48;
+    const partialEmailSentColumn = SHEET_COLUMNS.PARTIAL_EMAIL_SENT;
+    const completedEmailSentColumn = SHEET_COLUMNS.COMPLETED_EMAIL_SENT;
     
     if (emailType === 'partial') {
       const partialEmailSent = sheet.getRange(existingRowIndex, partialEmailSentColumn).getValue();
@@ -885,8 +826,8 @@ function markEmailAsSent(sessionId, emailType) {
   }
   
   if (existingRowIndex > 0) {
-    const partialEmailSentColumn = 47;
-    const completedEmailSentColumn = 48;
+    const partialEmailSentColumn = SHEET_COLUMNS.PARTIAL_EMAIL_SENT;
+    const completedEmailSentColumn = SHEET_COLUMNS.COMPLETED_EMAIL_SENT;
     
     if (emailType === 'partial') {
       sheet.getRange(existingRowIndex, partialEmailSentColumn).setValue('TRUE');
@@ -1188,7 +1129,7 @@ function handleAbandonmentDetection(sessionId) {
   }
   
   if (existingRowIndex > 0) {
-    const statusColumn = 45;
+    const statusColumn = SHEET_COLUMNS.STATUS;
     const sessionStatus = sheet.getRange(existingRowIndex, statusColumn).getValue();
     
     if (sessionStatus === 'phone_captured') {
@@ -1197,24 +1138,24 @@ function handleAbandonmentDetection(sessionId) {
       // Get session data for email
       const sessionData = {
         contactInfo: {
-          firstName: values[existingRowIndex - 1][8] || '',
-          lastName: values[existingRowIndex - 1][9] || '',
-          email: values[existingRowIndex - 1][10] || '',
-          phone: values[existingRowIndex - 1][11] || '',
-          dateOfBirth: values[existingRowIndex - 1][12] || ''
+          firstName: values[existingRowIndex - 1][SHEET_COLUMNS.FIRST_NAME] || '',
+          lastName: values[existingRowIndex - 1][SHEET_COLUMNS.LAST_NAME] || '',
+          email: values[existingRowIndex - 1][SHEET_COLUMNS.EMAIL] || '',
+          phone: values[existingRowIndex - 1][SHEET_COLUMNS.PHONE] || '',
+          dateOfBirth: values[existingRowIndex - 1][SHEET_COLUMNS.DOB] || ''
         },
-        state: values[existingRowIndex - 1][3] || '',
-        militaryStatus: values[existingRowIndex - 1][4] || '',
-        branchOfService: values[existingRowIndex - 1][5] || '',
-        maritalStatus: values[existingRowIndex - 1][6] || '',
-        coverageAmount: values[existingRowIndex - 1][7] || '',
+        state: values[existingRowIndex - 1][SHEET_COLUMNS.STATE] || '',
+        militaryStatus: values[existingRowIndex - 1][SHEET_COLUMNS.MILITARY_STATUS] || '',
+        branchOfService: values[existingRowIndex - 1][SHEET_COLUMNS.BRANCH] || '',
+        maritalStatus: values[existingRowIndex - 1][SHEET_COLUMNS.MARITAL_STATUS] || '',
+        coverageAmount: values[existingRowIndex - 1][SHEET_COLUMNS.COVERAGE_AMOUNT] || '',
         medicalAnswers: {
-          tobaccoUse: values[existingRowIndex - 1][13] || '',
-          medicalConditions: values[existingRowIndex - 1][14] ? values[existingRowIndex - 1][14].split(', ') : [],
-          height: values[existingRowIndex - 1][15] || '',
-          weight: values[existingRowIndex - 1][16] || '',
-          hospitalCare: values[existingRowIndex - 1][17] || '',
-          diabetesMedication: values[existingRowIndex - 1][18] || ''
+          tobaccoUse: values[existingRowIndex - 1][SHEET_COLUMNS.TOBACCO_USE] || '',
+          medicalConditions: values[existingRowIndex - 1][SHEET_COLUMNS.MEDICAL_CONDITIONS] ? values[existingRowIndex - 1][SHEET_COLUMNS.MEDICAL_CONDITIONS].split(', ') : [],
+          height: values[existingRowIndex - 1][SHEET_COLUMNS.HEIGHT] || '',
+          weight: values[existingRowIndex - 1][SHEET_COLUMNS.WEIGHT] || '',
+          hospitalCare: values[existingRowIndex - 1][SHEET_COLUMNS.HOSPITAL_CARE] || '',
+          diabetesMedication: values[existingRowIndex - 1][SHEET_COLUMNS.DIABETES_MEDICATION] || ''
         }
       };
       
