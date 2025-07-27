@@ -24,14 +24,21 @@ function doPost(e) {
     if (data.formData) {
       try {
         parsedFormData = JSON.parse(data.formData);
+        console.log('Successfully parsed formData:', parsedFormData);
       } catch (error) {
         console.log('Error parsing formData JSON:', error);
       }
     }
     
+    // Debug: Log what data we're working with
+    console.log('Raw data received:', data);
+    console.log('Parsed formData:', parsedFormData);
+    
     // Helper function to extract values from both direct data and parsed formData
     const extractValue = (key, defaultValue = '') => {
-      return data[key] || parsedFormData[key] || defaultValue;
+      const result = data[key] || parsedFormData[key] || defaultValue;
+      console.log(`Extracting '${key}':`, result);
+      return result;
     };
     
     const extractNestedValue = (path, defaultValue = '') => {
@@ -41,9 +48,11 @@ function doPost(e) {
         if (value && typeof value === 'object' && key in value) {
           value = value[key];
         } else {
+          console.log(`Failed to extract '${path}' - missing key '${key}'`);
           return defaultValue;
         }
       }
+      console.log(`Extracting nested '${path}':`, value || defaultValue);
       return value || defaultValue;
     };
     
@@ -51,7 +60,7 @@ function doPost(e) {
     const spreadsheetId = '1MvmvfqRBnt8fjplbRgFIi7BTnzcAGaMNeIDwCHGPis8';
     const sheet = SpreadsheetApp.openById(spreadsheetId).getActiveSheet();
     
-    // Prepare the row data with ALL 34+ fields (complete structure)
+    // Prepare the row data with ALL 45 fields (complete structure)
     const rowData = [
       new Date(), // Timestamp
       data.sessionId || '', // Session ID for tracking
