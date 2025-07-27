@@ -11,20 +11,22 @@ const militaryOptions = [
 ]
 
 export const MilitaryStatus: React.FC = () => {
-  const { formData, updateFormData, goToNextStep } = useFunnelStore()
+  const { formData, updateFormData, goToNextStep, autoAdvanceEnabled, setAutoAdvanceEnabled } = useFunnelStore()
 
-  // Auto-continue when a selection is made
+  // Auto-continue when a selection is made (only if auto-advance is enabled)
   useEffect(() => {
-    if (formData.militaryStatus) {
+    if (formData.militaryStatus && autoAdvanceEnabled) {
       const timer = setTimeout(() => {
         goToNextStep()
       }, 500) // Small delay for better UX
       return () => clearTimeout(timer)
     }
-  }, [formData.militaryStatus, goToNextStep])
+  }, [formData.militaryStatus, autoAdvanceEnabled, goToNextStep])
   
   const handleMilitaryStatusChange = (value: string) => {
     updateFormData({ militaryStatus: value })
+    // Re-enable auto-advance when user makes a selection
+    setAutoAdvanceEnabled(true)
   }
   
   return (

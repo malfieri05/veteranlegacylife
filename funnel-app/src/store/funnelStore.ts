@@ -71,6 +71,9 @@ interface FunnelStore {
   isLoading: boolean
   isStreamingLoading: boolean
   
+  // Auto-advance management
+  autoAdvanceEnabled: boolean
+  
   // Session management
   sessionId: string
   
@@ -83,6 +86,7 @@ interface FunnelStore {
   closeModal: () => void
   setLoading: (loading: boolean) => void
   setStreamingLoading: (loading: boolean) => void
+  setAutoAdvanceEnabled: (enabled: boolean) => void
   updateFormData: (data: Partial<FormData>) => void
   submitPartial: (currentStep: number, stepName: string) => Promise<void>
   submitLeadPartial: () => Promise<void>
@@ -149,6 +153,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
   isModalOpen: false,
   isLoading: false,
   isStreamingLoading: false,
+  autoAdvanceEnabled: true, // Start with auto-advance enabled
   sessionId: generateSessionId(),
   formData: initialState,
 
@@ -160,6 +165,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
   
   setLoading: (loading) => set({ isLoading: loading }),
   setStreamingLoading: (loading) => set({ isStreamingLoading: loading }),
+  setAutoAdvanceEnabled: (enabled) => set({ autoAdvanceEnabled: enabled }),
   
   updateFormData: (data) => set((state) => ({
     formData: { ...state.formData, ...data }
@@ -256,6 +262,9 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
   goToPreviousStep: () => {
     const { currentStep } = get()
     if (currentStep > 1) {
+      // Disable auto-advance when going back
+      set({ autoAdvanceEnabled: false })
+      
       // Handle special case for loading step
       if (currentStep === 12) {
         // If we're on step 12 (Pre-Qualified Success), go back to step 11 (Diabetes Medication)

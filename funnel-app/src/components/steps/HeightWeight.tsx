@@ -2,34 +2,38 @@ import React, { useEffect } from 'react'
 import { useFunnelStore } from '../../store/funnelStore'
 
 export const HeightWeight: React.FC = () => {
-  const { formData, updateFormData, goToNextStep } = useFunnelStore()
+  const { formData, updateFormData, goToNextStep, autoAdvanceEnabled, setAutoAdvanceEnabled } = useFunnelStore()
 
-  // Auto-continue when both height and weight are filled
+  // Auto-continue when both height and weight are filled (only if auto-advance is enabled)
   useEffect(() => {
-    if (formData.medicalAnswers?.height && formData.medicalAnswers?.weight) {
+    if (formData.medicalAnswers?.height && formData.medicalAnswers?.weight && autoAdvanceEnabled) {
       const timer = setTimeout(() => {
         goToNextStep()
       }, 500) // Small delay for better UX
       return () => clearTimeout(timer)
     }
-  }, [formData.medicalAnswers?.height, formData.medicalAnswers?.weight, goToNextStep])
+  }, [formData.medicalAnswers?.height, formData.medicalAnswers?.weight, autoAdvanceEnabled, goToNextStep])
 
-  const handleHeightChange = (value: string) => {
-    updateFormData({
-      medicalAnswers: {
-        ...formData.medicalAnswers,
-        height: value
-      }
+    const handleHeightChange = (value: string) => {
+    updateFormData({ 
+      medicalAnswers: { 
+        ...formData.medicalAnswers, 
+        height: value 
+      } 
     })
+    // Re-enable auto-advance when user makes a selection
+    setAutoAdvanceEnabled(true)
   }
 
-  const handleWeightChange = (value: string) => {
-    updateFormData({
-      medicalAnswers: {
-        ...formData.medicalAnswers,
-        weight: value
-      }
+    const handleWeightChange = (value: string) => {
+    updateFormData({ 
+      medicalAnswers: { 
+        ...formData.medicalAnswers, 
+        weight: value 
+      } 
     })
+    // Re-enable auto-advance when user makes a selection
+    setAutoAdvanceEnabled(true)
   }
 
   const heightOptions = [

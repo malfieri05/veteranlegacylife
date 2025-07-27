@@ -33,7 +33,8 @@ export const FunnelModal: React.FC = () => {
     goToPreviousStep,
     formData,
     isStreamingLoading,
-    setStreamingLoading
+    setStreamingLoading,
+    setAutoAdvanceEnabled
   } = useFunnelStore()
 
   const renderStep = () => {
@@ -131,6 +132,8 @@ export const FunnelModal: React.FC = () => {
 
   const handleNext = () => {
     if (canGoNext()) {
+      // Re-enable auto-advance when user clicks Continue
+      setAutoAdvanceEnabled(true)
       goToNextStep()
     }
   }

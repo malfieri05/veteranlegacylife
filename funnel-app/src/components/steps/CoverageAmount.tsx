@@ -2,17 +2,17 @@ import React, { useEffect } from 'react'
 import { useFunnelStore } from '../../store/funnelStore'
 
 export const CoverageAmount: React.FC = () => {
-  const { formData, updateFormData, goToNextStep } = useFunnelStore()
+  const { formData, updateFormData, goToNextStep, autoAdvanceEnabled, setAutoAdvanceEnabled } = useFunnelStore()
 
-  // Auto-continue when a selection is made
+  // Auto-continue when a selection is made (only if auto-advance is enabled)
   useEffect(() => {
-    if (formData.coverageAmount) {
+    if (formData.coverageAmount && autoAdvanceEnabled) {
       const timer = setTimeout(() => {
         goToNextStep()
       }, 500) // Small delay for better UX
       return () => clearTimeout(timer)
     }
-  }, [formData.coverageAmount, goToNextStep])
+  }, [formData.coverageAmount, autoAdvanceEnabled, goToNextStep])
 
   return (
     <div>
@@ -27,7 +27,11 @@ export const CoverageAmount: React.FC = () => {
                 name="coverageAmount"
                 value={amount}
                 checked={formData.coverageAmount === amount}
-                onChange={(e) => updateFormData({ coverageAmount: e.target.value })}
+                onChange={(e) => {
+                  updateFormData({ coverageAmount: e.target.value })
+                  // Re-enable auto-advance when user makes a selection
+                  setAutoAdvanceEnabled(true)
+                }}
               />
               <span>{amount}</span>
             </label>
