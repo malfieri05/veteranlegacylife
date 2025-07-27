@@ -213,8 +213,11 @@ function handleLeadSubmission(data, sessionId) {
   
   // Session ID is in column B (index 1)
   for (let i = 1; i < values.length; i++) {
-    if (values[i][1] === sessionId) {
+    const existingSessionId = values[i][1];
+    // Compare session IDs, handling both string and null/undefined cases
+    if (existingSessionId && sessionId && existingSessionId.toString() === sessionId.toString()) {
       existingRowIndex = i + 1; // +1 because sheet rows are 1-indexed
+      Logger.log(`[${sessionId}] Found existing session at row ${existingRowIndex}`);
       break;
     }
   }
@@ -301,8 +304,32 @@ function handleApplicationSubmission(data, sessionId) {
     data.utmCampaign || ''
   ];
   
-  Logger.log(`[${sessionId}] Appending application data to sheet`);
-  sheet.appendRow(rowData);
+  // Check if session already exists in the sheet
+  let existingRowIndex = -1;
+  const dataRange = sheet.getDataRange();
+  const values = dataRange.getValues();
+  
+  // Session ID is in column B (index 1)
+  for (let i = 1; i < values.length; i++) {
+    const existingSessionId = values[i][1];
+    // Compare session IDs, handling both string and null/undefined cases
+    if (existingSessionId && sessionId && existingSessionId.toString() === sessionId.toString()) {
+      existingRowIndex = i + 1; // +1 because sheet rows are 1-indexed
+      Logger.log(`[${sessionId}] Found existing session at row ${existingRowIndex}`);
+      break;
+    }
+  }
+  
+  if (existingRowIndex > 0) {
+    // Update existing row
+    Logger.log(`[${sessionId}] Updating existing session row: ${existingRowIndex}`);
+    const range = sheet.getRange(existingRowIndex, 1, 1, rowData.length);
+    range.setValues([rowData]);
+  } else {
+    // Append new row
+    Logger.log(`[${sessionId}] Creating new session row`);
+    sheet.appendRow(rowData);
+  }
   
   // Send email notification
   sendApplicationNotification(data);
@@ -398,8 +425,11 @@ function handlePartialSubmission(data, sessionId) {
   
   // Session ID is in column B (index 1)
   for (let i = 1; i < values.length; i++) {
-    if (values[i][1] === sessionId) {
+    const existingSessionId = values[i][1];
+    // Compare session IDs, handling both string and null/undefined cases
+    if (existingSessionId && sessionId && existingSessionId.toString() === sessionId.toString()) {
       existingRowIndex = i + 1; // +1 because sheet rows are 1-indexed
+      Logger.log(`[${sessionId}] Found existing session at row ${existingRowIndex}`);
       break;
     }
   }
@@ -507,8 +537,11 @@ function handleLeadPartialSubmission(data, sessionId) {
   
   // Session ID is in column B (index 1)
   for (let i = 1; i < values.length; i++) {
-    if (values[i][1] === sessionId) {
+    const existingSessionId = values[i][1];
+    // Compare session IDs, handling both string and null/undefined cases
+    if (existingSessionId && sessionId && existingSessionId.toString() === sessionId.toString()) {
       existingRowIndex = i + 1; // +1 because sheet rows are 1-indexed
+      Logger.log(`[${sessionId}] Found existing session at row ${existingRowIndex}`);
       break;
     }
   }
