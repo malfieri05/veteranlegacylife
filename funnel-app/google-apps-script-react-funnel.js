@@ -73,6 +73,8 @@ function doPost(e) {
       response = handlePartialSubmission(data, sessionId);
     } else if (formType === 'LeadPartial') {
       response = handleLeadPartialSubmission(data, sessionId);
+    } else if (formType === 'Abandonment') {
+      response = handleAbandonmentDetection(sessionId);
     } else {
       throw new Error('Invalid form type: ' + formType);
     }
@@ -343,8 +345,11 @@ function handleApplicationSubmission(data, sessionId) {
     sheet.appendRow(rowData);
   }
   
+  // Update session status to completed
+  updateSessionStatus(sessionId, 'completed', parsedFormData);
+  
   // Send email notification
-  sendApplicationNotification(data);
+  sendApplicationNotification(data, sessionId);
   
   Logger.log(`[${sessionId}] Application submission completed successfully`);
   
@@ -461,6 +466,16 @@ function handlePartialSubmission(data, sessionId) {
     // Append new row
     Logger.log(`[${sessionId}] Creating new session row`);
     sheet.appendRow(rowData);
+  }
+  
+  // Update session status based on step
+  if (data.currentStep === 5 && parsedFormData.contactInfo?.phone) {
+    // Phone number captured - mark session for potential abandonment email
+    updateSessionStatus(sessionId, 'phone_captured', parsedFormData);
+    Logger.log(`[${sessionId}] Phone number captured, session marked for abandonment tracking`);
+  } else {
+    // Update last activity
+    updateSessionStatus(sessionId, 'active', parsedFormData);
   }
   
   Logger.log(`[${sessionId}] Partial submission completed successfully`);
@@ -581,8 +596,8 @@ function handleLeadPartialSubmission(data, sessionId) {
     sheet.appendRow(rowData);
   }
   
-  // Send lead partial notification email
-  sendLeadPartialNotification(data, parsedFormData);
+  // Update session status (no email sent here - only on abandonment or completion)
+  updateSessionStatus(sessionId, 'active', parsedFormData);
   
   Logger.log(`[${sessionId}] Lead partial submission completed successfully`);
   
@@ -642,7 +657,11 @@ function setupPartialSheet(sheet) {
     'Referrer',
     'UTM Source',
     'UTM Medium',
-    'UTM Campaign'
+    'UTM Campaign',
+    'Session Status',
+    'Last Activity',
+    'Partial Email Sent',
+    'Completed Email Sent'
   ];
   
   sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
@@ -695,7 +714,11 @@ function setupLeadSheet(sheet) {
     'Referrer',
     'UTM Source',
     'UTM Medium',
-    'UTM Campaign'
+    'UTM Campaign',
+    'Session Status',
+    'Last Activity',
+    'Partial Email Sent',
+    'Completed Email Sent'
   ];
   
   sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
@@ -735,12 +758,215 @@ function setupApplicationSheet(sheet) {
     'Referrer',
     'UTM Source',
     'UTM Medium',
-    'UTM Campaign'
+    'UTM Campaign',
+    'Session Status',
+    'Last Activity',
+    'Partial Email Sent',
+    'Completed Email Sent'
   ];
   
   sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
   sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
   sheet.autoResizeColumns(1, headers.length);
+}
+
+// Session tracking functions
+function updateSessionStatus(sessionId, status, data = {}) {
+  Logger.log(`[${sessionId}] Updating session status to: ${status}`);
+  
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  if (!spreadsheet) {
+    Logger.log(`[${sessionId}] ERROR: No active spreadsheet found for session tracking`);
+    return false;
+  }
+  
+  let sheet = spreadsheet.getActiveSheet();
+  const dataRange = sheet.getDataRange();
+  const values = dataRange.getValues();
+  
+  // Find existing session row
+  let existingRowIndex = -1;
+  for (let i = 1; i < values.length; i++) {
+    const existingSessionId = values[i][1];
+    if (existingSessionId && sessionId && existingSessionId.toString() === sessionId.toString()) {
+      existingRowIndex = i + 1;
+      break;
+    }
+  }
+  
+  if (existingRowIndex > 0) {
+    // Update session status in the row
+    const statusColumn = 45; // Add status column after existing columns
+    const lastActivityColumn = 46; // Add last activity column
+    const partialEmailSentColumn = 47; // Add partial email flag
+    const completedEmailSentColumn = 48; // Add completed email flag
+    
+    sheet.getRange(existingRowIndex, statusColumn).setValue(status);
+    sheet.getRange(existingRowIndex, lastActivityColumn).setValue(new Date());
+    
+    // Set email flags based on status
+    if (status === 'phone_captured') {
+      sheet.getRange(existingRowIndex, partialEmailSentColumn).setValue('FALSE');
+    } else if (status === 'completed') {
+      sheet.getRange(existingRowIndex, partialEmailSentColumn).setValue('TRUE'); // Prevent partial email
+      sheet.getRange(existingRowIndex, completedEmailSentColumn).setValue('FALSE');
+    }
+    
+    Logger.log(`[${sessionId}] Session status updated successfully`);
+    return true;
+  } else {
+    Logger.log(`[${sessionId}] Session not found for status update`);
+    return false;
+  }
+}
+
+function checkSessionEmailStatus(sessionId, emailType) {
+  Logger.log(`[${sessionId}] Checking ${emailType} email status for session`);
+  
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  if (!spreadsheet) {
+    Logger.log(`[${sessionId}] ERROR: No active spreadsheet found for email status check`);
+    return false;
+  }
+  
+  let sheet = spreadsheet.getActiveSheet();
+  const dataRange = sheet.getDataRange();
+  const values = dataRange.getValues();
+  
+  // Find existing session row
+  let existingRowIndex = -1;
+  for (let i = 1; i < values.length; i++) {
+    const existingSessionId = values[i][1];
+    if (existingSessionId && sessionId && existingSessionId.toString() === sessionId.toString()) {
+      existingRowIndex = i + 1;
+      break;
+    }
+  }
+  
+  if (existingRowIndex > 0) {
+    const partialEmailSentColumn = 47;
+    const completedEmailSentColumn = 48;
+    
+    if (emailType === 'partial') {
+      const partialEmailSent = sheet.getRange(existingRowIndex, partialEmailSentColumn).getValue();
+      Logger.log(`[${sessionId}] Partial email sent status: ${partialEmailSent}`);
+      return partialEmailSent === 'TRUE';
+    } else if (emailType === 'completed') {
+      const completedEmailSent = sheet.getRange(existingRowIndex, completedEmailSentColumn).getValue();
+      Logger.log(`[${sessionId}] Completed email sent status: ${completedEmailSent}`);
+      return completedEmailSent === 'TRUE';
+    }
+  }
+  
+  return false;
+}
+
+function markEmailAsSent(sessionId, emailType) {
+  Logger.log(`[${sessionId}] Marking ${emailType} email as sent`);
+  
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  if (!spreadsheet) {
+    Logger.log(`[${sessionId}] ERROR: No active spreadsheet found for email marking`);
+    return false;
+  }
+  
+  let sheet = spreadsheet.getActiveSheet();
+  const dataRange = sheet.getDataRange();
+  const values = dataRange.getValues();
+  
+  // Find existing session row
+  let existingRowIndex = -1;
+  for (let i = 1; i < values.length; i++) {
+    const existingSessionId = values[i][1];
+    if (existingSessionId && sessionId && existingSessionId.toString() === sessionId.toString()) {
+      existingRowIndex = i + 1;
+      break;
+    }
+  }
+  
+  if (existingRowIndex > 0) {
+    const partialEmailSentColumn = 47;
+    const completedEmailSentColumn = 48;
+    
+    if (emailType === 'partial') {
+      sheet.getRange(existingRowIndex, partialEmailSentColumn).setValue('TRUE');
+      Logger.log(`[${sessionId}] Partial email marked as sent`);
+    } else if (emailType === 'completed') {
+      sheet.getRange(existingRowIndex, completedEmailSentColumn).setValue('TRUE');
+      Logger.log(`[${sessionId}] Completed email marked as sent`);
+    }
+    
+    return true;
+  }
+  
+  return false;
+}
+
+function sendPartialLeadEmail(data, sessionId) {
+  // Check if partial email already sent
+  if (checkSessionEmailStatus(sessionId, 'partial')) {
+    Logger.log(`[${sessionId}] Partial email already sent, skipping`);
+    return false;
+  }
+  
+  // Check if user completed the application (prevent partial email)
+  if (checkSessionEmailStatus(sessionId, 'completed')) {
+    Logger.log(`[${sessionId}] User completed application, skipping partial email`);
+    return false;
+  }
+  
+  const firstName = data.contactInfo?.firstName || 'there';
+  const email = data.contactInfo?.email || '';
+  const phone = data.contactInfo?.phone || '';
+  const coverageAmount = data.coverageAmount || '';
+  
+  const subject = `Lead Abandonment Alert: ${firstName}`;
+  
+  const body = `
+    <h2>Lead Abandonment Alert</h2>
+    
+    <h3>Contact Information:</h3>
+    <p><strong>Name:</strong> ${data.contactInfo?.firstName || ''} ${data.contactInfo?.lastName || ''}</p>
+    <p><strong>Email:</strong> ${email}</p>
+    <p><strong>Phone:</strong> ${phone}</p>
+    <p><strong>Date of Birth:</strong> ${data.contactInfo?.dateOfBirth || ''}</p>
+    
+    <h3>Qualification Information:</h3>
+    <p><strong>State:</strong> ${data.state || ''}</p>
+    <p><strong>Military Status:</strong> ${data.militaryStatus || ''}</p>
+    <p><strong>Branch of Service:</strong> ${data.branchOfService || ''}</p>
+    <p><strong>Marital Status:</strong> ${data.maritalStatus || ''}</p>
+    <p><strong>Coverage Amount:</strong> ${coverageAmount}</p>
+    
+    <h3>Medical Information:</h3>
+    <p><strong>Tobacco Use:</strong> ${data.medicalAnswers?.tobaccoUse || ''}</p>
+    <p><strong>Medical Conditions:</strong> ${data.medicalAnswers?.medicalConditions?.join(', ') || 'None'}</p>
+    <p><strong>Height:</strong> ${data.medicalAnswers?.height || ''}</p>
+    <p><strong>Weight:</strong> ${data.medicalAnswers?.weight || ''}</p>
+    <p><strong>Hospital Care:</strong> ${data.medicalAnswers?.hospitalCare || ''}</p>
+    <p><strong>Diabetes Medication:</strong> ${data.medicalAnswers?.diabetesMedication || ''}</p>
+    
+    <h3>Status:</h3>
+    <p><strong>Status:</strong> Lead Abandoned (Phone Captured)</p>
+    <p><strong>Session ID:</strong> ${sessionId}</p>
+    
+    <hr>
+    <p><em>This lead abandoned the funnel after providing phone number at ${new Date().toLocaleString()}</em></p>
+  `;
+  
+  // Send to admin email
+  const adminEmail = 'lindsey08092@gmail.com';
+  MailApp.sendEmail({
+    to: adminEmail,
+    subject: subject,
+    htmlBody: body
+  });
+  
+  // Mark email as sent
+  markEmailAsSent(sessionId, 'partial');
+  
+  Logger.log(`[${sessionId}] Partial lead email sent successfully`);
+  return true;
 }
 
 function sendLeadNotification(data) {
@@ -824,7 +1050,13 @@ function sendLeadNotification(data) {
   }
 }
 
-function sendApplicationNotification(data) {
+function sendApplicationNotification(data, sessionId) {
+  // Check if completed email already sent
+  if (checkSessionEmailStatus(sessionId, 'completed')) {
+    Logger.log(`[${sessionId}] Completed email already sent, skipping`);
+    return false;
+  }
+  
   const firstName = data.contactInfo?.firstName || 'there';
   const email = data.contactInfo?.email || '';
   const coverageAmount = data.applicationData?.quoteData?.coverageAmount || '';
@@ -870,6 +1102,7 @@ function sendApplicationNotification(data) {
     
     <h3>Status:</h3>
     <p><strong>Status:</strong> Application Submitted</p>
+    <p><strong>Session ID:</strong> ${sessionId}</p>
     
     <hr>
     <p><em>This application was submitted through the React Funnel at ${new Date().toLocaleString()}</em></p>
@@ -920,6 +1153,80 @@ function sendApplicationNotification(data) {
       subject: confirmationSubject,
       htmlBody: confirmationBody
     });
+  }
+  
+  // Mark email as sent
+  markEmailAsSent(sessionId, 'completed');
+  
+  Logger.log(`[${sessionId}] Completed application email sent successfully`);
+  return true;
+}
+
+// Abandonment detection function - called by React app when abandonment is detected
+function handleAbandonmentDetection(sessionId) {
+  Logger.log(`[${sessionId}] Abandonment detected, checking if partial email should be sent`);
+  
+  // Check if session has phone number captured
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  if (!spreadsheet) {
+    Logger.log(`[${sessionId}] ERROR: No active spreadsheet found for abandonment check`);
+    return false;
+  }
+  
+  let sheet = spreadsheet.getActiveSheet();
+  const dataRange = sheet.getDataRange();
+  const values = dataRange.getValues();
+  
+  // Find existing session row
+  let existingRowIndex = -1;
+  for (let i = 1; i < values.length; i++) {
+    const existingSessionId = values[i][1];
+    if (existingSessionId && sessionId && existingSessionId.toString() === sessionId.toString()) {
+      existingRowIndex = i + 1;
+      break;
+    }
+  }
+  
+  if (existingRowIndex > 0) {
+    const statusColumn = 45;
+    const sessionStatus = sheet.getRange(existingRowIndex, statusColumn).getValue();
+    
+    if (sessionStatus === 'phone_captured') {
+      Logger.log(`[${sessionId}] Phone captured session abandoned, sending partial email`);
+      
+      // Get session data for email
+      const sessionData = {
+        contactInfo: {
+          firstName: values[existingRowIndex - 1][8] || '',
+          lastName: values[existingRowIndex - 1][9] || '',
+          email: values[existingRowIndex - 1][10] || '',
+          phone: values[existingRowIndex - 1][11] || '',
+          dateOfBirth: values[existingRowIndex - 1][12] || ''
+        },
+        state: values[existingRowIndex - 1][3] || '',
+        militaryStatus: values[existingRowIndex - 1][4] || '',
+        branchOfService: values[existingRowIndex - 1][5] || '',
+        maritalStatus: values[existingRowIndex - 1][6] || '',
+        coverageAmount: values[existingRowIndex - 1][7] || '',
+        medicalAnswers: {
+          tobaccoUse: values[existingRowIndex - 1][13] || '',
+          medicalConditions: values[existingRowIndex - 1][14] ? values[existingRowIndex - 1][14].split(', ') : [],
+          height: values[existingRowIndex - 1][15] || '',
+          weight: values[existingRowIndex - 1][16] || '',
+          hospitalCare: values[existingRowIndex - 1][17] || '',
+          diabetesMedication: values[existingRowIndex - 1][18] || ''
+        }
+      };
+      
+      // Send partial email
+      return sendPartialLeadEmail(sessionData, sessionId);
+    } else {
+      Logger.log(`[${sessionId}] Session status is ${sessionStatus}, no partial email sent`);
+      return false;
+    }
+  } else {
+    Logger.log(`[${sessionId}] Session not found for abandonment check`);
+    return false;
   }
 }
 
