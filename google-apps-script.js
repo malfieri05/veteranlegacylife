@@ -3,168 +3,160 @@
 
 function doPost(e) {
   try {
-    // Handle CORS preflight requests
-    if (e.parameter.method === 'OPTIONS') {
-      return ContentService
-        .createTextOutput('')
-        .setMimeType(ContentService.MimeType.TEXT)
-        .setHeader('Access-Control-Allow-Origin', '*')
-        .setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
-        .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    
+    // Parse the incoming form data
+    const formData = e.postData.contents;
+    const data = {};
+    
+    // Parse URL-encoded form data manually (URLSearchParams not available in GAS)
+    const params = formData.split('&');
+    for (let i = 0; i < params.length; i++) {
+      const pair = params[i].split('=');
+      if (pair.length === 2) {
+        const key = decodeURIComponent(pair[0]);
+        const value = decodeURIComponent(pair[1]);
+        data[key] = value;
+      }
     }
-    
-    // Log the incoming request for debugging
-    console.log('Received POST request');
-    console.log('Post data contents:', e.postData.contents);
-    
-    // Parse the incoming JSON data
-    const data = JSON.parse(e.postData.contents);
-    console.log('Parsed data:', data);
     
     // Get the active spreadsheet
     const spreadsheetId = '1MvmvfqRBnt8fjplbRgFIi7BTnzcAGaMNeIDwCHGPis8';
-    const spreadsheet = SpreadsheetApp.openById(spreadsheetId);
-    const sheet = spreadsheet.getActiveSheet();
+    const sheet = SpreadsheetApp.openById(spreadsheetId).getActiveSheet();
     
-    console.log('Sheet name:', sheet.getName());
-    console.log('Sheet URL:', spreadsheet.getUrl());
-    
-    // Prepare comprehensive row data with ALL funnel information
+    // Prepare the row data with all funnel information (flattened structure)
     const rowData = [
       new Date(), // Timestamp
+      data.sessionId || '', // Session ID for tracking
       data.firstName || '',
       data.lastName || '',
       data.phone || '',
       data.email || '',
       data.dateOfBirth || '',
-      data.age || '',
       data.state || '',
       data.militaryStatus || '',
       data.branchOfService || '',
       data.maritalStatus || '',
       data.coverageAmount || '',
-      data.quoteType || '',
-      data.gender || '',
       data.tobaccoUse || '',
-      Array.isArray(data.medicalConditions) ? data.medicalConditions.join(', ') : (data.medicalConditions || ''),
+      data.medicalConditions || '', // Already a string from frontend
       data.height || '',
       data.weight || '',
       data.hospitalCare || '',
       data.diabetesMedication || '',
       data.transactionalConsent || false,
       data.marketingConsent || false,
-      data.formType || 'Funnel',
       data.funnelProgress || 'Complete',
-      data.ssn || '',
-      data.bankName || '',
-      data.routingNumber || '',
-      data.accountNumber || '',
-      data.policyStartDate || '',
-      data.quoteAmount || '',
-      data.healthTier || '',
-      data.monthlyPremium || ''
+      data.formType || 'Unknown' // Track if partial or complete
     ];
     
-    console.log('Row data to append:', rowData);
+    // Check if session already exists in the sheet
+    const sessionId = data.sessionId;
+    let existingRowIndex = -1;
     
-    // SEND EMAIL FIRST for immediate delivery
-    // Send comprehensive email notification with ALL funnel data - IMMEDIATE DELIVERY
-    try {
-      const emailAddress = 'michaelalfieri.ffl@gmail.com';
-      const subject = `🚨 NEW LEAD: ${data.firstName || ''} ${data.lastName || ''} - ${data.state || ''} - ${data.coverageAmount || ''}`;
+    if (sessionId) {
+      // Find existing row with this session ID
+      const dataRange = sheet.getDataRange();
+      const values = dataRange.getValues();
       
-      // Create comprehensive message with all captured data
-      const message = `
-🚨 NEW VETERAN LIFE INSURANCE LEAD 🚨
-
-=== CONTACT INFORMATION ===
-Name: ${data.firstName || ''} ${data.lastName || ''}
-Phone: ${data.phone || ''}
-Email: ${data.email || ''}
-Date of Birth: ${data.dateOfBirth || ''}
-Age: ${data.age || 'Not provided'}
-
-=== LOCATION & MILITARY INFO ===
-State: ${data.state || ''}
-Military Status: ${data.militaryStatus || ''}
-Branch of Service: ${data.branchOfService || ''}
-Marital Status: ${data.maritalStatus || ''}
-
-=== INSURANCE PREFERENCES ===
-Coverage Amount: ${data.coverageAmount || ''}
-Quote Type: ${data.quoteType || 'Standard'}
-Gender: ${data.gender || ''}
-
-=== MEDICAL INFORMATION ===
-Tobacco Use: ${data.tobaccoUse || ''}
-Height: ${data.height || ''}
-Weight: ${data.weight || ''}
-Hospital Care (Past 2 Years): ${data.hospitalCare || ''}
-Diabetes Medication: ${data.diabetesMedication || ''}
-
-Medical Conditions: ${Array.isArray(data.medicalConditions) ? data.medicalConditions.join(', ') : (data.medicalConditions || 'None listed')}
-
-=== CONSENT & MARKETING ===
-Transactional Consent: ${data.transactionalConsent ? 'YES' : 'NO'}
-Marketing Consent: ${data.marketingConsent ? 'YES' : 'NO'}
-
-=== ADDITIONAL DATA ===
-Form Type: ${data.formType || 'Funnel'}
-Funnel Progress: ${data.funnelProgress || 'Complete'}
-Timestamp: ${new Date().toLocaleString()}
-
-=== APPLICATION DATA (if applicable) ===
-SSN: ${data.ssn || 'Not provided'}
-Bank Name: ${data.bankName || 'Not provided'}
-Routing Number: ${data.routingNumber || 'Not provided'}
-Account Number: ${data.accountNumber || 'Not provided'}
-Policy Start Date: ${data.policyStartDate || 'Not provided'}
-
-=== QUOTE DATA (if applicable) ===
-Quote Amount: ${data.quoteAmount || 'Not provided'}
-Health Tier: ${data.healthTier || 'Not provided'}
-Monthly Premium: ${data.monthlyPremium || 'Not provided'}
-
-📊 View all leads in the Google Sheet: ${spreadsheet.getUrl()}
-
----
-This lead was generated from the Veteran Legacy Life website funnel.
-      `;
-      
-      // Send email with maximum priority for immediate delivery
-      MailApp.sendEmail({
-        to: emailAddress,
-        subject: subject,
-        body: message,
-        noReply: false,
-        replyTo: emailAddress
-      });
-      console.log('🚨 IMMEDIATE EMAIL SENT TO michaelalfieri.ffl@gmail.com 🚨');
-    } catch (emailError) {
-      console.log('Email error:', emailError.toString());
+      // Session ID is in column B (index 1)
+      for (let i = 1; i < values.length; i++) {
+        if (values[i][1] === sessionId) {
+          existingRowIndex = i + 1; // +1 because sheet rows are 1-indexed
+          break;
+        }
+      }
     }
     
-    // Append the data to the sheet (after email is sent)
-    sheet.appendRow(rowData);
-    console.log('Data appended successfully');
+    if (existingRowIndex > 0) {
+      // Update existing row
+      console.log('Updating existing session row:', existingRowIndex);
+      const range = sheet.getRange(existingRowIndex, 1, 1, rowData.length);
+      range.setValues([rowData]);
+    } else {
+      // Append new row
+      console.log('Creating new session row');
+      sheet.appendRow(rowData);
+    }
+    
+    // Send email notifications based on form type
+    const emailAddress = 'michaelalfieri.ffl@gmail.com';
+    
+    if (data.formType === 'SessionStart') {
+        // Email: "New user started funnel"
+        const subject = '🚀 New User Started Funnel - Veteran Legacy Life';
+        const message = `
+          New user started the funnel:
+          
+          Session ID: ${data.sessionId || 'N/A'}
+          Timestamp: ${data.timestamp || new Date().toISOString()}
+          
+          View all leads in the Google Sheet: https://docs.google.com/spreadsheets/d/1MvmvfqRBnt8fjplbRgFIi7BTnzcAGaMNeIDwCHGPis8/edit
+        `;
+        
+        MailApp.sendEmail(emailAddress, subject, message);
+        
+    } else if (data.formType === 'Abandoned') {
+        // Email: "User abandoned funnel"
+        const subject = '⚠️ User Abandoned Funnel - Veteran Legacy Life';
+        const message = `
+          User abandoned the funnel:
+          
+          Session ID: ${data.sessionId || 'N/A'}
+          Reason: ${data.abandonmentReason || 'Unknown'}
+          Progress: ${data.funnelProgress || 'Unknown'}
+          
+          Data collected:
+          - State: ${data.state || 'None'}
+          - Military Status: ${data.militaryStatus || 'None'}
+          - Branch: ${data.branchOfService || 'None'}
+          - Marital Status: ${data.maritalStatus || 'None'}
+          - Coverage: ${data.coverageAmount || 'None'}
+          - Contact Info: ${data.firstName ? 'Yes' : 'No'}
+          
+          View all leads in the Google Sheet: https://docs.google.com/spreadsheets/d/1MvmvfqRBnt8fjplbRgFIi7BTnzcAGaMNeIDwCHGPis8/edit
+        `;
+        
+        MailApp.sendEmail(emailAddress, subject, message);
+        
+    } else if (data.formType === 'Funnel') {
+        // Email: "User completed funnel" (existing logic)
+        const subject = '✅ New Lead Completed - Veteran Legacy Life';
+        const message = `
+          New lead completed the funnel:
+          
+          Session ID: ${data.sessionId || 'N/A'}
+          Name: ${data.firstName || ''} ${data.lastName || ''}
+          Phone: ${data.phone || ''}
+          Email: ${data.email || ''}
+          Date of Birth: ${data.dateOfBirth || ''}
+          State: ${data.state || ''}
+          Military Status: ${data.militaryStatus || ''}
+          Branch of Service: ${data.branchOfService || ''}
+          Marital Status: ${data.maritalStatus || ''}
+          Coverage Amount: ${data.coverageAmount || ''}
+          Tobacco Use: ${data.tobaccoUse || ''}
+          Medical Conditions: ${data.medicalConditions || ''}
+          Height: ${data.height || ''}
+          Weight: ${data.weight || ''}
+          Hospital Care: ${data.hospitalCare || ''}
+          Diabetes Medication: ${data.diabetesMedication || ''}
+          
+          View all leads in the Google Sheet: https://docs.google.com/spreadsheets/d/1MvmvfqRBnt8fjplbRgFIi7BTnzcAGaMNeIDwCHGPis8/edit
+        `;
+        
+        MailApp.sendEmail(emailAddress, subject, message);
+    }
     
     // Return success response with CORS headers
     return ContentService
-      .createTextOutput(JSON.stringify({ 'result': 'success', 'message': 'Data recorded and email sent' }))
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeader('Access-Control-Allow-Origin', '*')
-      .setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
-      .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+      .createTextOutput(JSON.stringify({ 'result': 'success' }))
+      .setMimeType(ContentService.MimeType.JSON);
       
   } catch (error) {
-    console.log('Error in doPost:', error.toString());
     // Return error response with CORS headers
     return ContentService
       .createTextOutput(JSON.stringify({ 'result': 'error', 'error': error.toString() }))
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeader('Access-Control-Allow-Origin', '*')
-      .setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
-      .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+      .setMimeType(ContentService.MimeType.JSON);
   }
 }
 
@@ -192,7 +184,7 @@ function testSheetAccess() {
     console.log('Sheet access successful');
     
     // Test append a row
-    const testRow = ['Test', 'Data', 'Row', new Date()];
+    const testRow = ['Test', 'session_test_123', 'Data', 'Row', new Date()];
     console.log('Appending test row:', testRow);
     sheet.appendRow(testRow);
     console.log('Test row appended successfully');

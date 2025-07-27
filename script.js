@@ -1,6 +1,247 @@
 // Veteran Legacy Life - Main JavaScript
 
+// ============================================================================
+// CONFIGURATION - UPDATE THIS URL WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
+// ============================================================================
+// To get your Google Apps Script web app URL:
+// 1. Go to https://script.google.com
+// 2. Create a new project or open existing one
+// 3. Copy the contents of google-apps-script.js into the script editor
+// 4. Click "Deploy" > "New deployment"
+// 5. Choose "Web app" as type
+// 6. Set "Execute as" to "Me"
+// 7. Set "Who has access" to "Anyone"
+// 8. Click "Deploy" and copy the URL below
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyyEbKokJLvJQgYeBt1z1v8GzvZpV4hk9nu6FvTEZ6n1CTW5h1ZWPUyp_TiR0D8ecSS/exec';
+
+// Test function to verify Google Apps Script connection
+async function testGoogleAppsScript() {
+    console.log('=== TESTING GOOGLE APPS SCRIPT CONNECTION ===');
+    try {
+        const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+            method: 'GET'
+        });
+        const text = await response.text();
+        console.log('GET response:', text);
+        console.log('Connection test successful');
+        return true;
+    } catch (error) {
+        console.error('Connection test failed:', error);
+        return false;
+    }
+}
+
+// Enhanced error handling for all button clicks
+function addButtonErrorHandling() {
+    try {
+        console.log('🔧 Adding comprehensive error handling to all buttons...');
+        
+        // Add error handling to all CTA buttons
+        const ctaButtons = document.querySelectorAll('.cta-button');
+        ctaButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                try {
+                    console.log('🔄 Button clicked:', this.textContent || this.innerHTML);
+                } catch (error) {
+                    console.error('❌ Error in button click handler:', error);
+                }
+            });
+        });
+
+        // Add error handling to all form submit buttons
+        const submitButtons = document.querySelectorAll('button[type="submit"]');
+        submitButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                try {
+                    console.log('🔄 Submit button clicked:', this.textContent || this.innerHTML);
+                } catch (error) {
+                    console.error('❌ Error in submit button click handler:', error);
+                }
+            });
+        });
+
+        // Add error handling to all modal close buttons
+        const closeButtons = document.querySelectorAll('.modal-close, .modal-close-btn');
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                try {
+                    console.log('🔄 Close button clicked');
+                } catch (error) {
+                    console.error('❌ Error in close button click handler:', error);
+                }
+            });
+        });
+
+        console.log('✅ Comprehensive error handling added to all buttons');
+    } catch (error) {
+        console.error('❌ Error adding button error handling:', error);
+    }
+}
+
+// ============================================================================
+// COMPLETE FUNNEL FLOW DOCUMENTATION
+// ============================================================================
+/*
+PHASE 1: MEDICAL PRE-QUALIFICATION (12 Steps)
+1. State Selection
+2. Military Status  
+3. Branch of Service
+4. Marital Status
+5. Coverage Amount
+6. Contact Information
+7. Tobacco Use
+8. Medical Conditions
+9. Height & Weight
+10. Hospital Care
+11. Diabetes Medication → Loading Screen → "Pre-Qualified!" Message
+
+PHASE 2: FULL APPLICATION (Optional)
+12. "Complete Application" → IUL Quote Modal (age-based)
+13. IUL Modal shows actual rate with "Secure this rate" → Application Step 1
+14. Application Step 1 → Address Information
+15. "Continue to Step 2" → Application Step 2 (SSN, Banking, Policy Date)
+16. "Submit Application" → Final Success Modal with Quote
+
+FLOW CONTROL:
+- Medical funnel auto-advances through steps 1-11
+- Step 11 shows loading screen, then congratulations
+- "Complete Application" triggers IUL quote modal
+- IUL modal shows calculated rate with "Secure this rate" → Application Step 1
+- Application Step 1 → Step 2 → Final Success Modal
+*/
+
+// ============================================================================
+// FUNNEL STEP CONFIGURATION - CLEARLY DEFINED 12 STEPS
+// ============================================================================
+const FUNNEL_STEPS = {
+    // Step 1: State Selection
+    STATE: {
+        id: 'funnel-state-form',
+        name: 'State Selection',
+        description: 'Select your state of residence',
+        hasLoadingScreen: false,
+        dataField: 'state'
+    },
+    
+    // Step 2: Military Status
+    MILITARY: {
+        id: 'funnel-military-form',
+        name: 'Military Status',
+        description: 'Select your military status',
+        hasLoadingScreen: false,
+        dataField: 'militaryStatus'
+    },
+    
+    // Step 3: Branch of Service
+    BRANCH: {
+        id: 'funnel-branch-form',
+        name: 'Branch of Service',
+        description: 'Select your branch of service',
+        hasLoadingScreen: false,
+        dataField: 'branchOfService'
+    },
+    
+    // Step 4: Marital Status
+    MARITAL: {
+        id: 'funnel-marital-form',
+        name: 'Marital Status',
+        description: 'Select your marital status',
+        hasLoadingScreen: false,
+        dataField: 'maritalStatus'
+    },
+    
+    // Step 5: Coverage Amount
+    COVERAGE: {
+        id: 'funnel-coverage-form',
+        name: 'Coverage Amount',
+        description: 'Select your desired coverage amount',
+        hasLoadingScreen: false,
+        dataField: 'coverageAmount'
+    },
+    
+    // Step 6: Contact Information
+    CONTACT: {
+        id: 'funnel-contact-form',
+        name: 'Contact Information',
+        description: 'Enter your contact details',
+        hasLoadingScreen: false,
+        dataField: 'contactInfo'
+    },
+    
+    // Step 7: Tobacco Use
+    TOBACCO: {
+        id: 'funnel-medical-tobacco',
+        name: 'Tobacco Use',
+        description: 'Do you use tobacco products?',
+        hasLoadingScreen: false,
+        dataField: 'tobaccoUse'
+    },
+    
+    // Step 8: Medical Conditions
+    CONDITIONS: {
+        id: 'funnel-medical-conditions',
+        name: 'Medical Conditions',
+        description: 'Select any medical conditions',
+        hasLoadingScreen: false,
+        dataField: 'medicalConditions'
+    },
+    
+    // Step 9: Height & Weight
+    HEIGHT_WEIGHT: {
+        id: 'funnel-medical-height-weight',
+        name: 'Height & Weight',
+        description: 'Enter your height and weight',
+        hasLoadingScreen: false,
+        dataField: 'heightWeight'
+    },
+    
+    // Step 10: Hospital Care
+    HOSPITAL: {
+        id: 'funnel-medical-hospital',
+        name: 'Hospital Care',
+        description: 'Recent hospital care questions',
+        hasLoadingScreen: false,
+        dataField: 'hospitalCare'
+    },
+    
+    // Step 11: Diabetes Medication
+    DIABETES: {
+        id: 'funnel-medical-diabetes',
+        name: 'Diabetes Medication',
+        description: 'Do you take medication for diabetes?',
+        hasLoadingScreen: true, // This step has a loading screen
+        dataField: 'diabetesMedication'
+    },
+    
+    // Step 12: Quote Tool
+    QUOTE_TOOL: {
+        id: 'funnel-quote-tool',
+        name: 'Quote Tool',
+        description: 'Get your personalized quote',
+        hasLoadingScreen: false,
+        dataField: 'quoteData'
+    }
+};
+
+// Convert to array for easy iteration
+const FUNNEL_STEPS_ARRAY = Object.values(FUNNEL_STEPS);
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Test Google Apps Script connection
+    testGoogleAppsScript().then(success => {
+        if (success) {
+            console.log('✅ Google Apps Script connection verified');
+        } else {
+            console.error('❌ Google Apps Script connection failed');
+        }
+    });
+    
+    // Initialize Load Screen functionality
+    initializeLoadScreen();
+    
+    // Initialize abandonment tracking
+    initializeAbandonmentTracking();
+    
     // Initialize all functionality
     initializeFormHandling();
     initializeSmoothScrolling();
@@ -8,102 +249,648 @@ document.addEventListener('DOMContentLoaded', function() {
     initializePhoneNumberFormatting();
     initializeFormValidation();
     
+    // Add comprehensive error handling to all buttons
+    addButtonErrorHandling();
+    
+    // Initialize "See If I Qualify" button
+    const seeIfQualifyBtn = document.querySelector('.qualify-button, .cta-button.qualify-button, #see-if-qualify-btn, [data-action="open-funnel"]');
+    console.log('🔍 Looking for "See If I Qualify" button...');
+    console.log('Button found:', !!seeIfQualifyBtn);
+    
+    if (seeIfQualifyBtn) {
+        seeIfQualifyBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('🚀 "See If I Qualify" button clicked - opening funnel');
+            openFunnelModal();
+        });
+        console.log('✅ Button event listener added');
+    } else {
+        console.log('❌ "See If I Qualify" button not found');
+        // Try alternative selectors
+        const alternativeButtons = document.querySelectorAll('.cta-button, button[class*="qualify"], button[class*="funnel"]');
+        console.log('Alternative buttons found:', alternativeButtons.length);
+        alternativeButtons.forEach((btn, index) => {
+            console.log(`Button ${index}:`, btn.textContent.trim());
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('🚀 Alternative button clicked - opening funnel');
+                openFunnelModal();
+            });
+        });
+    }
+    
     // Initialize quote sliders
     let coverageSlider = null;
     let iulQuoteSlider = null;
     let userAge = null; // Store user's age globally
     
-    // Add global event listener for "Get Your Quote Now" button
+    // Add event listener for "Complete Application" button to show quote modal
     const getQuoteBtn = document.getElementById('get-quote-btn');
     if (getQuoteBtn) {
         getQuoteBtn.addEventListener('click', function() {
+            console.log('🔄 "Complete Application" button clicked - showing quote modal');
+            
+            // Hide the congratulations modal
+            hideMedicalCongratsModal();
+            
             // Check if we have age data
-            if (userAge !== null) {
-                // Route based on age
-                if (userAge <= 60) {
-                    // Show IUL quoting tool for ages 60 and below
-                    document.getElementById('iul-quote-modal').style.display = 'flex';
-                    document.getElementById('iul-quote-modal').classList.add('active');
+            const userAge = window.funnelData.age || 26; // Default to 26 if not set
+            console.log('🎯 User age for quote modal:', userAge);
+            
+            if (userAge <= 60) {
+                // Show IUL quoting tool for ages 60 and below
+                const iulModal = document.getElementById('iul-quote-modal');
+                if (iulModal) {
+                    iulModal.style.display = 'flex';
+                    iulModal.classList.add('active');
+                    console.log('📊 IUL Quote modal displayed');
+                    
                     // Initialize the IUL quote slider if not already done
                     if (!window.iulQuoteSlider) {
                         window.iulQuoteSlider = new IULQuoteSlider();
+                        window.iulQuoteSlider.init(); // Initialize with proper data
+                    } else {
+                        // Re-initialize with updated data
+                        window.iulQuoteSlider.userAge = userAge;
+                        window.iulQuoteSlider.coverageRange = window.iulQuoteSlider.getCoverageRangeFromPreviousStep();
+                        window.iulQuoteSlider.currentValue = window.iulQuoteSlider.coverageRange.min;
+                        window.iulQuoteSlider.lockAgeSlider();
+                        window.iulQuoteSlider.setCoverageSliderRange();
+                        window.iulQuoteSlider.updateQuote();
                     }
-                } else {
-                    // Show final expense quoting tool for ages 61 and above
-                    document.getElementById('coverage-slider-modal').style.display = 'flex';
-                    document.getElementById('coverage-slider-modal').classList.add('active');
+                }
+            } else {
+                // Show final expense quoting tool for ages 61 and above
+                const coverageModal = document.getElementById('coverage-slider-modal');
+                if (coverageModal) {
+                    coverageModal.style.display = 'flex';
+                    coverageModal.classList.add('active');
+                    console.log('📊 Coverage Slider modal displayed');
+                    
                     // Initialize the coverage slider
                     if (!window.coverageSlider) {
                         window.coverageSlider = new CoverageSlider();
                     }
                 }
-            } else {
-                // Default to final expense if no age data
-                document.getElementById('coverage-slider-modal').style.display = 'flex';
-                document.getElementById('coverage-slider-modal').classList.add('active');
-                // Initialize the coverage slider
-                if (!window.coverageSlider) {
-                    window.coverageSlider = new CoverageSlider();
-                }
             }
         });
     }
+    
+    // Note: Quote modals are now triggered only after application submission
+    // The get-quote-btn now only shows the application form, not the quote modals
 
-    // Funnel state management
-    let funnelData = {};
-    const funnelSteps = [
-        'funnel-state-form',
-        'funnel-military-form',
-        'funnel-branch-form',
-        'funnel-marital-form',
-        'funnel-coverage-form',
-        'funnel-contact-form',
-        'funnel-medical-tobacco',
-        'funnel-medical-conditions',
-        'funnel-medical-hospital',
-        'funnel-medical-diabetes',
-        'funnel-quote-tool'
-    ];
+    // Funnel state management (make globally accessible)
+    window.funnelData = {};
+    window.sessionId = null; // Will store the unique session ID
+    window.abandonmentEmailSent = false; // Flag to prevent multiple abandonment emails per session
+    
+    // Generate unique session ID
+    function generateSessionId() {
+        return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
 
     // Function to accumulate funnel data
     function accumulateFunnelData(stepName, stepData) {
-        funnelData[stepName] = stepData;
-        console.log(`Data accumulated for step ${stepName}:`, funnelData);
+        window.funnelData[stepName] = stepData;
     }
 
-    // Function to send complete funnel data to Google Sheets
-    async function sendCompleteFunnelData() {
+    // ============================================================================
+    // FUNNEL NAVIGATION FUNCTIONS
+    // ============================================================================
+    
+    // Function to go to next step with optional loading screen
+    function goToNextStep(currentStepId, showLoadingScreen = false) {
+        const currentStepIndex = FUNNEL_STEPS_ARRAY.findIndex(step => step.id === currentStepId);
+        const nextStep = FUNNEL_STEPS_ARRAY[currentStepIndex + 1];
+        
+        if (nextStep) {
+            // Hide current step
+            const currentElement = document.getElementById(currentStepId);
+            if (currentElement) {
+                currentElement.style.display = 'none';
+            }
+            
+            // Show loading screen if specified
+            if (showLoadingScreen && nextStep.hasLoadingScreen) {
+                showLoadingModal();
+                setTimeout(() => {
+                    hideLoadingModal();
+                    showStep(nextStep.id);
+                }, 3000); // 3 second loading screen
+            } else {
+                showStep(nextStep.id);
+            }
+            
+            // Update progress
+            updateFunnelProgress(nextStep.id);
+            
+            // Update current step for abandonment tracking
+            window.currentStep = currentStepIndex + 2; // +2 because arrays are 0-indexed and we're moving to next step
+            
+            console.log(`✅ Moved from ${currentStepId} to ${nextStep.id} (Step ${currentStepIndex + 2}/12)`);
+        }
+    }
+    
+    // Function to show a specific step
+    function showStep(stepId) {
+        const stepElement = document.getElementById(stepId);
+        if (stepElement) {
+            stepElement.style.display = 'flex';
+        }
+    }
+    
+    // Function to go back to previous step
+    function goToPreviousStep(currentStepId) {
+        const currentStepIndex = FUNNEL_STEPS_ARRAY.findIndex(step => step.id === currentStepId);
+        const previousStep = FUNNEL_STEPS_ARRAY[currentStepIndex - 1];
+        
+        if (previousStep) {
+            // Hide current step
+            const currentElement = document.getElementById(currentStepId);
+            if (currentElement) {
+                currentElement.style.display = 'none';
+            }
+            
+            // Show previous step
+            showStep(previousStep.id);
+            
+            // Update progress
+            updateFunnelProgress(previousStep.id);
+            
+            // Update current step for abandonment tracking
+            window.currentStep = currentStepIndex;
+            
+            console.log(`⬅️ Moved back from ${currentStepId} to ${previousStep.id} (Step ${currentStepIndex}/12)`);
+        }
+    }
+    
+    // Function to reset funnel to first step
+    function resetFunnel() {
+        window.funnelData = {};
+        window.sessionId = generateSessionId(); // Generate new session ID
+        window.abandonmentEmailSent = false; // Reset abandonment flag for new session
+        console.log('=== NEW SESSION STARTED ===');
+        console.log('Session ID:', window.sessionId);
+        
+        // Hide all forms
+        FUNNEL_STEPS_ARRAY.forEach(step => {
+            const element = document.getElementById(step.id);
+            if (element) {
+                element.style.display = 'none';
+                // Reset form if it's a form element
+                if (element.tagName === 'FORM') {
+                    element.reset();
+                }
+            }
+        });
+        
+        // Show first step
+        showStep(FUNNEL_STEPS.STATE.id);
+        updateFunnelProgress(FUNNEL_STEPS.STATE.id);
+        window.currentStep = 1;
+    }
+    
+    // Function to open funnel modal
+    function openFunnelModal() {
+        const modal = document.getElementById('funnel-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+            modal.classList.add('active');
+        resetFunnel();
+            
+            // Send session start email
+            window.sendSessionStartEmail();
+        }
+    }
+    
+    // ============================================================================
+    // LOADING SCREEN FUNCTIONS
+    // ============================================================================
+    
+    function showLoadingModal() {
+        console.log('🔄 Creating loading modal from scratch...');
+        
+        // Remove any existing loading modal
+        const existingModal = document.getElementById('funnel-load-screen-modal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+        
+        // Create modal container with smooth transition
+        const modal = document.createElement('div');
+        modal.id = 'funnel-load-screen-modal';
+        modal.style.position = 'fixed';
+        modal.style.top = '0';
+        modal.style.left = '0';
+        modal.style.width = '100%';
+        modal.style.height = '100%';
+        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        modal.style.display = 'flex';
+        modal.style.justifyContent = 'center';
+        modal.style.alignItems = 'center';
+        modal.style.zIndex = '99999';
+        modal.style.opacity = '0';
+        modal.style.visibility = 'visible';
+        modal.style.transition = 'opacity 0.4s ease-in-out';
+        
+        // Create modal content with smooth entrance
+        const content = document.createElement('div');
+        content.style.background = 'white';
+        content.style.padding = '3rem 2rem';
+        content.style.borderRadius = '20px';
+        content.style.textAlign = 'center';
+        content.style.maxWidth = '500px';
+        content.style.width = '90%';
+        content.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.15)';
+        content.style.transform = 'scale(0.8)';
+        content.style.transition = 'transform 0.4s ease-in-out';
+        
+        // Add logo
+        const logo = document.createElement('div');
+        logo.style.marginBottom = '2rem';
+        const logoImg = document.createElement('img');
+        logoImg.src = 'assets/logo.png';
+        logoImg.alt = 'Veteran Legacy Life Logo';
+        logoImg.style.height = '80px';
+        logoImg.style.width = 'auto';
+        logoImg.style.objectFit = 'contain';
+        logo.appendChild(logoImg);
+        
+        // Add title
+        const title = document.createElement('h2');
+        title.textContent = 'Your answers are being processed. Please wait.';
+        title.style.color = '#1e293b';
+        title.style.fontSize = '1.5rem';
+        title.style.fontWeight = '600';
+        title.style.marginBottom = '2rem';
+        title.style.lineHeight = '1.4';
+        
+        // Add spinner
+        const spinner = document.createElement('div');
+        spinner.style.display = 'flex';
+        spinner.style.justifyContent = 'center';
+        spinner.style.alignItems = 'center';
+        spinner.style.marginTop = '2rem';
+        
+        const spinnerRing = document.createElement('div');
+        spinnerRing.style.width = '60px';
+        spinnerRing.style.height = '60px';
+        spinnerRing.style.border = '4px solid #e2e8f0';
+        spinnerRing.style.borderTop = '4px solid #3b82f6';
+        spinnerRing.style.borderRadius = '50%';
+        spinnerRing.style.animation = 'spin 1s linear infinite';
+        spinnerRing.style.animationName = 'spin';
+        spinnerRing.style.animationDuration = '1s';
+        spinnerRing.style.animationTimingFunction = 'linear';
+        spinnerRing.style.animationIterationCount = 'infinite';
+        
+        // Add keyframes for spin animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        spinner.appendChild(spinnerRing);
+        
+        // Assemble content
+        content.appendChild(logo);
+        content.appendChild(title);
+        content.appendChild(spinner);
+        
+        // Add to modal
+        modal.appendChild(content);
+        
+        // Add to page
+        document.body.appendChild(modal);
+        
+        // Hide the funnel modal first
+        const funnelModal = document.getElementById('funnel-modal');
+        if (funnelModal) {
+            funnelModal.style.display = 'none';
+            console.log('🔍 Funnel modal hidden');
+        }
+        
+        // Trigger smooth entrance animation
+        setTimeout(() => {
+            modal.style.opacity = '1';
+            content.style.transform = 'scale(1)';
+        }, 50);
+        
+        console.log('🔄 Loading screen displayed');
+        console.log('Loading modal element:', modal);
+        console.log('Loading modal display:', modal.style.display);
+        console.log('Loading modal z-index:', modal.style.zIndex);
+        
+        const rect = modal.getBoundingClientRect();
+        console.log('Loading modal bounding rect:', rect);
+        console.log('Loading modal is visible:', rect.width > 0 && rect.height > 0);
+        
+        // Auto-hide after 3 seconds with smooth exit
+        setTimeout(() => {
+            hideLoadingModal();
+        }, 3000);
+    }
+    
+    function hideLoadingModal() {
+        const loadingModal = document.getElementById('funnel-load-screen-modal');
+        if (loadingModal) {
+            // Smooth exit animation
+            loadingModal.style.opacity = '0';
+            const content = loadingModal.querySelector('div');
+            if (content) {
+                content.style.transform = 'scale(0.9)';
+            }
+            
+            // Remove after animation
+            setTimeout(() => {
+                if (loadingModal.parentNode) {
+                    loadingModal.remove();
+                    console.log('✅ Loading screen hidden');
+                    
+                    // Show the medical congratulations modal
+                    showMedicalCongratsModal();
+                }
+            }, 300);
+        }
+    }
+    
+    // Function to show medical congratulations modal after loading
+    function showMedicalCongratsModal() {
+        console.log('🎉 Showing medical congratulations modal...');
+        
+        // Hide any existing modals first
+        const existingModals = document.querySelectorAll('.modal-overlay');
+        existingModals.forEach(modal => {
+            if (modal.id !== 'medical-congrats-modal') {
+                modal.style.display = 'none';
+            }
+        });
+        
+        const congratsModal = document.getElementById('medical-congrats-modal');
+        if (congratsModal) {
+            // Show with smooth animation
+            congratsModal.style.display = 'flex';
+            congratsModal.style.opacity = '0';
+            congratsModal.style.transform = 'scale(0.9)';
+            congratsModal.style.transition = 'opacity 0.3s ease-in-out, transform 0.3s ease-in-out';
+            
+            setTimeout(() => {
+                congratsModal.style.opacity = '1';
+                congratsModal.style.transform = 'scale(1)';
+            }, 10);
+            
+            console.log('🎉 Medical congratulations modal displayed');
+            
+            // NO AUTO-ADVANCE - wait for user to click "Complete Application"
+        } else {
+            console.error('❌ Medical congratulations modal not found');
+            // Fallback: show next step directly
+            showNextStepAfterCongrats();
+        }
+    }
+    
+    // Function to show the next step after congratulations
+    function showNextStepAfterCongrats() {
+        console.log('🔄 Showing application form after congratulations...');
+        
+        // Hide the congratulations modal completely
+        hideMedicalCongratsModal();
+        
+        // Hide the funnel modal completely
+        const funnelModal = document.getElementById('funnel-modal');
+        if (funnelModal) {
+            funnelModal.style.display = 'none';
+        }
+        
+        // Hide any other modals that might be showing
+        const coverageModal = document.getElementById('coverage-slider-modal');
+        if (coverageModal) {
+            coverageModal.style.display = 'none';
+        }
+        
+        const iulModal = document.getElementById('iul-quote-modal');
+        if (iulModal) {
+            iulModal.style.display = 'none';
+        }
+        
+        // Show the application form as a separate modal
+        const applicationForm = document.getElementById('funnel-application-form');
+        if (applicationForm) {
+            // Create a new modal container for the application form
+            const appModal = document.createElement('div');
+            appModal.id = 'application-modal-overlay';
+            appModal.style.position = 'fixed';
+            appModal.style.top = '0';
+            appModal.style.left = '0';
+            appModal.style.width = '100%';
+            appModal.style.height = '100%';
+            appModal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+            appModal.style.display = 'flex';
+            appModal.style.justifyContent = 'center';
+            appModal.style.alignItems = 'center';
+            appModal.style.zIndex = '999999'; // Higher than other modals
+            appModal.style.opacity = '0';
+            appModal.style.transition = 'opacity 0.3s ease-in-out';
+            
+            // Create content container
+            const appContent = document.createElement('div');
+            appContent.style.background = 'white';
+            appContent.style.padding = '2rem';
+            appContent.style.borderRadius = '15px';
+            appContent.style.maxWidth = '600px';
+            appContent.style.width = '90%';
+            appContent.style.maxHeight = '90vh';
+            appContent.style.overflowY = 'auto';
+            appContent.style.transform = 'scale(0.9)';
+            appContent.style.transition = 'transform 0.3s ease-in-out';
+            
+            // Clone the application form content
+            const formClone = applicationForm.cloneNode(true);
+            formClone.style.display = 'block';
+            formClone.style.border = 'none';
+            formClone.style.padding = '0';
+            formClone.style.margin = '0';
+            
+            // Add close button
+            const closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '×';
+            closeBtn.style.position = 'absolute';
+            closeBtn.style.top = '15px';
+            closeBtn.style.right = '15px';
+            closeBtn.style.background = 'none';
+            closeBtn.style.border = 'none';
+            closeBtn.style.fontSize = '24px';
+            closeBtn.style.color = '#666';
+            closeBtn.style.cursor = 'pointer';
+            closeBtn.onclick = function() {
+                appModal.style.opacity = '0';
+                appContent.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    if (appModal.parentNode) {
+                        appModal.remove();
+                    }
+                }, 300);
+            };
+            
+            appContent.appendChild(closeBtn);
+            appContent.appendChild(formClone);
+            appModal.appendChild(appContent);
+            document.body.appendChild(appModal);
+            
+            // Attach event listeners to the cloned buttons
+            const nextBtn = formClone.querySelector('#application-next-btn');
+            if (nextBtn) {
+                nextBtn.addEventListener('click', function() {
+                    console.log('🔄 "Continue to Step 2" button clicked in cloned form');
+                    
+                    // Hide the current application form step
+                    formClone.style.display = 'none';
+                    
+                    // Show the final application step
+                    const finalForm = document.getElementById('funnel-application-final');
+                    if (finalForm) {
+                        finalForm.style.display = 'block';
+                        console.log('📝 Application step 2 displayed');
+                    } else {
+                        console.error('❌ Final application form not found');
+                    }
+                });
+                console.log('✅ Event listener attached to cloned "Continue to Step 2" button');
+            } else {
+                console.error('❌ Application next button not found in cloned form');
+            }
+            
+            // Trigger smooth entrance animation
+            setTimeout(() => {
+                appModal.style.opacity = '1';
+                appContent.style.transform = 'scale(1)';
+            }, 10);
+            
+            console.log('📝 Application form displayed as separate modal');
+        } else {
+            console.error('❌ Application form not found');
+        }
+    }
+    
+    // Add event listener for the "Complete Application" button
+    function initializeMedicalCongratsButton() {
+        const getQuoteBtn = document.getElementById('get-quote-btn');
+        if (getQuoteBtn) {
+            console.log('✅ Medical congratulations button found and initialized');
+            getQuoteBtn.addEventListener('click', function() {
+                console.log('🔄 "Complete Application" button clicked - showing quote modal');
+                
+                // Hide the congratulations modal
+                hideMedicalCongratsModal();
+                
+                // Check if we have age data
+                const userAge = window.funnelData.age || 26; // Default to 26 if not set
+                console.log('🎯 User age for quote modal:', userAge);
+                
+                if (userAge <= 60) {
+                    // Show IUL quoting tool for ages 60 and below
+                    const iulModal = document.getElementById('iul-quote-modal');
+                    if (iulModal) {
+                        iulModal.style.display = 'flex';
+                        iulModal.classList.add('active');
+                        console.log('📊 IUL Quote modal displayed');
+                        
+                        // Initialize the IUL quote slider if not already done
+                        if (!window.iulQuoteSlider) {
+                            window.iulQuoteSlider = new IULQuoteSlider();
+                        }
+                    }
+                } else {
+                    // Show final expense quoting tool for ages 61 and above
+                    const coverageModal = document.getElementById('coverage-slider-modal');
+                    if (coverageModal) {
+                        coverageModal.style.display = 'flex';
+                        coverageModal.classList.add('active');
+                        console.log('📊 Coverage Slider modal displayed');
+                        
+                        // Initialize the coverage slider
+                        if (!window.coverageSlider) {
+                            window.coverageSlider = new CoverageSlider();
+                        }
+                    }
+                }
+            });
+        } else {
+            console.error('❌ Medical congratulations button not found');
+        }
+    }
+
+    // Send session start email
+    window.sendSessionStartEmail = async function() {
         try {
+            console.log('=== SENDING SESSION START EMAIL ===');
+            
+            const sessionStartData = {
+                sessionId: window.sessionId,
+                formType: 'SessionStart',
+                funnelProgress: 'Started',
+                timestamp: new Date().toISOString()
+            };
+            
+            console.log('Session start data:', sessionStartData);
+            await submitFormData(sessionStartData);
+            console.log('=== SESSION START EMAIL SENT ===');
+            
+        } catch (error) {
+            console.error('=== ERROR in sendSessionStartEmail ===');
+            console.error('Error type:', error.constructor.name);
+            console.error('Error message:', error.message);
+            // Don't show error to user for session start emails
+        }
+    }
+
+    // Function to send abandonment email
+    window.sendAbandonmentEmail = async function(reason) {
+        // Check if abandonment email already sent for this session
+        if (window.abandonmentEmailSent) {
+            console.log(`=== ABANDONMENT EMAIL ALREADY SENT FOR SESSION ${window.sessionId} ===`);
+            return;
+        }
+        
+        try {
+            console.log(`=== SENDING ABANDONMENT EMAIL: ${reason} ===`);
+            
             // Calculate age from date of birth if available
             let calculatedAge = null;
-            if (funnelData.contactInfo?.dateOfBirth) {
+            if (window.funnelData.contactInfo?.dateOfBirth) {
                 const today = new Date();
-                const birthDate = new Date(funnelData.contactInfo.dateOfBirth);
+                const birthDate = new Date(window.funnelData.contactInfo.dateOfBirth);
                 const age = today.getFullYear() - birthDate.getFullYear();
                 const monthDiff = today.getMonth() - birthDate.getMonth();
                 calculatedAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) ? age - 1 : age;
             }
             
-            // Flatten the data structure to match the original working format
-            const completeData = {
-                // Contact info (flattened)
-                firstName: funnelData.contactInfo?.firstName || '',
-                lastName: funnelData.contactInfo?.lastName || '',
-                phone: funnelData.contactInfo?.phone || '',
-                email: funnelData.contactInfo?.email || '',
-                dateOfBirth: funnelData.contactInfo?.dateOfBirth || '',
+            const abandonmentData = {
+                sessionId: window.sessionId,
+                formType: 'Abandoned',
+                funnelProgress: `Abandoned at step ${window.currentStep}`,
+                abandonmentReason: reason,
+                
+                // Include whatever data we have so far
+                firstName: window.funnelData.contactInfo?.firstName || '',
+                lastName: window.funnelData.contactInfo?.lastName || '',
+                phone: window.funnelData.contactInfo?.phone || '',
+                email: window.funnelData.contactInfo?.email || '',
+                dateOfBirth: window.funnelData.contactInfo?.dateOfBirth || '',
                 age: calculatedAge || userAge || '',
-                transactionalConsent: funnelData.contactInfo?.transactionalConsent || false,
-                marketingConsent: funnelData.contactInfo?.marketingConsent || false,
+                transactionalConsent: window.funnelData.contactInfo?.transactionalConsent || false,
+                marketingConsent: window.funnelData.contactInfo?.marketingConsent || false,
                 
-                // Funnel data
-                state: funnelData.state || '',
-                militaryStatus: funnelData.militaryStatus || '',
-                branchOfService: funnelData.branchOfService || '',
-                maritalStatus: funnelData.maritalStatus || '',
-                coverageAmount: funnelData.coverageAmount || '',
+                state: window.funnelData.state || '',
+                militaryStatus: window.funnelData.militaryStatus || '',
+                branchOfService: window.funnelData.branchOfService || '',
+                maritalStatus: window.funnelData.maritalStatus || '',
+                coverageAmount: window.funnelData.coverageAmount || '',
                 
-                // Medical answers (flattened)
                 tobaccoUse: medicalAnswers.tobaccoUse || '',
                 medicalConditions: medicalAnswers.medicalConditions || [],
                 height: medicalAnswers.height || '',
@@ -111,858 +898,895 @@ document.addEventListener('DOMContentLoaded', function() {
                 hospitalCare: medicalAnswers.hospitalCare || '',
                 diabetesMedication: medicalAnswers.diabetesMedication || '',
                 
-                // Form type and progress
+                timestamp: new Date().toISOString()
+            };
+            
+            console.log('Abandonment data being sent:', abandonmentData);
+            await submitFormData(abandonmentData);
+            console.log(`=== ABANDONMENT EMAIL SENT: ${reason} ===`);
+            
+            // Set flag to prevent multiple abandonment emails for this session
+            window.abandonmentEmailSent = true;
+            
+        } catch (error) {
+            console.error('=== ERROR in sendAbandonmentEmail ===');
+            console.error('Error type:', error.constructor.name);
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack);
+            console.error('Abandonment reason:', reason);
+            console.error('Current step:', window.currentStep);
+            console.error('Funnel data available:', !!window.funnelData);
+            console.error('Medical answers available:', !!medicalAnswers);
+        }
+    }
+
+    // ============================================================================
+    // PARTIAL DATA SAVING FUNCTIONS
+    // ============================================================================
+    
+    // Send partial funnel data (silent backend operation)
+    window.sendPartialFunnelData = async function(stepNumber, totalSteps) {
+        try {
+            console.log(`=== SILENT PARTIAL SAVE: Step ${stepNumber}/${totalSteps} ===`);
+            
+            // Calculate age from date of birth if available
+            let calculatedAge = null;
+            if (window.funnelData.contactInfo?.dateOfBirth) {
+                const today = new Date();
+                const birthDate = new Date(window.funnelData.contactInfo.dateOfBirth);
+                const age = today.getFullYear() - birthDate.getFullYear();
+                const monthDiff = today.getMonth() - birthDate.getMonth();
+                calculatedAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) ? age - 1 : age;
+            }
+            
+            const partialData = {
+                sessionId: window.sessionId, // Added
+                firstName: window.funnelData.contactInfo?.firstName || '',
+                lastName: window.funnelData.contactInfo?.lastName || '',
+                phone: window.funnelData.contactInfo?.phone || '',
+                email: window.funnelData.contactInfo?.email || '',
+                dateOfBirth: window.funnelData.contactInfo?.dateOfBirth || '',
+                age: calculatedAge || userAge || '',
+                transactionalConsent: window.funnelData.contactInfo?.transactionalConsent || false,
+                marketingConsent: window.funnelData.contactInfo?.marketingConsent || false,
+                
+                state: window.funnelData.state || '',
+                militaryStatus: window.funnelData.militaryStatus || '',
+                branchOfService: window.funnelData.branchOfService || '',
+                maritalStatus: window.funnelData.maritalStatus || '',
+                coverageAmount: window.funnelData.coverageAmount || '',
+                
+                tobaccoUse: medicalAnswers?.tobaccoUse || '',
+                medicalConditions: medicalAnswers?.medicalConditions || [],
+                height: medicalAnswers?.height || '',
+                weight: medicalAnswers?.weight || '',
+                hospitalCare: medicalAnswers?.hospitalCare || '',
+                diabetesMedication: medicalAnswers?.diabetesMedication || '',
+                
+                formType: 'Partial',
+                funnelProgress: `Step ${stepNumber}/${totalSteps}`,
+                timestamp: new Date().toISOString()
+            };
+            
+            console.log('Partial data being sent:', partialData);
+            await submitFormData(partialData);
+            console.log(`=== PARTIAL SAVE COMPLETE: Step ${stepNumber}/${totalSteps} ===`);
+            
+        } catch (error) {
+            console.error('=== ERROR in sendPartialFunnelData ===');
+            console.error('Error type:', error.constructor.name);
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack);
+            console.error('Step number:', stepNumber);
+            console.error('Total steps:', totalSteps);
+            console.error('Funnel data available:', !!window.funnelData);
+            console.error('Medical answers available:', !!medicalAnswers);
+        }
+    }
+
+    // ============================================================================
+    // COMPLETE FUNNEL DATA SUBMISSION
+    // ============================================================================
+    
+    async function sendCompleteFunnelData() {
+        try {
+            console.log('=== START: sendCompleteFunnelData ===');
+            console.log('funnelData:', window.funnelData);
+            console.log('medicalAnswers:', medicalAnswers);
+            
+            // Calculate age from date of birth
+            let calculatedAge = null;
+            if (window.funnelData.contactInfo?.dateOfBirth) {
+                const today = new Date();
+                const birthDate = new Date(window.funnelData.contactInfo.dateOfBirth);
+                const age = today.getFullYear() - birthDate.getFullYear();
+                const monthDiff = today.getMonth() - birthDate.getMonth();
+                calculatedAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) ? age - 1 : age;
+            }
+            
+            const completeData = {
+                sessionId: window.sessionId,
+                firstName: window.funnelData.contactInfo?.firstName || '',
+                lastName: window.funnelData.contactInfo?.lastName || '',
+                phone: window.funnelData.contactInfo?.phone || '',
+                email: window.funnelData.contactInfo?.email || '',
+                dateOfBirth: window.funnelData.contactInfo?.dateOfBirth || '',
+                age: calculatedAge || userAge || '',
+                transactionalConsent: window.funnelData.contactInfo?.transactionalConsent || false,
+                marketingConsent: window.funnelData.contactInfo?.marketingConsent || false,
+                
+                state: window.funnelData.state || '',
+                militaryStatus: window.funnelData.militaryStatus || '',
+                branchOfService: window.funnelData.branchOfService || '',
+                maritalStatus: window.funnelData.maritalStatus || '',
+                coverageAmount: window.funnelData.coverageAmount || '',
+                
+                tobaccoUse: medicalAnswers.tobaccoUse || '',
+                medicalConditions: medicalAnswers.medicalConditions || [],
+                height: medicalAnswers.height || '',
+                weight: medicalAnswers.weight || '',
+                hospitalCare: medicalAnswers.hospitalCare || '',
+                diabetesMedication: medicalAnswers.diabetesMedication || '',
+                
                 formType: 'Funnel',
                 funnelProgress: 'Complete',
                 timestamp: new Date().toISOString()
             };
             
-                    console.log('🚨 SENDING COMPLETE FUNNEL DATA 🚨');
-        console.log('Sending complete funnel data:', completeData);
-        console.log('Funnel data object:', funnelData);
-        console.log('Medical answers object:', medicalAnswers);
-        
-        // Use the same submitFormData function
-        console.log('🚨 CALLING submitFormData 🚨');
-        await submitFormData(completeData);
+            console.log('Complete data being sent:', completeData);
             
-            console.log('Complete funnel data sent successfully');
+            // Data validation - Required fields
+            console.log('Data validation - Required fields:');
+            console.log('- firstName:', !!completeData.firstName);
+            console.log('- lastName:', !!completeData.lastName);
+            console.log('- email:', !!completeData.email);
+            console.log('- phone:', !!completeData.phone);
             
-            // Show success message to user
-            alert('Thank you! Your information has been submitted successfully. We will contact you within 24 hours.');
+            console.log('Calling submitFormData...');
+            const result = await submitFormData(completeData);
+            console.log('submitFormData result:', result);
+            
+            console.log('=== END: sendCompleteFunnelData (SUCCESS) ===');
+            return result;
             
         } catch (error) {
-            console.error('Error sending complete funnel data:', error);
-            alert('There was an error submitting your information. Please try again.');
+            console.error('=== ERROR in sendCompleteFunnelData ===');
+            console.error('Error type:', error.constructor.name);
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack);
+            throw error;
         }
     }
 
-    // Funnel modal logic
-    const funnelModal = document.getElementById('funnel-modal');
-    const ctaButtons = document.querySelectorAll('.cta-button.primary, .qualify-button');
+    // ============================================================================
+    // FUNNEL STEP EVENT HANDLERS - CLEARLY ORGANIZED BY STEP
+    // ============================================================================
     
-    ctaButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            if (!this.closest('form')) {  // Only trigger if not a form submit button
-                e.preventDefault();
-                openFunnelModal();
-            }
-        });
-    });
-
-    function openFunnelModal() {
-        funnelModal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-        // Hide progress tracker for regular funnel
-        const tracker = document.querySelector('.funnel-progress-tracker');
-        if (tracker) tracker.style.display = 'none';
-        resetFunnel();
-    }
-
-    function resetFunnel() {
-        funnelData = {};
-        document.querySelectorAll('#funnel-modal form').forEach(form => {
-            form.style.display = 'none';
-            form.reset();
-        });
-        document.getElementById('funnel-state-form').style.display = 'block';
-    }
-
-    function goToNextStep(currentStepId) {
-        const currentIndex = funnelSteps.indexOf(currentStepId);
-        if (currentIndex < funnelSteps.length - 1) {
-            document.getElementById(currentStepId).style.display = 'none';
-            document.getElementById(funnelSteps[currentIndex + 1]).style.display = 'block';
-        }
-    }
-
-    // State selection
-    document.getElementById('funnel-state-form').addEventListener('submit', function(e) {
+    // STEP 1: State Selection
+    function initializeStateStep() {
+        const stateForm = document.getElementById(FUNNEL_STEPS.STATE.id);
+        if (!stateForm) return;
+        
+        stateForm.addEventListener('submit', function(e) {
         e.preventDefault();
+            
+            try {
         const stateSelect = document.getElementById('funnel-state-select');
-        if (stateSelect.value) {
-            funnelData.state = stateSelect.value;
+                console.log('State select element found:', !!stateSelect);
+                console.log('Selected state value:', stateSelect?.value);
+                
+                if (!stateSelect || !stateSelect.value) {
+                    showFieldError(stateSelect, 'Please select your state');
+                    return;
+                }
+                
+                // Save state data
+                window.funnelData.state = stateSelect.value;
+                console.log('State saved to funnelData:', window.funnelData.state);
             
             // Accumulate data
             accumulateFunnelData('state', stateSelect.value);
-            
-            goToNextStep('funnel-state-form');
-        }
-    });
-
-    // Military status selection
-    const militaryInputs = document.querySelectorAll('#funnel-military-form input[name="militaryStatus"]');
+                console.log('State data accumulated successfully');
+                
+                goToNextStep(FUNNEL_STEPS.STATE.id);
+                console.log('✅ State step completed successfully');
+                
+            } catch (error) {
+                console.error('Error in state step:', error);
+            }
+        });
+    }
+    
+    // STEP 2: Military Status
+    function initializeMilitaryStep() {
+        const militaryInputs = document.querySelectorAll(`#${FUNNEL_STEPS.MILITARY.id} input[name="militaryStatus"]`);
     militaryInputs.forEach(input => {
         input.addEventListener('click', () => {
-            funnelData.militaryStatus = input.value;
+                window.funnelData.militaryStatus = input.value;
             
             // Accumulate data
             accumulateFunnelData('militaryStatus', input.value);
             
-            setTimeout(() => goToNextStep('funnel-military-form'), 300);
+                setTimeout(() => {
+                    goToNextStep(FUNNEL_STEPS.MILITARY.id);
+                }, 300);
         });
     });
+    }
 
-    // Branch selection
-    const branchInputs = document.querySelectorAll('#funnel-branch-form input[name="branchOfService"]');
+    // STEP 3: Branch of Service
+    function initializeBranchStep() {
+        const branchInputs = document.querySelectorAll(`#${FUNNEL_STEPS.BRANCH.id} input[name="branchOfService"]`);
     branchInputs.forEach(input => {
         input.addEventListener('click', () => {
-            funnelData.branchOfService = input.value;
+                window.funnelData.branchOfService = input.value;
             
             // Accumulate data
             accumulateFunnelData('branchOfService', input.value);
             
-            setTimeout(() => goToNextStep('funnel-branch-form'), 300);
+                setTimeout(() => {
+                    goToNextStep(FUNNEL_STEPS.BRANCH.id);
+                }, 300);
         });
     });
+    }
 
-    // Marital status selection
-    const maritalInputs = document.querySelectorAll('#funnel-marital-form input[name="maritalStatus"]');
+    // STEP 4: Marital Status
+    function initializeMaritalStep() {
+        const maritalInputs = document.querySelectorAll(`#${FUNNEL_STEPS.MARITAL.id} input[name="maritalStatus"]`);
     maritalInputs.forEach(input => {
         input.addEventListener('click', () => {
-            funnelData.maritalStatus = input.value;
+                window.funnelData.maritalStatus = input.value;
             
             // Accumulate data
             accumulateFunnelData('maritalStatus', input.value);
             
-            setTimeout(() => goToNextStep('funnel-marital-form'), 300);
+                setTimeout(() => {
+                    goToNextStep(FUNNEL_STEPS.MARITAL.id);
+                }, 300);
         });
     });
+    }
 
-    // Coverage amount selection
-    const coverageInputs = document.querySelectorAll('#funnel-coverage-form input[name="coverageAmount"]');
+    // STEP 5: Coverage Amount
+    function initializeCoverageStep() {
+        const coverageInputs = document.querySelectorAll(`#${FUNNEL_STEPS.COVERAGE.id} input[name="coverageAmount"]`);
     coverageInputs.forEach(input => {
         input.addEventListener('click', () => {
-            funnelData.coverageAmount = input.value;
+                window.funnelData.coverageAmount = input.value;
             
             // Accumulate data
             accumulateFunnelData('coverageAmount', input.value);
             
-            setTimeout(() => goToNextStep('funnel-coverage-form'), 300);
+                setTimeout(() => {
+                    goToNextStep(FUNNEL_STEPS.COVERAGE.id);
+                }, 300);
         });
     });
-
-    // Contact form submission - send to Google Sheets via webhook
-    document.getElementById('funnel-contact-form').addEventListener('submit', async function(e) {
+    }
+    
+    // STEP 6: Contact Information
+    function initializeContactStep() {
+        const contactForm = document.getElementById(FUNNEL_STEPS.CONTACT.id);
+        if (!contactForm) return;
+        
+        contactForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        // Validate required fields
-        const requiredFields = ['firstName', 'lastName', 'phone', 'dateOfBirth', 'email'];
-        let isValid = true;
-        
-        requiredFields.forEach(fieldId => {
-            const field = document.getElementById(fieldId);
-            if (!field.value.trim()) {
-                showFieldError(field, 'This field is required');
-                isValid = false;
-            } else {
-                clearFieldError(field);
-            }
-        });
-
-        // Validate consent checkbox
-        const transactionalConsent = document.querySelector('input[name="transactionalConsent"]');
-        if (!transactionalConsent.checked) {
-            showFieldError(transactionalConsent.parentElement, 'You must agree to receive transactional messages');
-            isValid = false;
-        }
-
-        if (!isValid) return;
-
-        // --- Visual Feedback on Click ---
-        const submitBtn = this.querySelector('button[type="submit"]');
-        const originalBtnText = submitBtn.innerHTML;
-        submitBtn.disabled = true;
-        submitBtn.classList.add('is-loading');
-        submitBtn.innerHTML = `<span>Submitting</span><div class="spinner"></div>`;
-        // --- End Visual Feedback ---
-
-        // Collect form data and combine with accumulated funnel data
-        const formData = {
-            firstName: document.getElementById('firstName').value,
-            lastName: document.getElementById('lastName').value,
-            phone: document.getElementById('phone').value,
-            dateOfBirth: document.getElementById('dateOfBirth').value,
-            email: document.getElementById('email').value,
-            state: funnelData.state || '',
-            militaryStatus: funnelData.militaryStatus || '',
-            branchOfService: funnelData.branchOfService || '',
-            maritalStatus: funnelData.maritalStatus || '',
-            coverageAmount: funnelData.coverageAmount || '',
-            transactionalConsent: transactionalConsent.checked,
-            marketingConsent: document.querySelector('input[name="marketingConsent"]').checked,
-            timestamp: new Date().toISOString()
-        };
-
-        try {
-            // Accumulate contact form data
-            accumulateFunnelData('contactInfo', formData);
-
-            // With 'no-cors', we can't check the response. We optimistically assume success.
-            
-                    // Calculate age from date of birth
-        const dateOfBirth = document.getElementById('dateOfBirth').value;
+            try {
+                // Get form data
+                const formData = new FormData(contactForm);
+                const contactData = {
+                    firstName: formData.get('firstName'),
+                    lastName: formData.get('lastName'),
+                    phone: formData.get('phone'),
+                    email: formData.get('email'),
+                    dateOfBirth: formData.get('dateOfBirth'),
+                    transactionalConsent: formData.get('transactionalConsent') === 'on',
+                    marketingConsent: formData.get('marketingConsent') === 'on'
+                };
+                
+                // Validate required fields
+                const requiredFields = ['firstName', 'lastName', 'phone', 'email', 'dateOfBirth'];
+                for (const field of requiredFields) {
+                    if (!contactData[field] || contactData[field].trim() === '') {
+                        showFieldError(document.querySelector(`[name="${field}"]`), `Please fill in your ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
+                        return;
+                    }
+                }
+                
+                // Calculate age
         const today = new Date();
-        const birthDate = new Date(dateOfBirth);
+                const birthDate = new Date(contactData.dateOfBirth);
         const age = today.getFullYear() - birthDate.getFullYear();
         const monthDiff = today.getMonth() - birthDate.getMonth();
-        const actualAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) ? age - 1 : age;
-        
-        // Store age globally
-        userAge = actualAge;
-        
-        // Store contact form data and proceed to medical questions
-        funnelData.contactInfo = {
-            firstName: document.getElementById('firstName').value,
-            lastName: document.getElementById('lastName').value,
-            phone: document.getElementById('phone').value,
-            dateOfBirth: document.getElementById('dateOfBirth').value,
-            email: document.getElementById('email').value,
-            age: actualAge,
-            transactionalConsent: transactionalConsent.checked,
-            marketingConsent: document.querySelector('input[name="marketingConsent"]').checked
-        };
-            
-            // Go to first medical question (tobacco)
-            document.getElementById('funnel-contact-form').style.display = 'none';
-            document.getElementById('funnel-medical-tobacco').style.display = 'block';
-            // Hide progress tracker for regular funnel flow
-            const tracker = document.querySelector('.funnel-progress-tracker');
-            if (tracker) tracker.style.display = 'none';
-            setMedicalProgress(1, 4);
-            this.reset();
-            
-        } catch (error) {
-            console.error('Error:', error);
-            alert('There was an error submitting your information. Please try again.');
-            
-            // --- Re-enable button on error ---
-            submitBtn.disabled = false;
-            submitBtn.classList.remove('is-loading');
-            submitBtn.innerHTML = originalBtnText;
-        }
-    });
-
-    // Medical funnel state
-    let medicalAnswers = {};
-
-    function setMedicalProgress(step, total) {
-      const tracker = document.querySelector('.funnel-progress-tracker');
-      if (tracker) tracker.textContent = `${step}/${total}`;
+                userAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) ? age - 1 : age;
+                
+                // Save contact data
+                window.funnelData.contactInfo = contactData;
+                window.funnelData.contactInfo.age = userAge;
+                
+                // Accumulate data
+                accumulateFunnelData('contactInfo', contactData);
+                
+                console.log('Contact data saved:', contactData);
+                console.log('Calculated age:', userAge);
+                
+                goToNextStep(FUNNEL_STEPS.CONTACT.id);
+                
+            } catch (error) {
+                console.error('Error in contact step:', error);
+            }
+        });
     }
-
-    // Medical Tobacco step
-    document.getElementById('medical-tobacco-next').addEventListener('click', async function() {
-        const selected = document.querySelector('input[name="tobaccoUse"]:checked');
-        if (!selected) {
-            showFieldError(document.querySelector('input[name="tobaccoUse"]'), 'Please select an option');
-            return;
-        } else {
-            clearFieldError(document.querySelector('input[name="tobaccoUse"]'));
-        }
-        medicalAnswers.tobaccoUse = selected.value;
+    
+    // STEP 7: Tobacco Use
+    function initializeTobaccoStep() {
+        const tobaccoInputs = document.querySelectorAll(`#${FUNNEL_STEPS.TOBACCO.id} input[name="tobaccoUse"]`);
+        tobaccoInputs.forEach(input => {
+            input.addEventListener('click', () => {
+                medicalAnswers.tobaccoUse = input.value;
+                
+                setTimeout(() => {
+                    goToNextStep(FUNNEL_STEPS.TOBACCO.id);
+                }, 300);
+            });
+        });
+    }
+    
+    // STEP 8: Medical Conditions
+    function initializeConditionsStep() {
+        const conditionsForm = document.getElementById(FUNNEL_STEPS.CONDITIONS.id);
+        if (!conditionsForm) return;
         
-        // Accumulate medical data
-        accumulateFunnelData('medicalAnswers', medicalAnswers);
+        conditionsForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const selectedConditions = [];
+            const checkboxes = conditionsForm.querySelectorAll('input[type="checkbox"]:checked');
+            checkboxes.forEach(checkbox => {
+                selectedConditions.push(checkbox.value);
+            });
+            
+            medicalAnswers.medicalConditions = selectedConditions;
+            
+            goToNextStep(FUNNEL_STEPS.CONDITIONS.id);
+        });
+    }
+    
+    // STEP 9: Height & Weight
+    function initializeHeightWeightStep() {
+        const heightWeightForm = document.getElementById(FUNNEL_STEPS.HEIGHT_WEIGHT.id);
+        if (!heightWeightForm) return;
         
-        document.getElementById('funnel-medical-tobacco').style.display = 'none';
-        document.getElementById('funnel-medical-conditions').style.display = 'block';
-        setMedicalProgress(2, 5);
-        // Initialize the medical conditions logic when form is shown
-        initializeMedicalConditionsLogic();
-    });
-
-    // Medical Conditions step
-    document.getElementById('medical-conditions-next').addEventListener('click', async function() {
-        const checked = Array.from(document.querySelectorAll('input[name="medicalConditions"]:checked'));
-        if (checked.length === 0) {
-            showFieldError(document.querySelector('input[name="medicalConditions"]'), 'Please select at least one');
-            return;
-        } else {
-            clearFieldError(document.querySelector('input[name="medicalConditions"]'));
-        }
-        medicalAnswers.medicalConditions = checked.map(cb => cb.value);
-        
-        // Accumulate medical data
-        accumulateFunnelData('medicalAnswers', medicalAnswers);
-        
-        document.getElementById('funnel-medical-conditions').style.display = 'none';
-        document.getElementById('funnel-medical-height-weight').style.display = 'block';
-        setMedicalProgress(3, 5);
-        // Initialize dropdowns when height/weight form is shown
-        initializeHeightWeightDropdowns();
-    });
-
-    // Medical Height/Weight step
-    document.getElementById('medical-height-weight-next').addEventListener('click', async function() {
-        const height = document.getElementById('height').value.trim();
-        const weight = document.getElementById('weight').value.trim();
-        
-        // Get valid dropdown options
-        const heightDropdown = document.getElementById('height-dropdown');
-        const weightDropdown = document.getElementById('weight-dropdown');
-        const validHeightOptions = Array.from(heightDropdown.querySelectorAll('.dropdown-item')).map(item => item.getAttribute('data-value'));
-        const validWeightOptions = Array.from(weightDropdown.querySelectorAll('.dropdown-item')).map(item => item.getAttribute('data-value'));
-        
-        // Also get display text options for more flexible validation
-        const validHeightDisplayOptions = Array.from(heightDropdown.querySelectorAll('.dropdown-item')).map(item => item.textContent.trim());
-        const validWeightDisplayOptions = Array.from(weightDropdown.querySelectorAll('.dropdown-item')).map(item => item.textContent.trim());
-        
-        let hasError = false;
-        
-        if (!height || !weight) {
+        // Add click event listener for the Next button
+        const nextButton = document.getElementById('medical-height-weight-next');
+        if (nextButton) {
+            nextButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const heightInput = heightWeightForm.querySelector('input[name="height"]');
+                const weightInput = heightWeightForm.querySelector('input[name="weight"]');
+                
+                if (!heightInput.value || !weightInput.value) {
             showFieldError(document.querySelector('#funnel-medical-height-weight input'), 'Please fill in both height and weight');
             return;
         }
         
-        // Check if height is a valid option (check both data-value and display text)
-        if (!validHeightOptions.includes(height) && !validHeightDisplayOptions.includes(height)) {
-            console.log('Height validation failed:', { height, validHeightOptions, validHeightDisplayOptions });
-            showFieldError(document.getElementById('height'), 'Please select a valid height from the dropdown');
-            hasError = true;
-        }
-        
-        // Check if weight is a valid option (check both data-value and display text)
-        if (!validWeightOptions.includes(weight) && !validWeightDisplayOptions.includes(weight)) {
-            console.log('Weight validation failed:', { weight, validWeightOptions, validWeightDisplayOptions });
-            showFieldError(document.getElementById('weight'), 'Please select a valid weight from the dropdown');
-            hasError = true;
-        }
-        
-        if (hasError) {
-            return;
-        }
-        
-        // Clear any existing errors
-        clearFieldError(document.getElementById('height'));
-        clearFieldError(document.getElementById('weight'));
-        
-        medicalAnswers.height = height;
-        medicalAnswers.weight = weight;
-        
-        // Accumulate medical data
-        accumulateFunnelData('medicalAnswers', medicalAnswers);
-        
-        document.getElementById('funnel-medical-height-weight').style.display = 'none';
-        document.getElementById('funnel-medical-hospital').style.display = 'block';
-        setMedicalProgress(4, 5);
-    });
-
-    // Medical Hospital step
-    document.getElementById('medical-hospital-next').addEventListener('click', async function() {
-        const selected = document.querySelector('input[name="hospitalCare"]:checked');
-        if (!selected) {
-            showFieldError(document.querySelector('input[name="hospitalCare"]'), 'Please select an option');
-            return;
-        } else {
-            clearFieldError(document.querySelector('input[name="hospitalCare"]'));
-        }
-        medicalAnswers.hospitalCare = selected.value;
-        
-        // Accumulate medical data
-        accumulateFunnelData('medicalAnswers', medicalAnswers);
-        
-        document.getElementById('funnel-medical-hospital').style.display = 'none';
-        document.getElementById('funnel-medical-diabetes').style.display = 'block';
-        setMedicalProgress(5, 5);
-    });
-
-    // Medical Diabetes step (final submit) - Handle form submission
-    document.getElementById('funnel-medical-diabetes').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        console.log('🚨 MEDICAL SUBMISSION TRIGGERED 🚨');
-        console.log('Event:', e);
-        
-        const selected = document.querySelector('input[name="diabetesMedication"]:checked');
-        if (!selected) {
-            showFieldError(document.querySelector('input[name="diabetesMedication"]'), 'Please select an option');
-            return;
-        } else {
-            clearFieldError(document.querySelector('input[name="diabetesMedication"]'));
-        }
-        
-        medicalAnswers.diabetesMedication = selected.value;
-        console.log('Medical answers:', medicalAnswers);
-        console.log('User age:', userAge);
-        
-        // Combine all funnel data
-        const completeFormData = {
-            ...funnelData,
-            ...funnelData.contactInfo,
-            ...medicalAnswers,
-            timestamp: new Date().toISOString()
-        };
-        
-        console.log('Complete form data:', completeFormData);
-        console.log('🚨 ABOUT TO SEND FUNNEL DATA 🚨');
-        
-        // Send complete funnel data to Google Sheets (email sent automatically)
-        await sendCompleteFunnelData();
-        
-        // Show loading screen IMMEDIATELY
-        const funnelModal = document.getElementById('funnel-modal');
-        const processingModal = document.getElementById('medical-processing-modal');
-        
-        console.log('🚨 FORM SUBMISSION - SHOWING LOADING MODAL IMMEDIATELY 🚨');
-        console.log('Funnel modal:', funnelModal);
-        console.log('Processing modal:', processingModal);
-        
-        // Hide funnel modal and show processing modal immediately
-        if (funnelModal) funnelModal.style.display = 'none';
-        if (processingModal) {
-            processingModal.style.display = 'flex';
-            processingModal.style.zIndex = '9999';
-        }
-        
-        // Wrap ALL existing transition logic in setTimeout for 7-second delay
-        setTimeout(() => {
-            console.log('⏰ FORM SUBMISSION - 7 seconds completed - transitioning to congratulations');
-            
-            // Hide loading screen
-            if (processingModal) {
-                processingModal.style.display = 'none';
-            }
-            
-            // Show congratulations modal
-            const congratsModal = document.getElementById('medical-congrats-modal');
-            console.log('Congratulations modal:', congratsModal);
-            
-            if (congratsModal) {
-                congratsModal.style.display = 'flex';
-                congratsModal.style.zIndex = '9999';
-                congratsModal.style.opacity = '1';
-            }
-            
-            // Remove any existing event listeners to prevent duplication
-            const getQuoteBtn = document.getElementById('get-quote-btn');
-            if (getQuoteBtn) {
-                const newGetQuoteBtn = getQuoteBtn.cloneNode(true);
-                getQuoteBtn.parentNode.replaceChild(newGetQuoteBtn, getQuoteBtn);
+                medicalAnswers.height = heightInput.value;
+                medicalAnswers.weight = weightInput.value;
                 
-                // Add event listener for the "Complete Application" button
-                newGetQuoteBtn.addEventListener('click', function() {
-                    console.log('Complete Application button clicked');
-                    if (congratsModal) congratsModal.style.display = 'none';
-                    
-                    // Proceed to quote tool based on age
-                    if (userAge !== null) {
-                        console.log('Routing based on age:', userAge);
-                        // Route based on age
-                        if (userAge <= 60) {
-                            // Show IUL quoting tool for ages 60 and below
-                            document.getElementById('iul-quote-modal').style.display = 'flex';
-                            document.getElementById('iul-quote-modal').classList.add('active');
-                            // Initialize the IUL quote slider if not already done
-                            if (!window.iulQuoteSlider) {
-                                window.iulQuoteSlider = new IULQuoteSlider();
-                            }
-                        } else {
-                            // Show final expense quoting tool for ages 61 and above
-                            document.getElementById('coverage-slider-modal').style.display = 'flex';
-                            document.getElementById('coverage-slider-modal').classList.add('active');
-                            // Initialize the coverage slider if not already done
-                            if (!window.coverageSlider) {
-                                window.coverageSlider = new CoverageSlider();
-                            }
-                        }
-                    } else {
-                        console.log('No age data, defaulting to final expense');
-                        // Default to final expense if no age data
-                        document.getElementById('coverage-slider-modal').style.display = 'flex';
-                        document.getElementById('coverage-slider-modal').classList.add('active');
-                        if (!window.coverageSlider) {
-                            window.coverageSlider = new CoverageSlider();
-                        }
+                goToNextStep(FUNNEL_STEPS.HEIGHT_WEIGHT.id);
+            });
+        }
+        
+        heightWeightForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const heightInput = heightWeightForm.querySelector('input[name="height"]');
+            const weightInput = heightWeightForm.querySelector('input[name="weight"]');
+            
+            if (!heightInput.value || !weightInput.value) {
+                showFieldError(document.querySelector('#funnel-medical-height-weight input'), 'Please fill in both height and weight');
+            return;
+        }
+        
+            medicalAnswers.height = heightInput.value;
+            medicalAnswers.weight = weightInput.value;
+            
+            goToNextStep(FUNNEL_STEPS.HEIGHT_WEIGHT.id);
+        });
+    }
+    
+    // STEP 10: Hospital Care
+    function initializeHospitalStep() {
+        const hospitalInputs = document.querySelectorAll(`#${FUNNEL_STEPS.HOSPITAL.id} input[name="hospitalCare"]`);
+        hospitalInputs.forEach(input => {
+            input.addEventListener('click', () => {
+                medicalAnswers.hospitalCare = input.value;
+                
+                setTimeout(() => {
+                    goToNextStep(FUNNEL_STEPS.HOSPITAL.id);
+                }, 300);
+            });
+        });
+        
+        // Add click event listener for the Next button
+        const nextButton = document.getElementById('medical-hospital-next');
+        if (nextButton) {
+            nextButton.addEventListener('click', function(e) {
+        e.preventDefault();
+                
+                const selectedInput = document.querySelector(`#${FUNNEL_STEPS.HOSPITAL.id} input[name="hospitalCare"]:checked`);
+                
+                if (!selectedInput) {
+                    showFieldError(document.querySelector('#funnel-medical-hospital input'), 'Please select an option');
+            return;
+                }
+                
+                medicalAnswers.hospitalCare = selectedInput.value;
+                goToNextStep(FUNNEL_STEPS.HOSPITAL.id);
+            });
+        }
+    }
+    
+    // STEP 11: Diabetes Medication (with loading screen)
+    function initializeDiabetesStep() {
+        const diabetesForm = document.getElementById(FUNNEL_STEPS.DIABETES.id);
+        if (!diabetesForm) return;
+        
+        // Add click event listener for the submit button as backup
+        const submitButton = document.getElementById('medical-submit');
+        if (submitButton) {
+            submitButton.addEventListener('click', async function(e) {
+                e.preventDefault();
+                
+                const diabetesInputs = diabetesForm.querySelectorAll('input[name="diabetesMedication"]');
+                let selectedValue = '';
+                
+                diabetesInputs.forEach(input => {
+                    if (input.checked) {
+                        selectedValue = input.value;
                     }
                 });
-            }
-        }, 7000); // 7 second loading time
-    });
-
-    // Handle the "See Results!" button click - EXACT ChatGPT structure
-    document.getElementById('medical-submit').addEventListener('click', function(e) {
-        e.preventDefault();
-        console.log('🚨 See Results button clicked - showing loading modal immediately');
-
-        // Show the loading modal immediately
-        const loadingModal = document.getElementById('medical-processing-modal');
-        const congratsModal = document.getElementById('medical-congrats-modal');
-        
-        // Hide congratulations modal first (in case it's already visible)
-        if (congratsModal) {
-            congratsModal.style.display = 'none';
-        }
-        
-        if (loadingModal) {
-            loadingModal.style.display = 'flex';
-            loadingModal.style.zIndex = '10000'; // Higher z-index than congratulations modal
-            console.log('✅ Loading modal displayed with z-index 10000');
-        }
-
-        // Wait 7 seconds before continuing
-        setTimeout(() => {
-            console.log('⏰ 7 seconds completed - hiding loading modal');
-            
-            // Hide the loading modal
-            if (loadingModal) {
-                loadingModal.style.display = 'none';
-                console.log('✅ Loading modal hidden');
-            }
-
-            // Now trigger the existing logic to show the "Congratulations" modal
-            showCongratulationsModal();
-        }, 7000);
-    });
-
-    // Function to show congratulations modal (existing logic)
-    function showCongratulationsModal() {
-        console.log('🎉 Showing congratulations modal');
-        
-        // Show congratulations modal
-        const congratsModal = document.getElementById('medical-congrats-modal');
-        if (congratsModal) {
-            congratsModal.style.display = 'flex';
-            congratsModal.style.zIndex = '9999';
-            congratsModal.style.opacity = '1';
-            console.log('✅ Congratulations modal displayed');
-        }
-        
-        // Remove any existing event listeners to prevent duplication
-        const getQuoteBtn = document.getElementById('get-quote-btn');
-        if (getQuoteBtn) {
-            const newGetQuoteBtn = getQuoteBtn.cloneNode(true);
-            getQuoteBtn.parentNode.replaceChild(newGetQuoteBtn, getQuoteBtn);
-            
-            // Add event listener for the "Complete Application" button
-            newGetQuoteBtn.addEventListener('click', function() {
-                console.log('Complete Application button clicked');
-                if (congratsModal) congratsModal.style.display = 'none';
                 
-                // Proceed to quote tool based on age
-                if (userAge !== null) {
-                    console.log('Routing based on age:', userAge);
-                    // Route based on age
-                    if (userAge <= 60) {
-                        // Show IUL quoting tool for ages 60 and below
-                        document.getElementById('iul-quote-modal').style.display = 'flex';
-                        document.getElementById('iul-quote-modal').classList.add('active');
-                        // Initialize the IUL quote slider if not already done
-                        if (!window.iulQuoteSlider) {
-                            window.iulQuoteSlider = new IULQuoteSlider();
-                        }
-                    } else {
-                        // Show final expense quoting tool for ages 61 and above
-                        document.getElementById('coverage-slider-modal').style.display = 'flex';
-                        document.getElementById('coverage-slider-modal').classList.add('active');
-                        // Initialize the coverage slider if not already done
-                        if (!window.coverageSlider) {
-                            window.coverageSlider = new CoverageSlider();
-                        }
-                    }
-                } else {
-                    console.log('No age data, defaulting to final expense');
-                    // Default to final expense if no age data
-                    document.getElementById('coverage-slider-modal').style.display = 'flex';
-                    document.getElementById('coverage-slider-modal').classList.add('active');
-                    if (!window.coverageSlider) {
-                        window.coverageSlider = new CoverageSlider();
-                    }
+                if (!selectedValue) {
+                    showFieldError(document.querySelector('#funnel-medical-diabetes input'), 'Please select an option');
+                    return;
+                }
+                
+                medicalAnswers.diabetesMedication = selectedValue;
+                
+                // Show fake loading screen for 3 seconds
+                showLoadingModal();
+                
+                setTimeout(() => {
+                    hideLoadingModal();
+                    // Show medical congratulations modal
+                    showMedicalCongratsModal();
+                }, 3000); // 3 second loading screen
+                
+                // Send complete funnel data in background
+                try {
+                    await sendCompleteFunnelData();
+                    console.log('✅ Complete funnel data sent successfully');
+                } catch (error) {
+                    console.error('❌ Error sending complete funnel data:', error);
                 }
             });
         }
     }
-    });
-
-    // Back button for diabetes step
-    document.querySelector('#funnel-medical-diabetes .funnel-back-btn').addEventListener('click', function() {
-        document.getElementById('funnel-medical-diabetes').style.display = 'none';
-        document.getElementById('funnel-medical-hospital').style.display = 'block';
-        setMedicalProgress(4, 5);
-    });
-
-    // Back button for hospital step
-    document.querySelector('#funnel-medical-hospital .funnel-back-btn').addEventListener('click', function() {
-        document.getElementById('funnel-medical-hospital').style.display = 'none';
-        document.getElementById('funnel-medical-height-weight').style.display = 'block';
-        setMedicalProgress(3, 5);
-    });
-
-    // Back button for conditions step
-    document.querySelector('#funnel-medical-conditions .funnel-back-btn').addEventListener('click', function() {
-        document.getElementById('funnel-medical-conditions').style.display = 'none';
-        document.getElementById('funnel-medical-tobacco').style.display = 'block';
-        setMedicalProgress(1, 5);
-    });
-
-    // Back button for height/weight step
-    document.querySelector('#funnel-medical-height-weight .funnel-back-btn').addEventListener('click', function() {
-        document.getElementById('funnel-medical-height-weight').style.display = 'none';
-        document.getElementById('funnel-medical-conditions').style.display = 'block';
-        setMedicalProgress(2, 5);
-        // Initialize the medical conditions logic when form is shown
-        initializeMedicalConditionsLogic();
-        // Initialize dropdowns when height/weight form is shown
-        initializeHeightWeightDropdowns();
-    });
-
-    // Back button for tobacco step
-    document.querySelector('#funnel-medical-tobacco .funnel-back-btn').addEventListener('click', function() {
-        document.getElementById('funnel-medical-tobacco').style.display = 'none';
-        document.getElementById('funnel-contact-form').style.display = 'block';
-        // Hide progress tracker when going back to contact form
-        const tracker = document.querySelector('.funnel-progress-tracker');
-        if (tracker) tracker.style.display = 'none';
-    });
-
-    // Application form step 1 to step 2
-    document.getElementById('application-next-btn').addEventListener('click', function() {
-        // Validate required fields
-        const requiredFields = ['app-street-address', 'app-city', 'app-state', 'app-zip-code', 'app-beneficiary-first', 'app-beneficiary-last', 'app-beneficiary-relationship', 'app-birth-state', 'app-va-clinic', 'app-primary-doctor', 'app-driver-license'];
-        let isValid = true;
-        
-        requiredFields.forEach(fieldId => {
-            const field = document.getElementById(fieldId);
-            if (!field.value.trim()) {
-                showFieldError(field, 'This field is required');
-                isValid = false;
-            } else {
-                clearFieldError(field);
-            }
+    
+    // STEP 12: Quote Tool (final step)
+    function initializeQuoteToolStep() {
+        // This step is handled by the quote tool classes
+        console.log('Quote tool step initialized');
+    }
+    
+    // ============================================================================
+    // BACK BUTTON HANDLERS
+    // ============================================================================
+    
+    function initializeBackButtons() {
+        // Back button handlers for each step
+        const backButtons = document.querySelectorAll('.funnel-back-btn');
+        backButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const currentForm = this.closest('form');
+                if (currentForm) {
+                    goToPreviousStep(currentForm.id);
+                }
+            });
         });
-
-        if (!isValid) return;
-
-        // Save step 1 data to localStorage
-        const step1Data = {};
-        requiredFields.forEach(fieldId => {
-            const field = document.getElementById(fieldId);
-            step1Data[fieldId] = field.value;
-        });
-        localStorage.setItem('applicationPage1Data', JSON.stringify(step1Data));
-
-        // Go to step 2
-        document.getElementById('funnel-application-form').style.display = 'none';
-        document.getElementById('funnel-application-final').style.display = 'block';
-    });
-
-    // Application form step 2 submit
-    document.getElementById('application-submit-btn').addEventListener('click', function(e) {
-        e.preventDefault();
+    }
+    
+    // ============================================================================
+    // INITIALIZE ALL FUNNEL STEPS
+    // ============================================================================
+    
+    function initializeAllFunnelSteps() {
+        console.log('🚀 Initializing all 12 funnel steps...');
         
-        // Validate required fields
-        const requiredFields = ['app-ssn', 'app-bank-name', 'app-routing', 'app-account', 'app-policy-start-date'];
-        let isValid = true;
+        // Initialize each step
+        initializeStateStep();
+        initializeMilitaryStep();
+        initializeBranchStep();
+        initializeMaritalStep();
+        initializeCoverageStep();
+        initializeContactStep();
+        initializeTobaccoStep();
+        initializeConditionsStep();
+        initializeHeightWeightStep();
+        initializeHospitalStep();
+        initializeDiabetesStep();
+        initializeQuoteToolStep();
         
-        requiredFields.forEach(fieldId => {
-            const field = document.getElementById(fieldId);
-            if (!field.value.trim()) {
-                showFieldError(field, 'This field is required');
-                isValid = false;
-            } else {
-                clearFieldError(field);
-            }
-        });
-
-        if (!isValid) return;
-
-        // Get step 1 data from localStorage
-        const step1Data = JSON.parse(localStorage.getItem('applicationPage1Data') || '{}');
+        // Initialize back buttons
+        initializeBackButtons();
         
-        // Get step 2 data
-        const step2Data = {};
-        requiredFields.forEach(fieldId => {
-            const field = document.getElementById(fieldId);
-            step2Data[fieldId] = field.value;
+        console.log('✅ All 12 funnel steps initialized');
+    }
+    
+    // Initialize all funnel steps
+    initializeAllFunnelSteps();
+
+    // ============================================================================
+    // ADDITIONAL BUTTON INITIALIZATIONS (RESTORED FROM ORIGINAL)
+    // ============================================================================
+    
+    // Initialize "Load Screen" button
+    const loadScreenBtn = document.querySelector('.load-screen-btn, [data-action="load-screen"]');
+    if (loadScreenBtn) {
+        loadScreenBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('🔄 Load Screen button clicked');
+            showLoadingModal();
+            setTimeout(() => {
+                hideLoadingModal();
+                // Show medical congratulations modal
+                showMedicalCongratsModal();
+            }, 7000); // 7 seconds as requested
         });
-
-        // Combine all data
-        const completeData = { ...step1Data, ...step2Data };
-        console.log('Complete application data:', completeData);
-
-        // Show loading state
-        const submitBtn = this;
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-        submitBtn.disabled = true;
-
-        // Show loading modal for 3 seconds
-        const loadingModal = document.getElementById('processing-modal');
-        if (loadingModal) {
-            loadingModal.style.display = 'flex';
-        }
-
-        // Simulate API call for 3 seconds
-        setTimeout(() => {
-            // Hide loading modal
-            if (loadingModal) {
-                loadingModal.style.display = 'none';
-            }
-            
-            // Clear localStorage
-            localStorage.removeItem('applicationPage1Data');
-            
-            // Close the funnel modal
-            document.getElementById('funnel-modal').style.display = 'none';
-            document.body.style.overflow = '';
-            
-            // Show congratulations modal
-            console.log('About to show congrats modal');
-            showApplicationCongratsModal();
-            
-            // Reset the form
-            resetFunnel();
-            
-            // Reset button
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        }, 3000);
-    });
-
-    // Close modal when clicking outside
-    funnelModal.addEventListener('click', function(e) {
-        if (e.target === this) {
-            this.style.display = 'none';
-            document.body.style.overflow = '';
-            resetFunnel();
+    }
+    
+    // Initialize all medical form inputs (restored from original)
+    function initializeMedicalFormInputs() {
+        // Tobacco use inputs
+        const tobaccoInputs = document.querySelectorAll('#funnel-medical-tobacco input[name="tobaccoUse"]');
+        tobaccoInputs.forEach(input => {
+            input.addEventListener('click', () => {
+                medicalAnswers.tobaccoUse = input.value;
+                // Navigation is handled by the form submit in the step functions
+            });
+        });
+        
+        // Hospital care inputs
+        const hospitalInputs = document.querySelectorAll('#funnel-medical-hospital input[name="hospitalCare"]');
+        hospitalInputs.forEach(input => {
+            input.addEventListener('click', () => {
+                medicalAnswers.hospitalCare = input.value;
+                // Navigation is handled by the form submit in the step functions
+            });
+        });
+        
+        // Diabetes medication inputs
+        const diabetesInputs = document.querySelectorAll('#funnel-medical-diabetes input[name="diabetesMedication"]');
+        diabetesInputs.forEach(input => {
+            input.addEventListener('click', () => {
+                medicalAnswers.diabetesMedication = input.value;
+                // Navigation is handled by the form submit in the step functions
+            });
+        });
+    }
+    
+    // Initialize medical form inputs
+    initializeMedicalFormInputs();
+    
+    // Initialize height/weight dropdowns
+    initializeHeightWeightDropdowns();
+    
+    // Initialize medical conditions logic
+    initializeMedicalConditionsLogic();
+    
+    // Initialize application form navigation
+    initializeApplicationFormNavigation();
+    
+    // Initialize FAQ functionality
+    initializeFAQ();
+    
+    // Initialize image optimization
+    optimizeImages();
+    
+    // Initialize all other missing functionality
+    console.log('🔧 Initializing additional functionality...');
+    
+    // Track all CTA button clicks
+    document.addEventListener('click', function(e) {
+        if (e.target.matches('.cta-button, button[class*="cta"], .qualify-button')) {
+            const buttonText = e.target.textContent.trim();
+            const pageLocation = window.location.href;
+            trackEvent('cta_click', {
+                button_text: buttonText,
+                page_location: pageLocation
+            });
         }
     });
+    
+    console.log('✅ All additional functionality initialized');
 
-    // Success modal functionality
+    // ============================================================================
+    // PROGRESS TRACKING
+    // ============================================================================
+    
+    function setMedicalProgress(step, total) {
+        const progressBar = document.querySelector('.medical-progress-bar');
+        if (progressBar) {
+            const percentage = (step / total) * 100;
+            progressBar.style.width = percentage + '%';
+        }
+        // Log progress even if no visual bar exists
+        console.log(`📊 Medical Progress: Step ${step}/${total} (${Math.round((step / total) * 100)}%)`);
+    }
+    
+    function updateFunnelProgress(currentStepId) {
+        const currentStepIndex = FUNNEL_STEPS_ARRAY.findIndex(step => step.id === currentStepId);
+        const stepNumber = currentStepIndex + 1;
+        const percentage = Math.round((stepNumber / 12) * 100);
+        
+        console.log(`📊 Progress: Step ${stepNumber}/12 (${percentage}%)`);
+        
+        // Update progress tracker text
+        const progressTracker = document.querySelector('.funnel-progress-tracker');
+        if (progressTracker) {
+            progressTracker.textContent = `${stepNumber}/12`;
+        }
+        
+        // Update progress bar fill
+        const progressFill = document.querySelector('.funnel-progress-fill');
+        if (progressFill) {
+            progressFill.style.width = `${percentage}%`;
+        }
+        
+        // Update current step for abandonment tracking
+        window.currentStep = stepNumber;
+    }
+
+    // ============================================================================
+    // MODAL FUNCTIONS
+    // ============================================================================
+    
     function showSuccessModal() {
-        const successModal = document.getElementById('success-modal');
-        if (successModal) {
-            successModal.classList.add('active');
-
-            // Automatically hide and reset after 3 seconds
-            setTimeout(hideSuccessModal, 3000);
+        const modal = document.getElementById('success-modal');
+        if (modal) {
+            modal.style.display = 'flex';
         }
     }
 
     function hideSuccessModal() {
-        const successModal = document.getElementById('success-modal');
-
-        // Hide the success message
-        if (successModal) {
-            successModal.classList.remove('active');
+        const modal = document.getElementById('success-modal');
+        if (modal) {
+            modal.style.display = 'none';
         }
-        // Ensure the main funnel stays hidden until next time
-        const funnelModal = document.querySelector('.funnel-modal');
-        if (funnelModal) {
-            funnelModal.style.display = 'none';
-        }
-        // Reset the funnel steps for the next time it's opened
-        resetFunnel();
     }
-
-    // Application congratulations modal functions
+    
     function showApplicationCongratsModal() {
-        const congratsModal = document.getElementById('application-congrats-modal');
-        console.log('Showing congrats modal:', congratsModal);
-        if (congratsModal) {
-            congratsModal.style.display = 'flex';
-            congratsModal.style.opacity = '1';
-            congratsModal.style.zIndex = '9999';
-            console.log('Modal display set to flex');
-        } else {
-            console.log('Modal not found!');
+        const modal = document.getElementById('application-congrats-modal');
+        if (modal) {
+            modal.style.display = 'flex';
         }
     }
 
     function hideApplicationCongratsModal() {
-        const congratsModal = document.getElementById('application-congrats-modal');
-        if (congratsModal) {
-            congratsModal.style.display = 'none';
+        const modal = document.getElementById('application-congrats-modal');
+        if (modal) {
+            modal.style.display = 'none';
         }
     }
 
     function hideMedicalCongratsModal() {
         const congratsModal = document.getElementById('medical-congrats-modal');
         if (congratsModal) {
-            congratsModal.style.display = 'none';
+            // Smooth exit animation
+            congratsModal.style.opacity = '0';
+            congratsModal.style.transform = 'scale(0.9)';
+            congratsModal.style.transition = 'opacity 0.3s ease-in-out, transform 0.3s ease-in-out';
+            
+            // Remove after animation
+            setTimeout(() => {
+                congratsModal.style.display = 'none';
+                console.log('✅ Medical congratulations modal hidden');
+            }, 300);
         }
     }
 
+    // ============================================================================
+    // UTILITY FUNCTIONS
+    // ============================================================================
+
     function initializeFAQ() {
         const faqItems = document.querySelectorAll('.faq-item');
-        
         faqItems.forEach(item => {
             const question = item.querySelector('.faq-question');
+            const answer = item.querySelector('.faq-answer');
             
+            if (question && answer) {
             question.addEventListener('click', () => {
-                const isActive = item.classList.contains('active');
+                    const isOpen = item.classList.contains('active');
                 
-                // Close all other FAQ items
+                    // Close all FAQ items
                 faqItems.forEach(otherItem => {
                     otherItem.classList.remove('active');
                 });
                 
-                // Toggle current item
-                if (!isActive) {
+                    // Open clicked item if it wasn't open
+                    if (!isOpen) {
                     item.classList.add('active');
                 }
             });
+            }
         });
     }
-
-    // Make functions globally available
-    window.hideApplicationCongratsModal = hideApplicationCongratsModal;
-    window.showApplicationCongratsModal = showApplicationCongratsModal;
-    window.hideMedicalCongratsModal = hideMedicalCongratsModal;
-
-    // Initialize FAQ functionality
-    initializeFAQ();
-
-    // Phone number formatting
+    
     function initializePhoneNumberFormatting() {
-        const phoneInput = document.getElementById('phone');
-        if (phoneInput) {
-            phoneInput.addEventListener('input', function(e) {
+        const phoneInputs = document.querySelectorAll('input[type="tel"]');
+        phoneInputs.forEach(input => {
+            input.addEventListener('input', function(e) {
                 let value = e.target.value.replace(/\D/g, '');
                 if (value.length > 0) {
                     if (value.length <= 3) {
-                        value = value;
+                        value = `(${value}`;
                     } else if (value.length <= 6) {
-                        value = value.slice(0,3) + '-' + value.slice(3);
+                        value = `(${value.slice(0, 3)}) ${value.slice(3)}`;
                     } else {
-                        value = value.slice(0,3) + '-' + value.slice(3,6) + '-' + value.slice(6,10);
+                        value = `(${value.slice(0, 3)}) ${value.slice(3, 6)}-${value.slice(6, 10)}`;
                     }
                 }
                 e.target.value = value;
             });
-        }
+            });
     }
 
     function showFieldError(field, message) {
-        const errorDiv = field.parentElement.querySelector('.error-message') || 
-                        document.createElement('div');
-        errorDiv.className = 'error-message';
-        errorDiv.textContent = message;
-        if (!field.parentElement.querySelector('.error-message')) {
-            field.parentElement.appendChild(errorDiv);
-        }
+        if (!field) return;
+        
+        // Remove existing error
+        clearFieldError(field);
+        
+        // Add error styling
         field.classList.add('error');
+        
+        // Create error message
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'field-error';
+        errorDiv.textContent = message;
+        errorDiv.style.color = '#e74c3c';
+        errorDiv.style.fontSize = '12px';
+        errorDiv.style.marginTop = '5px';
+        
+        // Insert error message after field
+        field.parentNode.insertBefore(errorDiv, field.nextSibling);
+        
+        // Scroll to error
+        field.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     function clearFieldError(field) {
-        const errorDiv = field.parentElement.querySelector('.error-message');
-        if (errorDiv) {
-            errorDiv.remove();
-        }
+        if (!field) return;
+        
+        // Remove error styling
         field.classList.remove('error');
+        
+        // Remove existing error message
+        const existingError = field.parentNode.querySelector('.field-error');
+        if (existingError) {
+            existingError.remove();
+        }
+    }
+    
+    // Make clearFieldError globally accessible
+    window.clearFieldError = clearFieldError;
+
+    // Submit form data to Google Apps Script
+    async function submitFormData(data) {
+        console.log('=== START: submitFormData ===');
+        
+        try {
+            // Validate input data
+            if (!data || typeof data !== 'object') {
+                throw new Error('Invalid data: data must be an object');
+            }
+            
+            console.log('Input data:', data);
+            console.log('Data type:', typeof data);
+            console.log('Data keys:', Object.keys(data));
+            
+            // Convert data to URL-encoded format to avoid CORS preflight
+            const formData = new URLSearchParams();
+            let paramCount = 0;
+            
+            for (const [key, value] of Object.entries(data)) {
+                try {
+                    if (Array.isArray(value)) {
+                        formData.append(key, value.join(', '));
+                    } else {
+                        formData.append(key, value || '');
+                    }
+                    paramCount++;
+                } catch (paramError) {
+                    console.error(`Error processing parameter ${key}:`, paramError);
+                }
+            }
+            
+            console.log('Parameters processed:', paramCount);
+            
+            const requestBody = formData.toString();
+            console.log('Request body length:', requestBody.length);
+            console.log('Request body preview:', requestBody.substring(0, 200) + '...');
+            console.log('Target URL:', GOOGLE_APPS_SCRIPT_URL);
+            
+            // Validate URL
+            if (!GOOGLE_APPS_SCRIPT_URL || !GOOGLE_APPS_SCRIPT_URL.includes('script.google.com')) {
+                throw new Error('Invalid Google Apps Script URL');
+            }
+            
+            console.log('Making fetch request...');
+            const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: requestBody
+            });
+            
+            console.log('Response received');
+            console.log('Response status:', response.status);
+            console.log('Response status text:', response.statusText);
+            console.log('Response URL:', response.url);
+            
+            // Log all response headers
+            const headers = {};
+            response.headers.forEach((value, key) => {
+                headers[key] = value;
+            });
+            console.log('Response headers:', headers);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Error response body:', errorText);
+                throw new Error(`HTTP ${response.status} ${response.statusText}: ${errorText}`);
+            }
+            
+            console.log('Response is OK, parsing JSON...');
+            const result = await response.json();
+            console.log('Parsed result:', result);
+            console.log('=== END: submitFormData (SUCCESS) ===');
+            return result;
+            
+        } catch (error) {
+            console.error('=== ERROR in submitFormData ===');
+            console.error('Error type:', error.constructor.name);
+            console.error('Error name:', error.name);
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack);
+            
+            // Additional error context
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                console.error('Network error detected - check internet connection');
+            }
+            
+            if (error.message.includes('CORS')) {
+                console.error('CORS error detected - check Google Apps Script deployment');
+            }
+            
+            console.error('=== END ERROR ===');
+            throw error;
+        }
     }
 
-    document.querySelectorAll('.funnel-back-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const currentForm = this.closest('form');
-            const backStepId = this.getAttribute('data-back');
-            if (currentForm && backStepId) {
-                currentForm.style.display = 'none';
-                document.getElementById(backStepId).style.display = 'block';
-            }
-        });
-    });
-
-// Form handling functionality
+    // ============================================================================
+    // FORM HANDLING FUNCTIONS
+    // ============================================================================
+    
 function initializeFormHandling() {
     const form = document.getElementById('eligibilityForm');
     if (!form) return;
@@ -1040,124 +1864,61 @@ function validateFormData(data) {
 }
 
 // ============================================================================
-// CONFIGURATION - UPDATE THIS URL WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
+    // MESSAGE FUNCTIONS
 // ============================================================================
-// To get your Google Apps Script web app URL:
-// 1. Go to https://script.google.com
-// 2. Create a new project or open existing one
-// 3. Copy the contents of google-apps-script.js into the script editor
-// 4. Click "Deploy" > "New deployment"
-// 5. Choose "Web app" as type
-// 6. Set "Execute as" to "Me"
-// 7. Set "Who has access" to "Anyone"
-// 8. Click "Deploy" and copy the URL below
-const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzXsVqxdaC146Z-OhcnBqtz45c8cSXWsyoj27K0Kj34ogeVzoPGFIL2DKz8M15IlXaK/exec';
-
-// Submit form data to Google Apps Script
-async function submitFormData(data) {
     
-    try {
-        console.log('🚨 SUBMITFORMDATA CALLED 🚨');
-        console.log('Submitting data to:', GOOGLE_APPS_SCRIPT_URL);
-        console.log('Data being submitted:', data);
-        
-        const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'cors',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        });
-        
-        console.log('Response status:', response.status);
-        console.log('Response headers:', response.headers);
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Response error text:', errorText);
-            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-        }
-        
-        const result = await response.json();
-        console.log('Form data submitted successfully:', result);
-        return result;
-        
-    } catch (error) {
-        console.error('Error submitting form data:', error);
-        console.error('Error details:', error.message);
-        throw error;
-    }
-}
-
-// Show success message
 function showSuccessMessage(message) {
-    const notification = createNotification(message, 'success');
-    document.body.appendChild(notification);
+        createNotification(message, 'success');
+    }
     
-    setTimeout(() => {
-        notification.remove();
-    }, 5000);
-}
-
-// Show error message
 function showErrorMessage(message) {
-    const notification = createNotification(message, 'error');
-    document.body.appendChild(notification);
+        createNotification(message, 'error');
+    }
     
-    setTimeout(() => {
-        notification.remove();
-    }, 5000);
-}
-
-// Create notification element
 function createNotification(message, type) {
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 1rem 1.5rem;
-        border-radius: 8px;
-        color: white;
-        font-weight: 600;
-        z-index: 10000;
-        max-width: 400px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        animation: slideInRight 0.3s ease-out;
-    `;
+        notification.textContent = message;
+        
+        // Style the notification
+        notification.style.position = 'fixed';
+        notification.style.top = '20px';
+        notification.style.right = '20px';
+        notification.style.padding = '15px 20px';
+        notification.style.borderRadius = '5px';
+        notification.style.color = 'white';
+        notification.style.fontWeight = 'bold';
+        notification.style.zIndex = '10000';
+        notification.style.maxWidth = '300px';
+        notification.style.wordWrap = 'break-word';
     
     if (type === 'success') {
-        notification.style.background = '#10b981';
+            notification.style.backgroundColor = '#27ae60';
     } else {
-        notification.style.background = '#ef4444';
-    }
-    
-    notification.textContent = message;
-    return notification;
-}
-
-// Smooth scrolling functionality
-function initializeSmoothScrolling() {
-    // Smooth scroll to form when CTA button is clicked
-    window.scrollToForm = function() {
-        const form = document.getElementById('eligibility-form');
-        if (form) {
-            form.scrollIntoView({ 
-                behavior: 'smooth',
-                block: 'start'
-            });
+            notification.style.backgroundColor = '#e74c3c';
         }
-    };
+        
+        document.body.appendChild(notification);
+        
+        // Remove notification after 5 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 5000);
+    }
+
+    // ============================================================================
+    // ANIMATION AND SCROLLING FUNCTIONS
+    // ============================================================================
     
-    // Smooth scroll for navigation links
-    const navLinks = document.querySelectorAll('a[href^="#"]');
-    navLinks.forEach(link => {
+    function initializeSmoothScrolling() {
+        const links = document.querySelectorAll('a[href^="#"]');
+        links.forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
-            const targetId = this.getAttribute('href').substring(1);
-            const targetElement = document.getElementById(targetId);
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
             
             if (targetElement) {
                 targetElement.scrollIntoView({ 
@@ -1169,873 +1930,565 @@ function initializeSmoothScrolling() {
     });
 }
 
-// Initialize animations
 function initializeAnimations() {
-    // Intersection Observer for scroll animations
+        // Add animation classes to elements when they come into view
     const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
     };
     
-    const observer = new IntersectionObserver(function(entries) {
+        const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
+                    entry.target.classList.add('animate-in');
             }
         });
     }, observerOptions);
     
-    // Observe elements for animation
-    const animatedElements = document.querySelectorAll('.benefit-card, .testimonial-card, .why-feature');
-    animatedElements.forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(30px)';
-        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        observer.observe(el);
-    });
-}
+        // Observe elements with animation classes
+        const animatedElements = document.querySelectorAll('.fade-in, .slide-in, .scale-in');
+        animatedElements.forEach(el => observer.observe(el));
+    }
 
-// Form validation
-function initializeFormValidation() {
-    const form = document.getElementById('eligibilityForm');
-    if (!form) return;
+    // ============================================================================
+    // FORM VALIDATION FUNCTIONS
+    // ============================================================================
     
-    const inputs = form.querySelectorAll('input, select');
-    
+    function initializeFormValidation() {
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            const inputs = form.querySelectorAll('input, select, textarea');
     inputs.forEach(input => {
-        input.addEventListener('blur', function() {
-            validateField(this);
-        });
-        
-        input.addEventListener('input', function() {
-            clearFieldError(this);
+                input.addEventListener('blur', () => validateField(input));
+                input.addEventListener('input', () => clearFieldError(input));
         });
     });
 }
 
-// Validate individual field
 function validateField(field) {
     const value = field.value.trim();
-    let isValid = true;
-    let errorMessage = '';
+        const fieldName = field.name || field.id;
     
-    // Check if required field is empty
+        // Clear previous errors
+        clearFieldError(field);
+        
+        // Required field validation
     if (field.hasAttribute('required') && !value) {
-        isValid = false;
-        errorMessage = 'This field is required.';
+            showFieldError(field, `${fieldName} is required`);
+            return false;
     }
     
     // Email validation
     if (field.type === 'email' && value) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(value)) {
-            isValid = false;
-            errorMessage = 'Please enter a valid email address.';
+                showFieldError(field, 'Please enter a valid email address');
+                return false;
         }
     }
     
     // Phone validation
     if (field.type === 'tel' && value) {
+            const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
         const cleanPhone = value.replace(/\D/g, '');
-        if (cleanPhone.length < 10) {
-            isValid = false;
-            errorMessage = 'Please enter a valid phone number.';
+            if (!phoneRegex.test(cleanPhone)) {
+                showFieldError(field, 'Please enter a valid phone number');
+                return false;
+            }
         }
+        
+        return true;
     }
-    
-    if (!isValid) {
-        showFieldError(field, errorMessage);
-    } else {
-        clearFieldError(field);
-    }
-    
-    return isValid;
-}
 
-// Header scroll effect
-window.addEventListener('scroll', function() {
-    const header = document.querySelector('.header');
-    if (window.scrollY > 100) {
-        header.style.background = 'rgba(255, 255, 255, 0.98)';
-        header.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
-    } else {
-        header.style.background = 'rgba(255, 255, 255, 0.95)';
-        header.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
-    }
-});
-
-// Add CSS animations
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideInRight {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
+    // ============================================================================
+    // EVENT TRACKING FUNCTIONS
+    // ============================================================================
     
-    @keyframes pulse {
-        0%, 100% {
-            transform: scale(1);
-        }
-        50% {
-            transform: scale(1.05);
-        }
-    }
-    
-    .cta-button.primary:hover {
-        animation: pulse 0.6s ease-in-out;
-    }
-    
-    .benefit-card:hover .benefit-icon {
-        transform: scale(1.1);
-        transition: transform 0.3s ease;
-    }
-    
-    .testimonial-card:hover {
-        transform: translateY(-5px) scale(1.02);
-    }
-    
-    .why-feature:hover i {
-        transform: rotate(5deg);
-        transition: transform 0.3s ease;
-    }
-`;
-document.head.appendChild(style);
-
-// Analytics tracking (replace with your actual analytics code)
-function trackEvent(eventName, eventData = {}) {
-    // Google Analytics 4
+    function trackEvent(eventName, eventData = {}) {
+        try {
+            // Add timestamp and page location
+            const eventPayload = {
+                ...eventData,
+                timestamp: new Date().toISOString(),
+                page_location: window.location.href,
+                user_agent: navigator.userAgent
+            };
+            
+            console.log('Event tracked:', eventName, eventPayload);
+            
+            // You can integrate with Google Analytics, Facebook Pixel, etc. here
     if (typeof gtag !== 'undefined') {
-        gtag('event', eventName, eventData);
+                gtag('event', eventName, eventPayload);
     }
     
-    // Facebook Pixel
     if (typeof fbq !== 'undefined') {
-        fbq('track', eventName, eventData);
+                fbq('track', eventName, eventPayload);
+            }
+            
+        } catch (error) {
+            console.error('Error tracking event:', error);
+        }
     }
-    
-    console.log('Event tracked:', eventName, eventData);
-}
 
-// Track form submissions
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('eligibilityForm');
-    if (form) {
-        form.addEventListener('submit', function() {
-            trackEvent('form_submit', {
-                form_name: 'eligibility_form',
-                page_location: window.location.href
-            });
-        });
-    }
+    // ============================================================================
+    // IMAGE OPTIMIZATION FUNCTIONS
+    // ============================================================================
     
-    // Track CTA button clicks
-    const ctaButtons = document.querySelectorAll('.cta-button');
-    ctaButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            trackEvent('cta_click', {
-                button_text: this.textContent.trim(),
-                page_location: window.location.href
-            });
-        });
-    });
-});
-
-// Performance optimization
 function optimizeImages() {
     const images = document.querySelectorAll('img');
     images.forEach(img => {
-        img.loading = 'lazy';
-        img.decoding = 'async';
-    });
-}
-
-// Initialize image optimization
-document.addEventListener('DOMContentLoaded', optimizeImages);
-
-// Service Worker registration (for PWA capabilities)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/sw.js')
-            .then(function(registration) {
-                console.log('ServiceWorker registration successful');
-            })
-            .catch(function(err) {
-                console.log('ServiceWorker registration failed');
+            // Add loading="lazy" for better performance
+            if (!img.hasAttribute('loading')) {
+                img.setAttribute('loading', 'lazy');
+            }
+            
+            // Add alt text if missing
+            if (!img.hasAttribute('alt')) {
+                img.setAttribute('alt', 'Veteran Legacy Life Insurance');
+            }
+            
+            // Add error handling
+            img.addEventListener('error', function() {
+                this.style.display = 'none';
+                console.error('Image failed to load:', this.src);
             });
-    });
-}
-
-// Update the funnel data collection
-document.getElementById('funnel-state-select').addEventListener('change', function() {
-    document.getElementById('form-state').value = this.value;
-});
-
-document.querySelectorAll('#funnel-military-form input[name="militaryStatus"]').forEach(input => {
-    input.addEventListener('change', function() {
-        document.getElementById('form-military-status').value = this.value;
-    });
-});
-
-document.querySelectorAll('#funnel-branch-form input[name="branchOfService"]').forEach(input => {
-    input.addEventListener('change', function() {
-        document.getElementById('form-branch').value = this.value;
-    });
-});
-
-document.querySelectorAll('#funnel-marital-form input[name="maritalStatus"]').forEach(input => {
-    input.addEventListener('change', function() {
-        document.getElementById('form-marital-status').value = this.value;
-    });
-});
-
-document.querySelectorAll('#funnel-coverage-form input[name="coverageAmount"]').forEach(input => {
-    input.addEventListener('change', function() {
-        document.getElementById('form-coverage-amount').value = this.value;
-    });
-});
-
-// Add quote-utils.js script tag to the head
-document.addEventListener('DOMContentLoaded', function() {
-    // Add quote-utils.js script if not already present
-    if (!document.querySelector('script[src="quote-utils.js"]')) {
-        const script = document.createElement('script');
-        script.src = 'quote-utils.js';
-        document.head.appendChild(script);
+        });
     }
-});
 
-// Coverage Slider functionality
+    // ============================================================================
+    // QUOTE SLIDER CLASSES
+    // ============================================================================
+    
 class CoverageSlider {
     constructor() {
-        this.quoteGender = 'male';
-        this.quoteAge = 60; // Default starting age (minimum)
-        this.quoteCoverage = 5000; // Default starting coverage (minimum)
-        this.healthTier = 'select1'; // Default health tier
-        
-        // Initialize with funnel data if available
-        this.initializeFromFunnelData();
-        
+            this.slider = document.getElementById('coverage-slider');
+            this.quoteDisplay = document.getElementById('coverage-quote');
+            this.currentValue = 10000;
                 this.init();
-
-        // Set initial slider values
-        this.updateSliderValues();
-        
-        // Setup modal close listener
-        this.setupModalCloseListener();
     }
 
     init() {
+            if (this.slider) {
         this.setupEventListeners();
         this.updateQuote();
+            }
     }
 
     setupEventListeners() {
-        // Age slider
-        document.getElementById('age-slider').addEventListener('input', (e) => {
-            this.quoteAge = parseInt(e.target.value);
-            document.getElementById('age-display').textContent = this.quoteAge;
+            this.slider.addEventListener('input', () => {
+                this.currentValue = parseInt(this.slider.value);
             this.updateQuote();
         });
 
-        // Coverage slider
-        document.getElementById('coverage-slider').addEventListener('input', (e) => {
-            this.quoteCoverage = parseInt(e.target.value);
-            document.getElementById('coverage-display').textContent = this.quoteCoverage.toLocaleString();
-            this.updateQuote();
-        });
-
-        // Gender selection
-        document.querySelectorAll('input[name="gender"]').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                this.quoteGender = e.target.value;
-                this.updateQuote();
-            });
-        });
-
-        // Quote card click
-        document.getElementById('quote-card').addEventListener('click', () => {
-            if (this.getQuote()) {
-                this.showApplicationModal();
-            }
-        });
-
-        // Modal close
-        document.getElementById('modal-close').addEventListener('click', () => {
-            this.hideSecureQuoteModal();
-        });
-
-        // Form submission
-        document.getElementById('quote-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.handleFormSubmit();
-        });
-
-        // Application form submission
-        const applicationForm = document.getElementById('application-form');
-        if (applicationForm) {
-            applicationForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.handleApplicationSubmit();
-            });
+            // Add quote button event listener
+            const getQuoteBtn = document.getElementById('get-coverage-quote');
+            if (getQuoteBtn) {
+                getQuoteBtn.addEventListener('click', () => this.showApplicationModal());
         }
     }
 
     getQuote() {
-        // Use real quote calculation engine with default health tier
-        if (typeof QuoteUtils !== 'undefined') {
-            return QuoteUtils.getNationalQuote(this.quoteGender, this.quoteAge, this.quoteCoverage, this.healthTier);
-        } else {
-            console.error('QuoteUtils not loaded');
-            return null;
-        }
+            // Final Expense rate calculation
+            const baseRate = 0.05; // 5% base rate
+            const coverageMultiplier = this.currentValue / 10000;
+            return Math.round(this.currentValue * baseRate * coverageMultiplier);
     }
 
     updateQuote() {
-        console.log('updateQuote called with:', this.quoteAge, this.quoteCoverage, this.quoteGender, this.healthTier);
-        const quote = this.getQuote();
-        const quoteCard = document.getElementById('quote-card');
-
-        if (quote) {
-            quoteCard.innerHTML = `
-                <div class="quote-amount">$${quote}</div>
-                <div class="quote-period">/month</div>
-                <div class="quote-actions">
-                    <button class="quote-action-btn secondary" id="final-expense-secure-quote-btn">
-                        <i class="fas fa-shield-alt"></i>
-                        Secure Quote
-                    </button>
-                </div>
-            `;
-            // Add event listener for the Secure Quote button
-            setTimeout(() => {
-                const secureBtn = document.getElementById('final-expense-secure-quote-btn');
-                if (secureBtn) {
-                    secureBtn.onclick = () => {
-                        // Hide coverage slider modal
-                        document.getElementById('coverage-slider-modal').style.display = 'none';
-                        document.getElementById('coverage-slider-modal').classList.remove('active');
-                        // Show application form step in funnel modal
-                        document.getElementById('funnel-modal').style.display = 'flex';
-                        document.body.style.overflow = 'hidden';
-                        document.getElementById('funnel-application-form').style.display = 'block';
-                        // Optionally, hide all other funnel steps
-                        document.querySelectorAll('#funnel-modal form').forEach(form => {
-                            if (form.id !== 'funnel-application-form') form.style.display = 'none';
-                        });
-                    };
-                }
-            }, 0);
-        } else {
-            quoteCard.innerHTML = '<div class="quote-placeholder">Adjust sliders to get your rate!</div>';
+        try {
+            if (this.quoteDisplay) {
+                const monthlyPremium = this.getQuote();
+                console.log('💰 Calculating Coverage quote - Coverage:', this.currentValue, 'Premium:', monthlyPremium);
+                
+                this.quoteDisplay.innerHTML = `
+                    <div class="quote-result">
+                        <h3>Your Estimated Monthly Premium</h3>
+                        <div class="premium-amount">$${monthlyPremium.toLocaleString()}</div>
+                        <p>For $${this.currentValue.toLocaleString()} in coverage</p>
+                        <button class="cta-button" onclick="handleCoverageQuoteNow()">Get Your Quote Now</button>
+                    </div>
+                `;
+                console.log('✅ Coverage quote display updated successfully');
+            } else {
+                console.error('❌ Coverage quote display element not found');
+            }
+        } catch (error) {
+            console.error('❌ Error updating coverage quote display:', error);
         }
     }
 
     showApplicationModal() {
-        // Hide coverage slider modal
-        document.getElementById('coverage-slider-modal').style.display = 'none';
-        document.getElementById('coverage-slider-modal').classList.remove('active');
-        // Show application modal
-        document.getElementById('application-modal').style.display = 'flex';
-        document.getElementById('application-modal').classList.add('active');
+        console.log('🔄 "Get Your Quote Now" clicked - showing application form');
+        // Hide the coverage slider modal
+        const coverageModal = document.getElementById('coverage-slider-modal');
+        if (coverageModal) {
+            coverageModal.style.display = 'none';
+        }
+        // Show the application form
+        showNextStepAfterCongrats();
     }
 
     showSecureQuoteModal() {
-        // Hide coverage slider modal
-        document.getElementById('coverage-slider-modal').style.display = 'none';
-        document.getElementById('coverage-slider-modal').classList.remove('active');
-        // Show application form step in funnel modal
-        document.getElementById('funnel-modal').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-        document.getElementById('funnel-application-form').style.display = 'block';
-        // Optionally, hide all other funnel steps
-        document.querySelectorAll('#funnel-modal form').forEach(form => {
-            if (form.id !== 'funnel-application-form') form.style.display = 'none';
-        });
+            const modal = document.getElementById('secure-quote-modal');
+            if (modal) {
+                modal.style.display = 'flex';
+                this.setupModalCloseListener();
+            }
     }
 
     hideSecureQuoteModal() {
-        document.getElementById('secure-quote-modal').style.display = 'none';
+            const modal = document.getElementById('secure-quote-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
     }
     
-    // Add event listener for modal close button
     setupModalCloseListener() {
-        const closeButton = document.getElementById('modal-close');
-        if (closeButton) {
-            closeButton.addEventListener('click', () => {
-                this.hideSecureQuoteModal();
-            });
+            const closeBtn = document.querySelector('#secure-quote-modal .close-btn');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => this.hideSecureQuoteModal());
         }
     }
     
     updateSliderValues() {
-        // Update age slider
-        const ageSlider = document.getElementById('age-slider');
-        const ageDisplay = document.getElementById('age-display');
-        if (ageSlider && ageDisplay) {
-            ageSlider.value = this.quoteAge;
-            ageDisplay.textContent = this.quoteAge;
-        }
-        
-        // Update coverage slider
-        const coverageSlider = document.getElementById('coverage-slider');
-        const coverageDisplay = document.getElementById('coverage-display');
-        if (coverageSlider && coverageDisplay) {
-            coverageSlider.value = this.quoteCoverage;
-            coverageDisplay.textContent = this.quoteCoverage.toLocaleString();
+            if (this.slider) {
+                const min = parseInt(this.slider.min);
+                const max = parseInt(this.slider.max);
+                const value = parseInt(this.slider.value);
+                
+                // Update display values
+                const minDisplay = document.getElementById('coverage-min');
+                const maxDisplay = document.getElementById('coverage-max');
+                const currentDisplay = document.getElementById('coverage-current');
+                
+                if (minDisplay) minDisplay.textContent = `$${min.toLocaleString()}`;
+                if (maxDisplay) maxDisplay.textContent = `$${max.toLocaleString()}`;
+                if (currentDisplay) currentDisplay.textContent = `$${value.toLocaleString()}`;
         }
     }
 
     async handleFormSubmit() {
-        const submitButton = document.getElementById('submit-button');
-        const formMessage = document.getElementById('form-message');
-        
-        submitButton.textContent = 'Sending...';
-        submitButton.disabled = true;
-        formMessage.style.display = 'none';
-
-        try {
-            // Get form data
             const form = document.getElementById('quote-form');
+            if (!form) return;
+            
+            try {
             const formData = new FormData(form);
-            const data = Object.fromEntries(formData);
-            
-            // Add comprehensive quote data
-            data.coverageAmount = this.quoteAmount;
-            data.age = this.quoteAge;
-            data.healthTier = this.healthTier;
-            data.quoteType = 'coverage_slider';
-            data.monthlyPremium = this.monthlyPremium;
-            data.formType = 'Quote';
-            data.timestamp = new Date().toISOString();
-            
-            // Submit to Google Apps Script
+                const data = {
+                    coverageAmount: this.currentValue,
+                    monthlyPremium: this.getQuote(),
+                    ...Object.fromEntries(formData)
+                };
+                
             await submitFormData(data);
-            
-            formMessage.className = 'form-message form-success';
-            formMessage.textContent = 'Quote sent successfully! Check your email.';
-            formMessage.style.display = 'block';
-            
-            // Reset form
-            form.reset();
+                this.showSecureQuoteModal();
             
         } catch (error) {
             console.error('Error submitting quote form:', error);
-            formMessage.className = 'form-message form-error';
-            formMessage.textContent = 'Error sending quote. Please try again.';
-            formMessage.style.display = 'block';
-        } finally {
-            submitButton.textContent = 'Get My Quote';
-            submitButton.disabled = false;
+                showErrorMessage('Error submitting form. Please try again.');
         }
     }
 
     async handleApplicationSubmit() {
-        const submitButton = document.querySelector('#application-form .cta-button');
-        const originalText = submitButton.textContent;
-        
-        submitButton.textContent = 'Submitting...';
-        submitButton.disabled = true;
-
-        try {
-            // Get form data
             const form = document.getElementById('application-form');
+            if (!form) return;
+            
+            try {
             const formData = new FormData(form);
-            const data = Object.fromEntries(formData);
-            
-            // Add form type identifier
-            data.formType = 'application_form';
-            
-            // Submit to Google Apps Script
+                const data = {
+                    formType: 'Application',
+                    coverageAmount: this.currentValue,
+                    monthlyPremium: this.getQuote(),
+                    ...Object.fromEntries(formData)
+                };
+                
             await submitFormData(data);
-            
-            // Show success message
-            alert('Application submitted successfully! A representative will contact you within 24 hours.');
-            
-            // Close application modal
-            document.getElementById('application-modal').style.display = 'none';
-            document.getElementById('application-modal').classList.remove('active');
-            
-            // Reset form
-            form.reset();
+                showSuccessMessage('Application submitted successfully!');
+                
+                // Hide modal
+                const modal = document.getElementById('application-modal');
+                if (modal) {
+                    modal.style.display = 'none';
+                }
             
         } catch (error) {
-            console.error('Error submitting application form:', error);
-            alert('Error submitting application. Please try again.');
-        } finally {
-            submitButton.textContent = originalText;
-            submitButton.disabled = false;
-        }
-    }
-}
-
-// Add methods to CoverageSlider class for funnel integration
-CoverageSlider.prototype.initializeFromFunnelData = function() {
-    // Get funnel data from global scope if available
-    if (typeof funnelData !== 'undefined' && funnelData.contactInfo) {
-        // Set age from funnel data
-        if (funnelData.contactInfo.age) {
-            this.quoteAge = parseInt(funnelData.contactInfo.age);
-            // Update the slider to match
-            const ageSlider = document.getElementById('age-slider');
-            if (ageSlider) {
-                ageSlider.value = this.quoteAge;
-                document.getElementById('age-display').textContent = this.quoteAge;
+                console.error('Error submitting application:', error);
+                showErrorMessage('Error submitting application. Please try again.');
             }
         }
-        
-        // Determine health tier based on medical answers
-        this.determineHealthTier();
     }
-};
-
-CoverageSlider.prototype.determineHealthTier = function() {
-    // Get medical answers from funnel data
-    if (typeof funnelData !== 'undefined' && funnelData.medicalAnswers) {
-        const answers = funnelData.medicalAnswers;
-        let riskFactors = 0;
-        
-        // Check tobacco use
-        if (answers.tobaccoUse === 'Yes') {
-            riskFactors += 2;
-        }
-        
-        // Check medical conditions
-        if (answers.medicalConditions) {
-            const conditions = Array.isArray(answers.medicalConditions) 
-                ? answers.medicalConditions 
-                : [answers.medicalConditions];
-            
-            conditions.forEach(condition => {
-                if (condition !== 'None') {
-                    riskFactors += 1;
-                }
-            });
-        }
-        
-        // Check diabetes
-        if (answers.diabetesMedication && answers.diabetesMedication !== 'No') {
-            riskFactors += 1;
-        }
-        
-        // Determine health tier based on risk factors
-        if (riskFactors === 0) {
-            this.healthTier = 'select1'; // Best rates
-        } else if (riskFactors <= 2) {
-            this.healthTier = 'select2'; // Standard rates
-        } else {
-            this.healthTier = 'select3'; // Higher rates
-        }
-    }
-};
 
 class IULQuoteSlider {
     constructor() {
-        this.iulData = {
-            male: {
-                40: [35.75, 39.26, 42.77, 46.27, 49.78, 50.94, 54.27, 57.60, 60.93, 64.26, 66.12, 69.30, 72.49, 75.67, 78.86, 81.30, 84.35, 87.41, 90.46, 93.52, 96.49, 99.53, 102.60, 105.66, 108.71, 111.69, 114.67, 117.65, 120.63, 123.61, 126.87, 129.85, 132.83, 135.81, 138.79, 142.05, 145.03, 148.01, 150.99, 154.07, 157.25],
-                41: [37.90, 41.60, 45.31, 49.01, 52.71, 54.16, 57.71, 61.26, 64.81, 68.36, 70.42, 73.83, 77.24, 80.65, 84.06, 86.68, 89.88, 93.09, 96.29, 99.50, 102.94, 106.13, 109.33, 112.53, 115.73, 119.20, 122.39, 125.59, 128.79, 132.00, 135.46, 138.66, 141.86, 145.06, 148.26, 151.72, 154.92, 158.12, 161.32, 164.24, 167.99],
-                42: [40.05, 43.95, 47.84, 51.74, 55.64, 57.39, 61.14, 64.90, 68.66, 72.41, 74.72, 78.36, 82.00, 85.64, 89.28, 92.05, 95.42, 98.78, 102.15, 105.52, 109.39, 112.73, 116.08, 119.42, 122.77, 126.72, 130.06, 133.40, 136.75, 140.09, 144.05, 147.39, 150.74, 154.08, 157.42, 161.40, 164.74, 168.08, 171.43, 174.73, 178.73],
-                43: [42.20, 46.30, 50.39, 54.49, 58.59, 60.61, 64.58, 68.54, 72.51, 76.48, 78.02, 82.29, 86.56, 90.83, 95.10, 97.43, 101.03, 104.64, 108.24, 111.85, 115.84, 119.43, 123.02, 126.61, 130.21, 134.23, 137.82, 141.41, 145.01, 148.60, 152.64, 156.23, 159.83, 163.42, 167.02, 171.07, 174.66, 178.26, 181.85, 185.99, 189.48],
-                44: [44.80, 49.14, 53.48, 57.82, 62.16, 64.52, 68.78, 73.04, 77.30, 81.56, 84.23, 88.79, 93.35, 97.91, 102.47, 103.92, 107.79, 111.66, 115.53, 119.40, 123.64, 127.50, 131.36, 135.22, 139.08, 143.35, 147.21, 151.07, 154.93, 158.79, 163.06, 166.92, 170.78, 174.64, 178.50, 182.77, 186.63, 190.49, 194.35, 199.07, 202.48],
-                45: [47.53, 52.09, 56.66, 61.23, 65.80, 68.62, 73.08, 77.54, 81.99, 86.45, 89.70, 94.53, 99.37, 104.20, 109.03, 110.77, 114.88, 118.99, 123.10, 127.21, 131.82, 135.93, 140.04, 144.15, 148.26, 152.87, 157.00, 161.12, 165.24, 169.37, 173.97, 178.09, 182.21, 186.34, 190.46, 194.89, 199.01, 203.14, 207.26, 212.90, 216.17],
-                46: [50.27, 55.04, 59.81, 64.58, 69.35, 72.72, 77.38, 82.04, 86.70, 91.36, 95.17, 100.27, 105.37, 110.47, 115.57, 117.61, 121.97, 126.33, 130.69, 135.05, 140.06, 144.42, 148.78, 153.14, 157.50, 162.52, 166.88, 171.24, 175.60, 179.96, 184.96, 189.32, 193.68, 198.04, 202.40, 207.41, 211.77, 216.13, 220.49, 226.73, 229.86],
-                47: [53.60, 58.68, 63.77, 68.85, 73.94, 77.72, 82.68, 87.64, 92.60, 97.56, 101.83, 107.27, 112.71, 118.15, 123.59, 125.94, 130.57, 135.20, 139.83, 144.46, 149.86, 154.49, 159.12, 163.75, 168.38, 173.88, 178.51, 183.14, 187.77, 192.40, 197.90, 202.53, 207.16, 211.79, 216.42, 221.80, 226.43, 231.06, 235.69, 242.76, 245.97],
-                48: [56.94, 62.31, 67.68, 73.05, 78.42, 82.72, 87.98, 93.24, 98.50, 103.76, 108.49, 114.27, 120.05, 125.83, 131.61, 134.28, 139.17, 144.06, 148.95, 153.84, 160.06, 165.00, 169.94, 174.88, 179.82, 185.83, 190.77, 195.71, 200.65, 205.59, 211.61, 216.55, 221.49, 226.43, 231.37, 237.39, 242.33, 247.27, 252.21, 260.04, 263.17],
-                49: [60.44, 66.16, 71.88, 77.60, 83.32, 87.96, 93.52, 99.08, 104.64, 110.20, 115.48, 121.60, 127.72, 133.84, 139.96, 142.92, 148.21, 153.50, 158.79, 164.08, 170.54, 175.83, 181.12, 186.41, 191.70, 197.97, 203.26, 208.55, 213.84, 219.13, 225.75, 231.04, 236.33, 241.62, 246.91, 253.12, 258.41, 263.70, 268.99, 277.60, 280.65],
-                50: [63.94, 69.96, 75.98, 82.00, 88.02, 93.19, 99.06, 104.93, 110.80, 116.67, 122.47, 128.93, 135.39, 141.85, 148.31, 151.75, 157.25, 162.75, 168.25, 173.75, 181.03, 186.53, 192.03, 197.53, 203.03, 210.30, 215.80, 221.30, 226.80, 232.30, 239.58, 245.08, 250.58, 256.08, 261.58, 268.85, 274.35, 279.85, 285.35, 295.17, 298.13],
-                51: [67.95, 74.33, 80.71, 87.09, 93.47, 99.22, 105.46, 111.70, 117.94, 124.18, 130.51, 137.26, 144.01, 150.76, 157.51, 161.79, 167.79, 173.79, 179.79, 185.79, 193.07, 199.07, 205.07, 211.07, 217.07, 224.36, 230.36, 236.36, 242.36, 248.36, 255.65, 261.65, 267.65, 273.65, 279.65, 286.92, 292.92, 298.92, 304.92, 315.26, 318.21],
-                52: [71.96, 78.70, 85.44, 92.18, 98.92, 105.25, 111.86, 118.47, 125.08, 131.69, 138.55, 145.59, 152.63, 159.67, 166.71, 171.84, 178.33, 184.82, 191.31, 197.80, 205.12, 211.61, 218.10, 224.59, 231.08, 238.42, 244.91, 251.40, 257.89, 264.38, 271.71, 278.20, 284.69, 291.18, 297.67, 305.00, 311.49, 317.98, 324.47, 335.35, 338.29],
-                53: [76.43, 83.56, 90.69, 97.82, 104.95, 111.97, 118.98, 126.00, 133.01, 140.02, 147.50, 154.92, 162.34, 169.76, 177.18, 182.84, 189.49, 196.14, 202.79, 209.44, 218.05, 224.70, 231.35, 238.00, 244.65, 253.58, 260.23, 266.88, 273.53, 280.18, 289.11, 295.76, 302.41, 309.06, 315.71, 324.64, 331.29, 337.94, 344.59, 357.22, 360.17],
-                54: [80.90, 88.43, 95.96, 103.49, 111.02, 118.68, 126.10, 133.52, 140.94, 148.36, 156.45, 164.25, 172.05, 179.85, 187.65, 194.21, 201.65, 209.09, 216.53, 223.97, 231.98, 239.42, 246.86, 254.30, 261.74, 269.74, 277.18, 284.62, 292.06, 299.50, 307.52, 314.96, 322.40, 329.84, 337.28, 345.28, 352.72, 360.16, 367.60, 383.04, 383.04],
-                55: [86.16, 94.16, 102.16, 110.16, 118.16, 126.56, 134.36, 142.16, 149.96, 157.76, 167.44, 175.58, 183.72, 191.86, 200.00, 207.83, 215.67, 223.51, 231.35, 239.19, 248.22, 256.06, 263.90, 271.74, 279.58, 288.61, 296.45, 304.29, 312.13, 319.97, 329.00, 336.84, 344.68, 352.52, 360.36, 369.90, 377.74, 385.58, 393.42, 407.90, 410.78],
-                56: [91.41, 99.80, 108.19, 116.58, 124.97, 134.43, 142.62, 150.81, 159.00, 167.19, 177.44, 186.23, 195.02, 203.81, 212.60, 220.46, 228.84, 237.22, 245.60, 253.98, 263.46, 272.25, 281.04, 289.83, 298.62, 306.48, 315.27, 324.06, 332.85, 341.64, 349.49, 358.28, 367.07, 375.86, 384.65, 392.52, 401.31, 410.10, 418.89, 432.76, 435.53],
-                57: [97.54, 106.50, 115.46, 124.42, 133.38, 143.61, 152.37, 161.13, 169.89, 178.65, 189.68, 198.88, 208.08, 217.28, 226.48, 235.76, 244.96, 254.16, 263.36, 272.56, 281.82, 291.02, 300.22, 309.42, 318.62, 327.90, 337.10, 346.30, 355.50, 364.70, 373.98, 383.18, 392.38, 401.58, 410.78, 420.06, 429.26, 438.46, 447.66, 463.37, 466.14],
-                58: [103.66, 113.08, 122.50, 131.92, 141.34, 152.78, 162.12, 171.46, 180.80, 190.14, 201.92, 211.54, 221.16, 230.78, 240.40, 251.06, 260.68, 270.30, 279.92, 289.54, 300.19, 309.81, 319.43, 329.05, 338.67, 349.33, 358.95, 368.57, 378.19, 387.81, 398.47, 408.09, 417.71, 427.33, 436.95, 447.61, 457.23, 466.85, 476.47, 493.98, 496.74],
-                59: [80.47, 88.23, 95.99, 103.75, 111.51, 117.78, 125.44, 133.10, 140.76, 148.42, 155.58, 163.54, 171.50, 179.46, 187.42, 193.39, 200.35, 207.31, 214.27, 221.23, 230.19, 237.91, 245.63, 253.35, 261.07, 270.03, 277.75, 285.47, 293.19, 300.91, 309.87, 317.59, 325.31, 333.03, 340.75, 349.71, 357.43, 365.15, 372.87, 408.38, 408.38],
-                60: [85.97, 94.23, 102.49, 110.75, 119.01, 126.27, 134.43, 142.59, 150.75, 158.91, 166.58, 175.14, 183.70, 192.26, 200.82, 206.87, 214.63, 222.39, 230.15, 237.91, 247.17, 254.93, 262.69, 270.45, 278.21, 287.47, 295.23, 302.99, 310.75, 318.51, 327.76, 335.52, 343.28, 351.04, 358.80, 368.06, 375.82, 383.58, 391.34, 408.38, 408.38]
-            }
-        };
-        this.coverageAmounts = [50000, 55000, 60000, 65000, 70000, 75000, 80000, 85000, 90000, 95000, 100000, 105000, 110000, 115000, 120000, 125000, 130000, 135000, 140000, 145000, 150000, 155000, 160000, 165000, 170000, 175000, 180000, 185000, 190000, 195000, 200000, 205000, 210000, 215000, 220000, 225000, 230000, 235000, 240000, 245000, 250000];
-        this.init();
-        this.setupModalCloseListener();
+        this.slider = document.getElementById('iul-coverage-slider');
+        this.ageSlider = document.getElementById('iul-age-slider');
+        this.quoteDisplay = document.getElementById('iul-quote-card');
+        this.currentValue = 50000; // Default coverage
+        this.userAge = 30; // Default age
+        this.userGender = 'male'; // Default gender
     }
 
     init() {
-        this.setupEventListeners();
-        this.updateQuote();
+        try {
+            console.log('🔧 Initializing IUL Quote Slider...');
+            this.userAge = calculateAgeFromPreviousStep();
+            const coverageRange = getCoverageRangeFromPreviousStep();
+            this.currentValue = coverageRange.min; // Start at min of the range
+            
+            if (this.ageSlider) {
+                this.ageSlider.value = this.userAge;
+                this.ageSlider.disabled = true; // Disable age slider
+                this.ageSlider.style.opacity = '0.5'; // Visually indicate disabled
+                this.ageSlider.style.pointerEvents = 'none'; // Prevent interaction
+                this.ageSlider.setAttribute('readonly', 'readonly'); // Additional protection
+                console.log('🔒 Age slider disabled and locked');
+            }
+            if (this.slider) {
+                this.slider.min = coverageRange.min;
+                this.slider.max = coverageRange.max;
+                this.slider.value = this.currentValue;
+                console.log('📊 Coverage slider range set:', coverageRange.min, 'to', coverageRange.max);
+            }
+
+            this.setupEventListeners();
+            this.updateQuote();
+            console.log('✅ IUL Quote Slider initialized successfully with age:', this.userAge, 'coverage range:', coverageRange);
+        } catch (error) {
+            console.error('❌ Error initializing IUL Quote Slider:', error);
+        }
     }
 
     setupEventListeners() {
-        const ageSlider = document.getElementById('iul-age-slider');
-        const coverageSlider = document.getElementById('iul-coverage-slider');
-        const genderInputs = document.querySelectorAll('input[name="iul-gender"]');
+        try {
+            // Coverage slider (only this one is active)
+            if (this.slider) {
+                this.slider.addEventListener('input', () => {
+                    try {
+                        this.currentValue = parseInt(this.slider.value);
+                        console.log('📊 Coverage slider changed to:', this.currentValue);
+                        this.updateQuote();
+                    } catch (error) {
+                        console.error('❌ Error handling coverage slider change:', error);
+                    }
+                });
+            } else {
+                console.error('❌ Coverage slider not found');
+            }
 
-        if (ageSlider) {
-            ageSlider.addEventListener('input', () => {
-                document.getElementById('iul-age-display').textContent = ageSlider.value;
-                this.updateQuote();
+            // Age slider is disabled and locked - no event listener needed
+
+            // Gender selection (still active)
+            const genderInputs = document.querySelectorAll('input[name="gender"]');
+            genderInputs.forEach(input => {
+                input.addEventListener('change', () => {
+                    try {
+                        this.userGender = input.value;
+                        console.log('📊 Gender changed to:', this.userGender);
+                        this.updateQuote();
+                    } catch (error) {
+                        console.error('❌ Error handling gender change:', error);
+                    }
+                });
             });
+
+            console.log('✅ IUL Quote Slider event listeners set up successfully');
+        } catch (error) {
+            console.error('❌ Error setting up IUL Quote Slider event listeners:', error);
         }
-
-        if (coverageSlider) {
-            coverageSlider.addEventListener('input', () => {
-                document.getElementById('iul-coverage-display').textContent = this.formatNumber(parseInt(coverageSlider.value));
-                this.updateQuote();
-            });
-        }
-
-        genderInputs.forEach(input => {
-            input.addEventListener('change', () => {
-                this.updateQuote();
-            });
-        });
     }
 
     updateQuote() {
-        const age = parseInt(document.getElementById('iul-age-slider').value);
-        const coverage = parseInt(document.getElementById('iul-coverage-slider').value);
-        const gender = document.querySelector('input[name="iul-gender"]:checked').value;
-        
-        const quoteCard = document.getElementById('iul-quote-card');
-        
-        // Find the closest coverage amount in our data
-        const coverageIndex = this.coverageAmounts.findIndex(amount => amount >= coverage);
-        const actualCoverage = this.coverageAmounts[coverageIndex >= 0 ? coverageIndex : this.coverageAmounts.length - 1];
-        
-        // Get the rate from our data
-        const rates = this.iulData[gender][age];
-        if (rates && rates[coverageIndex] !== undefined) {
-            const monthlyRate = rates[coverageIndex];
-            quoteCard.innerHTML = `
-                <div class="quote-amount">$${this.formatNumber(actualCoverage)}</div>
-                <div class="quote-period">Monthly Premium: $${monthlyRate.toFixed(2)}</div>
-                <div class="quote-actions">
-                    <button class="quote-action-btn secondary" id="iul-secure-quote-btn">
-                        <i class="fas fa-shield-alt"></i>
-                        Secure Quote
-                    </button>
-                </div>
-            `;
-            // Add event listener for the Secure Quote button
-            setTimeout(() => {
-                const secureBtn = document.getElementById('iul-secure-quote-btn');
-                if (secureBtn) {
-                    secureBtn.onclick = () => {
-                        // Hide IUL quote modal
-                        document.getElementById('iul-quote-modal').style.display = 'none';
-                        document.getElementById('iul-quote-modal').classList.remove('active');
-                        // Show application form step in funnel modal
-                        document.getElementById('funnel-modal').style.display = 'flex';
-                        document.body.style.overflow = 'hidden';
-                        document.getElementById('funnel-application-form').style.display = 'block';
-                        // Optionally, hide all other funnel steps
-                        document.querySelectorAll('#funnel-modal form').forEach(form => {
-                            if (form.id !== 'funnel-application-form') form.style.display = 'none';
-                        });
-                    };
+        try {
+            if (this.quoteDisplay) {
+                const monthlyPremium = this.getIULQuote();
+                console.log('💰 Calculating IUL quote - Age:', this.userAge, 'Gender:', this.userGender, 'Coverage:', this.currentValue, 'Premium:', monthlyPremium);
+                
+                // Update the main quote display
+                this.quoteDisplay.innerHTML = `
+                    <div class="quote-result">
+                        <div class="premium-amount" style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">$${monthlyPremium.toLocaleString()}</div>
+                        <p class="secure-rate-text" style="font-size: 1rem; color: #ffffff; opacity: 0.9; margin-bottom: 1.5rem;">Secure this rate</p>
+                        <button class="cta-button" onclick="handleIULQuoteNow()" style="background: #10b981; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background-color 0.3s ease;">Secure Your Rate</button>
+                    </div>
+                `;
+                
+                // Update individual display spans
+                const ageDisplay = document.getElementById('iul-age-display');
+                if (ageDisplay) {
+                    ageDisplay.textContent = this.userAge;
                 }
-            }, 0);
-        } else {
-            quoteCard.innerHTML = '<div class="quote-placeholder">Rate not available for this combination</div>';
+                
+                const coverageDisplay = document.getElementById('iul-coverage-display');
+                if (coverageDisplay) {
+                    // Ensure no double dollar signs - only add $ if it's not already there
+                    const cleanAmount = this.currentValue.toLocaleString();
+                    coverageDisplay.textContent = `$${cleanAmount}`;
+                }
+                
+                console.log('✅ Quote display updated successfully');
+            } else {
+                console.error('❌ Quote display element not found');
+            }
+        } catch (error) {
+            console.error('❌ Error updating quote display:', error);
+        }
+    }
+        
+    getIULQuote() {
+        try {
+            // IUL rate calculation based on age and gender
+            const age = this.userAge || 30;
+            const gender = this.userGender || 'male';
+            
+            // Simplified IUL rate calculation
+            const baseRate = gender === 'female' ? 0.04 : 0.05;
+            const ageMultiplier = Math.max(1, age / 30);
+            const coverageMultiplier = this.currentValue / 100000;
+            
+            const monthlyPremium = Math.round(this.currentValue * baseRate * ageMultiplier * coverageMultiplier);
+            console.log('💰 IUL Quote calculated:', monthlyPremium);
+            return monthlyPremium;
+        } catch (error) {
+            console.error('❌ Error calculating IUL quote:', error);
+            return 0;
         }
     }
 
     formatNumber(num) {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        try {
+            return num.toLocaleString();
+        } catch (error) {
+            console.error('❌ Error formatting number:', error);
+            return num.toString();
+        }
     }
 
     showSecureQuoteModal() {
-        // Get current quote data
-        const age = parseInt(document.getElementById('iul-age-slider').value);
-        const coverage = parseInt(document.getElementById('iul-coverage-slider').value);
-        const gender = document.querySelector('input[name="iul-gender"]:checked').value;
-        
-        // Find the closest coverage amount in our data
-        const coverageIndex = this.coverageAmounts.findIndex(amount => amount >= coverage);
-        const actualCoverage = this.coverageAmounts[coverageIndex >= 0 ? coverageIndex : this.coverageAmounts.length - 1];
-        
-        // Get the rate from our data
-        const rates = this.iulData[gender][age];
-        let monthlyRate = 0;
-        if (rates && rates[coverageIndex] !== undefined) {
-            monthlyRate = rates[coverageIndex];
-        }
-        
-        const rate = monthlyRate > 0 ? `$${monthlyRate.toFixed(2)}/month` : '$0.00/month';
-        const coverageFormatted = `$${this.formatNumber(actualCoverage)}`;
-        
-        // Update modal with current quote data
-        document.getElementById('secure-quote-rate').textContent = rate;
-        document.getElementById('secure-quote-coverage').textContent = coverageFormatted;
-        document.getElementById('secure-quote-age').textContent = age;
-        
-        // Show the modal
-        document.getElementById('secure-quote-modal').style.display = 'flex';
-    }
-    
-    setupModalCloseListener() {
-        const closeButton = document.getElementById('modal-close');
-        if (closeButton) {
-            closeButton.addEventListener('click', () => {
-                document.getElementById('secure-quote-modal').style.display = 'none';
-            });
-        }
-    }
-
-    async handleFormSubmit() {
-        const submitButton = document.getElementById('iul-submit-button');
-        const formMessage = document.getElementById('iul-form-message');
-        
-        if (submitButton) submitButton.textContent = 'Sending...';
-        if (submitButton) submitButton.disabled = true;
-        if (formMessage) formMessage.style.display = 'none';
-
         try {
-            // Get form data
+            console.log('🔄 "Get Your Quote Now" clicked - showing application form');
+            // Hide the IUL quote modal
+            const iulModal = document.getElementById('iul-quote-modal');
+            if (iulModal) {
+                iulModal.style.display = 'none';
+                console.log('✅ IUL quote modal hidden');
+            } else {
+                console.error('❌ IUL quote modal not found');
+            }
+            // Show the application form
+            showNextStepAfterCongrats();
+        } catch (error) {
+            console.error('❌ Error in showSecureQuoteModal:', error);
+        }
+    }
+        
+    hideSecureQuoteModal() {
+        try {
+            const modal = document.getElementById('iul-secure-quote-modal');
+            if (modal) {
+                modal.style.display = 'none';
+                console.log('✅ IUL secure quote modal hidden');
+            } else {
+                console.error('❌ IUL secure quote modal not found');
+            }
+        } catch (error) {
+            console.error('❌ Error hiding IUL secure quote modal:', error);
+        }
+    }
+        
+    setupModalCloseListener() {
+        try {
+            const closeBtn = document.querySelector('#iul-secure-quote-modal .close-btn');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => this.hideSecureQuoteModal());
+                console.log('✅ IUL modal close listener set up');
+            } else {
+                console.error('❌ IUL modal close button not found');
+            }
+        } catch (error) {
+            console.error('❌ Error setting up IUL modal close listener:', error);
+        }
+    }
+        
+    async handleFormSubmit() {
+        try {
             const form = document.getElementById('iul-quote-form');
+            if (!form) {
+                console.error('❌ IUL quote form not found');
+                return;
+            }
+            
             const formData = new FormData(form);
-            const data = Object.fromEntries(formData);
+            const data = {
+                formType: 'IULQuote',
+                coverageAmount: this.currentValue,
+                monthlyPremium: this.getIULQuote(),
+                userAge: this.userAge,
+                userGender: this.userGender,
+                ...Object.fromEntries(formData)
+            };
             
-            // Get current quote data
-            const age = parseInt(document.getElementById('iul-age-slider').value);
-            const coverage = parseInt(document.getElementById('iul-coverage-slider').value);
-            const gender = document.querySelector('input[name="iul-gender"]:checked').value;
-            
-            // Find the closest coverage amount in our data
-            const coverageIndex = this.coverageAmounts.findIndex(amount => amount >= coverage);
-            const actualCoverage = this.coverageAmounts[coverageIndex >= 0 ? coverageIndex : this.coverageAmounts.length - 1];
-            
-            // Get the rate from our data
-            const rates = this.iulData[gender][age];
-            let monthlyRate = 0;
-            if (rates && rates[coverageIndex] !== undefined) {
-                monthlyRate = rates[coverageIndex];
-            }
-            
-            // Add comprehensive quote data
-            data.coverageAmount = actualCoverage;
-            data.age = age;
-            data.gender = gender;
-            data.quoteType = 'iul_quote';
-            data.monthlyPremium = monthlyRate;
-            data.formType = 'Quote';
-            data.timestamp = new Date().toISOString();
-            
-            // Submit to Google Apps Script
+            console.log('📤 Submitting IUL quote data:', data);
             await submitFormData(data);
-            
-            if (formMessage) {
-                formMessage.className = 'form-message form-success';
-                formMessage.textContent = 'Quote sent successfully! Check your email.';
-                formMessage.style.display = 'block';
-            }
-            
-            // Reset form
-            if (form) form.reset();
+            this.showSecureQuoteModal();
             
         } catch (error) {
-            console.error('Error submitting IUL quote form:', error);
-            if (formMessage) {
-                formMessage.className = 'form-message form-error';
-                formMessage.textContent = 'Error sending quote. Please try again.';
-                formMessage.style.display = 'block';
-            }
-        } finally {
-            if (submitButton) {
-                submitButton.textContent = 'Get My Quote';
-                submitButton.disabled = false;
-            }
+            console.error('❌ Error submitting IUL quote form:', error);
+            showErrorMessage('Error submitting form. Please try again.');
         }
     }
 }
 
-// Initialize height/weight dropdown functionality
+    // ============================================================================
+    // MEDICAL FORM FUNCTIONS
+    // ============================================================================
+    
 function initializeHeightWeightDropdowns() {
-    const heightInput = document.getElementById('height');
-    const weightInput = document.getElementById('weight');
+        // Height dropdown
+        const heightInput = document.getElementById('height-input');
     const heightDropdown = document.getElementById('height-dropdown');
-    const weightDropdown = document.getElementById('weight-dropdown');
-    
-    if (!heightInput || !weightInput || !heightDropdown || !weightDropdown) {
-        console.log('Dropdown elements not found:', { heightInput, weightInput, heightDropdown, weightDropdown });
-        return;
-    }
-    
-    console.log('Initializing dropdowns...');
-    
-    // Height dropdown functionality
-    heightInput.addEventListener('focus', () => {
-        heightDropdown.classList.add('show');
-        filterDropdownItems(heightInput, heightDropdown);
-    });
-    
+        
+        if (heightInput && heightDropdown) {
     heightInput.addEventListener('input', () => {
-        heightDropdown.classList.add('show');
         filterDropdownItems(heightInput, heightDropdown);
-        // Clear error styling whenever user types anything
-        clearFieldError(heightInput);
-    });
-    
-    heightInput.addEventListener('blur', () => {
-        setTimeout(() => {
-            heightDropdown.classList.remove('show');
-        }, 200);
-    });
-    
-    // Height keyboard navigation
+            });
+            
     heightInput.addEventListener('keydown', (e) => {
         handleDropdownKeydown(e, heightInput, heightDropdown);
     });
     
-    // Weight dropdown functionality
-    weightInput.addEventListener('focus', () => {
-        weightDropdown.classList.add('show');
-        filterDropdownItems(weightInput, weightDropdown);
-    });
-    
+            // Add click listeners to dropdown items
+            const heightItems = heightDropdown.querySelectorAll('.dropdown-item');
+            heightItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    heightInput.value = item.textContent;
+                    heightDropdown.style.display = 'none';
+                    medicalAnswers.height = item.textContent;
+                });
+            });
+        }
+        
+        // Weight dropdown
+        const weightInput = document.getElementById('weight-input');
+        const weightDropdown = document.getElementById('weight-dropdown');
+        
+        if (weightInput && weightDropdown) {
     weightInput.addEventListener('input', () => {
-        weightDropdown.classList.add('show');
         filterDropdownItems(weightInput, weightDropdown);
-        // Clear error styling whenever user types anything
-        clearFieldError(weightInput);
-    });
-    
-    weightInput.addEventListener('blur', () => {
-        setTimeout(() => {
-            weightDropdown.classList.remove('show');
-        }, 200);
-    });
-    
-    // Weight keyboard navigation
+            });
+            
     weightInput.addEventListener('keydown', (e) => {
         handleDropdownKeydown(e, weightInput, weightDropdown);
     });
     
-    // Add click handlers for dropdown items
-    heightDropdown.addEventListener('click', (e) => {
-        if (e.target.classList.contains('dropdown-item')) {
-            heightInput.value = e.target.getAttribute('data-value');
-            heightDropdown.classList.remove('show');
-            // Clear error styling when value is selected
-            clearFieldError(heightInput);
+            // Add click listeners to dropdown items
+            const weightItems = weightDropdown.querySelectorAll('.dropdown-item');
+            weightItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    weightInput.value = item.textContent;
+                    weightDropdown.style.display = 'none';
+                    medicalAnswers.weight = item.textContent;
+                });
+            });
         }
-    });
-    
-    weightDropdown.addEventListener('click', (e) => {
-        if (e.target.classList.contains('dropdown-item')) {
-            weightInput.value = e.target.getAttribute('data-value');
-            weightDropdown.classList.remove('show');
-            // Clear error styling when value is selected
-            clearFieldError(weightInput);
-        }
-    });
 }
 
 function filterDropdownItems(input, dropdown) {
@@ -2044,320 +2497,1555 @@ function filterDropdownItems(input, dropdown) {
     
     items.forEach(item => {
         const text = item.textContent.toLowerCase();
-        if (text.startsWith(searchTerm)) {
-            item.classList.remove('hidden');
+            if (text.includes(searchTerm)) {
+                item.style.display = 'block';
         } else {
-            item.classList.add('hidden');
+                item.style.display = 'none';
         }
     });
+        
+        dropdown.style.display = 'block';
 }
 
 function handleDropdownKeydown(e, input, dropdown) {
-    const visibleItems = dropdown.querySelectorAll('.dropdown-item:not(.hidden)');
+        const items = dropdown.querySelectorAll('.dropdown-item:not([style*="display: none"])');
+        const currentIndex = Array.from(items).findIndex(item => item.classList.contains('selected'));
     
-    if (e.key === 'Enter') {
+        switch (e.key) {
+            case 'ArrowDown':
         e.preventDefault();
-        if (visibleItems.length === 1) {
-            // If only one item matches, select it
-            const selectedItem = visibleItems[0];
-            input.value = selectedItem.getAttribute('data-value');
-            dropdown.classList.remove('show');
-            // Clear error styling when value is selected
-            clearFieldError(input);
-        } else if (visibleItems.length > 1) {
-            // If multiple items match, select the first one
-            const firstItem = visibleItems[0];
-            input.value = firstItem.getAttribute('data-value');
-            dropdown.classList.remove('show');
-            // Clear error styling when value is selected
-            clearFieldError(input);
-        }
-    } else if (e.key === 'Escape') {
-        // Close dropdown on Escape
-        dropdown.classList.remove('show');
-    } else if (e.key === 'ArrowDown') {
+                const nextIndex = (currentIndex + 1) % items.length;
+                items.forEach(item => item.classList.remove('selected'));
+                if (items[nextIndex]) {
+                    items[nextIndex].classList.add('selected');
+                }
+                break;
+                
+            case 'ArrowUp':
         e.preventDefault();
-        // Navigate down through visible items
-        const currentIndex = Array.from(visibleItems).findIndex(item => 
-            item.classList.contains('selected')
-        );
-        const nextIndex = (currentIndex + 1) % visibleItems.length;
-        
-        // Remove previous selection
-        visibleItems.forEach(item => item.classList.remove('selected'));
-        
-        // Select next item
-        if (visibleItems[nextIndex]) {
-            const selectedItem = visibleItems[nextIndex];
-            selectedItem.classList.add('selected');
-            // Scroll to keep the selected item visible
-            selectedItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-        }
-    } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        // Navigate up through visible items
-        const currentIndex = Array.from(visibleItems).findIndex(item => 
-            item.classList.contains('selected')
-        );
-        const prevIndex = currentIndex <= 0 ? visibleItems.length - 1 : currentIndex - 1;
-        
-        // Remove previous selection
-        visibleItems.forEach(item => item.classList.remove('selected'));
-        
-        // Select previous item
-        if (visibleItems[prevIndex]) {
-            const selectedItem = visibleItems[prevIndex];
-            selectedItem.classList.add('selected');
-            // Scroll to keep the selected item visible
-            selectedItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                const prevIndex = currentIndex <= 0 ? items.length - 1 : currentIndex - 1;
+                items.forEach(item => item.classList.remove('selected'));
+                if (items[prevIndex]) {
+                    items[prevIndex].classList.add('selected');
+                }
+                break;
+                
+            case 'Enter':
+                e.preventDefault();
+                const selectedItem = dropdown.querySelector('.dropdown-item.selected');
+                if (selectedItem) {
+                    input.value = selectedItem.textContent;
+                    dropdown.style.display = 'none';
+                    if (input.id === 'height-input') {
+                        medicalAnswers.height = selectedItem.textContent;
+                    } else if (input.id === 'weight-input') {
+                        medicalAnswers.weight = selectedItem.textContent;
+                    }
+                }
+                break;
+                
+            case 'Escape':
+                dropdown.style.display = 'none';
+                break;
         }
     }
-}
-
-// Handle medical conditions checkbox logic
+    
 function initializeMedicalConditionsLogic() {
     const medicalConditionsForm = document.getElementById('funnel-medical-conditions');
     if (!medicalConditionsForm) return;
     
-    const noneCheckbox = medicalConditionsForm.querySelector('input[value="None"]');
-    const otherCheckboxes = medicalConditionsForm.querySelectorAll('input[name="medicalConditions"]:not([value="None"])');
-    
-    // Remove any existing event listeners to prevent duplicates
-    const allCheckboxes = medicalConditionsForm.querySelectorAll('input[name="medicalConditions"]');
-    allCheckboxes.forEach(checkbox => {
-        checkbox.removeEventListener('change', handleMedicalConditionChange);
-        checkbox.addEventListener('change', handleMedicalConditionChange);
-    });
-    
-    function handleMedicalConditionChange() {
-        const isNoneChecked = noneCheckbox && noneCheckbox.checked;
-        const isOtherChecked = Array.from(otherCheckboxes).some(cb => cb.checked);
+        const checkboxes = medicalConditionsForm.querySelectorAll('input[type="checkbox"]');
+        const otherConditionInput = document.getElementById('other-condition');
+        const otherConditionCheckbox = document.getElementById('other-condition-checkbox');
         
-        if (this.value === 'None' && this.checked) {
-            // "None of the above" was checked - uncheck all others
-            otherCheckboxes.forEach(checkbox => {
-                checkbox.checked = false;
+        // Handle "Other" condition
+        if (otherConditionCheckbox && otherConditionInput) {
+            otherConditionCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    otherConditionInput.style.display = 'block';
+                    otherConditionInput.focus();
+                } else {
+                    otherConditionInput.style.display = 'none';
+                    otherConditionInput.value = '';
+                }
             });
-        } else if (this.value !== 'None' && this.checked) {
-            // A specific condition was checked - uncheck "None of the above"
-            if (noneCheckbox) {
-                noneCheckbox.checked = false;
-            }
+            
+            // Handle "Other" input
+            otherConditionInput.addEventListener('input', function() {
+                if (this.value.trim()) {
+                    otherConditionCheckbox.checked = true;
+                }
+            });
+        }
+        
+        // Handle medical condition changes
+        function handleMedicalConditionChange() {
+            const selectedConditions = [];
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    if (checkbox.id === 'other-condition-checkbox') {
+                        const otherValue = otherConditionInput ? otherConditionInput.value.trim() : '';
+                        if (otherValue) {
+                            selectedConditions.push(otherValue);
+                        }
+                    } else {
+                        selectedConditions.push(checkbox.value);
+                    }
+                }
+            });
+            
+            medicalAnswers.medicalConditions = selectedConditions;
+            console.log('Medical conditions updated:', selectedConditions);
+        }
+        
+        // Add event listeners
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', handleMedicalConditionChange);
+        });
+        
+        if (otherConditionInput) {
+            otherConditionInput.addEventListener('input', handleMedicalConditionChange);
         }
     }
-}
 
-// Initialize IUL Quote Slider when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize IUL Quote Slider if the modal exists
-    const iulQuoteModal = document.getElementById('iul-quote-modal');
-    if (iulQuoteModal) {
-        window.iulQuoteSlider = new IULQuoteSlider();
+    // ============================================================================
+    // LOADING SCREEN FUNCTIONS
+    // ============================================================================
+    
+    function initializeLoadScreen() {
+        // Initialize load screen functionality
+        console.log('Load screen functionality initialized');
     }
     
+    function initializeAbandonmentTracking() {
+        // Initialize abandonment tracking
+        window.currentStep = 0;
+        
+        function updateCurrentStep(stepNumber) {
+            window.currentStep = stepNumber;
+            
+            // Trigger partial saves at specific checkpoints
+            if (stepNumber === 4 || stepNumber === 7 || stepNumber === 10) {
+                window.sendPartialFunnelData(stepNumber, 12);
+            }
+        }
+        
+        // Browser close detection
+        window.addEventListener('beforeunload', function() {
+            if (!window.abandonmentEmailSent) {
+                window.sendAbandonmentEmail('Browser closed');
+            }
+        });
+        
+        // Page visibility change detection (tab switch/minimize)
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden && !window.abandonmentEmailSent) {
+                window.sendAbandonmentEmail('Page hidden (tab switch/minimize)');
+            }
+        });
+        
+        // Inactivity detection (30 seconds)
+        let inactivityTimer;
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(() => {
+                if (!window.abandonmentEmailSent) {
+                    window.sendAbandonmentEmail('User inactive for 30 seconds');
+                }
+            }, 30000); // 30 seconds
+        }
+        
+        // Reset timer on user activity
+        document.addEventListener('mousemove', resetInactivityTimer);
+        document.addEventListener('keypress', resetInactivityTimer);
+        document.addEventListener('click', resetInactivityTimer);
+        document.addEventListener('scroll', resetInactivityTimer);
+        
+        // Initialize timer
+        resetInactivityTimer();
+        
+        // Make updateCurrentStep globally accessible
+        window.updateCurrentStep = updateCurrentStep;
+    }
 
+    // ============================================================================
+    // MEDICAL ANSWERS OBJECT
+    // ============================================================================
     
-                    // Add close button functionality for secure quote modal
-                const modalCloseBtn = document.getElementById('modal-close');
-                if (modalCloseBtn) {
-                    modalCloseBtn.addEventListener('click', function() {
-                        document.getElementById('secure-quote-modal').style.display = 'none';
-                    });
-                }
+    const medicalAnswers = {
+        tobaccoUse: '',
+        medicalConditions: [],
+        height: '',
+        weight: '',
+        hospitalCare: '',
+        diabetesMedication: ''
+    };
 
-                // Add Complete Application button functionality for secure quote modal
-                const completeApplicationSecureBtn = document.getElementById('complete-application-secure-btn');
-                if (completeApplicationSecureBtn) {
-                    completeApplicationSecureBtn.addEventListener('click', function() {
-                        // Hide secure quote modal
-                        document.getElementById('secure-quote-modal').style.display = 'none';
-                        // Show application modal
-                        document.getElementById('application-modal').style.display = 'flex';
-                    });
-                }
+    // ============================================================================
+    // IUL DATA (RATE TABLES)
+    // ============================================================================
+    
+    const iulData = {
+        male: {
+            "18-25": {
+                "100000-250000": 85,
+                "251000-500000": 165,
+                "501000-1000000": 325,
+                "1001000-2000000": 650,
+                "2001000-5000000": 1625
+            },
+            "26-30": {
+                "100000-250000": 95,
+                "251000-500000": 185,
+                "501000-1000000": 365,
+                "1001000-2000000": 730,
+                "2001000-5000000": 1825
+            },
+            "31-35": {
+                "100000-250000": 110,
+                "251000-500000": 215,
+                "501000-1000000": 425,
+                "1001000-2000000": 850,
+                "2001000-5000000": 2125
+            },
+            "36-40": {
+                "100000-250000": 130,
+                "251000-500000": 255,
+                "501000-1000000": 505,
+                "1001000-2000000": 1010,
+                "2001000-5000000": 2525
+            },
+            "41-45": {
+                "100000-250000": 155,
+                "251000-500000": 305,
+                "501000-1000000": 605,
+                "1001000-2000000": 1210,
+                "2001000-5000000": 3025
+            },
+            "46-50": {
+                "100000-250000": 185,
+                "251000-500000": 365,
+                "501000-1000000": 725,
+                "1001000-2000000": 1450,
+                "2001000-5000000": 3625
+            },
+            "51-55": {
+                "100000-250000": 225,
+                "251000-500000": 445,
+                "501000-1000000": 885,
+                "1001000-2000000": 1770,
+                "2001000-5000000": 4425
+            },
+            "56-60": {
+                "100000-250000": 275,
+                "251000-500000": 545,
+                "501000-1000000": 1085,
+                "1001000-2000000": 2170,
+                "2001000-5000000": 5425
+            }
+        },
+        female: {
+            "18-25": {
+                "100000-250000": 75,
+                "251000-500000": 145,
+                "501000-1000000": 285,
+                "1001000-2000000": 570,
+                "2001000-5000000": 1425
+            },
+            "26-30": {
+                "100000-250000": 85,
+                "251000-500000": 165,
+                "501000-1000000": 325,
+                "1001000-2000000": 650,
+                "2001000-5000000": 1625
+            },
+            "31-35": {
+                "100000-250000": 95,
+                "251000-500000": 185,
+                "501000-1000000": 365,
+                "1001000-2000000": 730,
+                "2001000-5000000": 1825
+            },
+            "36-40": {
+                "100000-250000": 110,
+                "251000-500000": 215,
+                "501000-1000000": 425,
+                "1001000-2000000": 850,
+                "2001000-5000000": 2125
+            },
+            "41-45": {
+                "100000-250000": 130,
+                "251000-500000": 255,
+                "501000-1000000": 505,
+                "1001000-2000000": 1010,
+                "2001000-5000000": 2525
+            },
+            "46-50": {
+                "100000-250000": 155,
+                "251000-500000": 305,
+                "501000-1000000": 605,
+                "1001000-2000000": 1210,
+                "2001000-5000000": 3025
+            },
+            "51-55": {
+                "100000-250000": 185,
+                "251000-500000": 365,
+                "501000-1000000": 725,
+                "1001000-2000000": 1450,
+                "2001000-5000000": 3625
+            },
+            "56-60": {
+                "100000-250000": 225,
+                "251000-500000": 445,
+                "501000-1000000": 885,
+                "1001000-2000000": 1770,
+                "2001000-5000000": 4425
+            }
+        }
+    };
 
-                // Add close button functionality for application modal
-                const applicationModalCloseBtn = document.getElementById('application-modal-close');
-                if (applicationModalCloseBtn) {
-                    applicationModalCloseBtn.addEventListener('click', function() {
-                        document.getElementById('application-modal').style.display = 'none';
-                    });
-                }
+    // Test function to manually show loading modal
+    window.testLoadingModal = function() {
+        console.log('🧪 Testing loading modal...');
+        const loadingModal = document.getElementById('funnel-load-screen-modal');
+        if (loadingModal) {
+            console.log('Found loading modal:', loadingModal);
+            loadingModal.style.display = 'flex';
+            loadingModal.style.zIndex = '10000';
+            loadingModal.style.position = 'fixed';
+            loadingModal.style.top = '0';
+            loadingModal.style.left = '0';
+            loadingModal.style.width = '100%';
+            loadingModal.style.height = '100%';
+            loadingModal.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+            loadingModal.style.justifyContent = 'center';
+            loadingModal.style.alignItems = 'center';
+            
+            console.log('Modal styles applied');
+            console.log('Modal display:', loadingModal.style.display);
+            console.log('Modal z-index:', loadingModal.style.zIndex);
+            
+            const rect = loadingModal.getBoundingClientRect();
+            console.log('Modal bounding rect:', rect);
+            console.log('Modal is visible:', rect.width > 0 && rect.height > 0);
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                loadingModal.style.display = 'none';
+                console.log('Test modal hidden');
+            }, 3000);
+        } else {
+            console.error('Loading modal not found for test');
+        }
+    };
 
-                // Add Finish Application button functionality for application modal
-                const finishApplicationModalBtn = document.getElementById('finish-application-modal-btn');
-                if (finishApplicationModalBtn) {
-                    finishApplicationModalBtn.addEventListener('click', function() {
-                        // Save form data to localStorage
-                        const formData = new FormData(document.getElementById('application-form'));
-                        const data = {};
-                        for (let [key, value] of formData.entries()) {
-                            data[key] = value;
-                        }
-                        localStorage.setItem('applicationPage1Data', JSON.stringify(data));
-                        
-                        // Hide application modal
-                        document.getElementById('application-modal').style.display = 'none';
-                        
-                        // Show application final modal
-                        document.getElementById('application-final-modal').style.display = 'flex';
-                    });
-                }
+    // Test function to create a modal from scratch
+    window.createTestModal = function() {
+        console.log('🧪 Creating test modal from scratch...');
+        
+        // Remove any existing test modal
+        const existingTestModal = document.getElementById('test-modal');
+        if (existingTestModal) {
+            existingTestModal.remove();
+        }
+        
+        // Create modal container
+        const modal = document.createElement('div');
+        modal.id = 'test-modal';
+        modal.style.position = 'fixed';
+        modal.style.top = '0';
+        modal.style.left = '0';
+        modal.style.width = '100%';
+        modal.style.height = '100%';
+        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        modal.style.display = 'flex';
+        modal.style.justifyContent = 'center';
+        modal.style.alignItems = 'center';
+        modal.style.zIndex = '99999';
+        
+        // Create modal content
+        const content = document.createElement('div');
+        content.style.background = 'white';
+        content.style.padding = '2rem';
+        content.style.borderRadius = '10px';
+        content.style.textAlign = 'center';
+        content.style.maxWidth = '400px';
+        content.style.width = '90%';
+        
+        // Add content
+        content.innerHTML = `
+            <h2 style="color: #333; margin-bottom: 1rem;">Test Modal</h2>
+            <p style="color: #666; margin-bottom: 1rem;">This is a test modal created from scratch.</p>
+            <div style="width: 50px; height: 50px; border: 4px solid #e2e8f0; border-top: 4px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;"></div>
+            <button onclick="document.getElementById('test-modal').remove()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
+        `;
+        
+        // Add to page
+        modal.appendChild(content);
+        document.body.appendChild(modal);
+        
+        console.log('Test modal created:', modal);
+        console.log('Modal display:', modal.style.display);
+        console.log('Modal z-index:', modal.style.zIndex);
+        
+        const rect = modal.getBoundingClientRect();
+        console.log('Modal bounding rect:', rect);
+        console.log('Modal is visible:', rect.width > 0 && rect.height > 0);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (modal.parentNode) {
+                modal.remove();
+                console.log('Test modal removed');
+            }
+        }, 5000);
+    };
 
-                // Add close button functionality for application final modal
-                const applicationFinalModalCloseBtn = document.getElementById('application-final-modal-close');
-                if (applicationFinalModalCloseBtn) {
-                    applicationFinalModalCloseBtn.addEventListener('click', function() {
-                        document.getElementById('application-final-modal').style.display = 'none';
-                    });
-                }
+    // Initialize medical congratulations button
+    initializeMedicalCongratsButton();
+    
+    // Initialize abandonment tracking
+    initializeAbandonmentTracking();
 
-                // Add back button functionality for application final modal
-                const backToPage1Btn = document.getElementById('back-to-page1-btn');
-                if (backToPage1Btn) {
-                    backToPage1Btn.addEventListener('click', function() {
-                        document.getElementById('application-final-modal').style.display = 'none';
-                        document.getElementById('application-modal').style.display = 'flex';
-                    });
-                }
+    // Test function to manually show congratulations modal
+    window.testCongratsModal = function() {
+        console.log('🧪 Testing congratulations modal...');
+        showMedicalCongratsModal();
+    };
 
-                // Add form submission handling for application final modal
-                const applicationFinalForm = document.getElementById('application-final-form');
-                if (applicationFinalForm) {
-                    applicationFinalForm.addEventListener('submit', async function(e) {
-                        e.preventDefault();
-                        
-                        const submitButton = this.querySelector('button[type="submit"]');
-                        const originalText = submitButton.innerHTML;
-                        
-                        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-                        submitButton.disabled = true;
+    // Test function to manually show application form
+    window.testApplicationForm = function() {
+        console.log('🧪 Testing application form display...');
+        showNextStepAfterCongrats();
+    };
 
-                        try {
-                            // Get data from both pages
-                            const page1Data = JSON.parse(localStorage.getItem('applicationPage1Data') || '{}');
-                            const formData = new FormData(this);
-                            const page2Data = {};
-                            for (let [key, value] of formData.entries()) {
-                                page2Data[key] = value;
-                            }
-
-                            // Combine all data
-                            const completeData = { 
-                                ...page1Data, 
-                                ...page2Data,
-                                formType: 'Application',
-                                timestamp: new Date().toISOString()
-                            };
-                            console.log('Complete application data:', completeData);
-
-                            // Submit to Google Apps Script
-                            await submitFormData(completeData);
-                            
-                            // Clear localStorage
-                            localStorage.removeItem('applicationPage1Data');
-                            
-                            // Show success message
-                            alert('Application submitted successfully! A licensed agent will contact you within 24 hours.');
-                            
-                            // Hide application final modal
-                            document.getElementById('application-final-modal').style.display = 'none';
-                            
-                        } catch (error) {
-                            alert('Error submitting application. Please try again.');
-                        } finally {
-                            submitButton.innerHTML = originalText;
-                            submitButton.disabled = false;
-                        }
-                    });
-                }
-
-                // SSN formatting for application final modal
-                const ssnInput = document.getElementById('ssn');
-                if (ssnInput) {
-                    ssnInput.addEventListener('input', function(e) {
-                        let value = e.target.value.replace(/\D/g, '');
-                        if (value.length >= 5) {
-                            value = value.replace(/(\d{3})(\d{2})(\d{4})/, '$1-$2-$3');
-                        } else if (value.length >= 3) {
-                            value = value.replace(/(\d{3})(\d{0,2})/, '$1-$2');
-                        }
-                        e.target.value = value;
-                    });
-                }
-
-                // Routing number formatting for application final modal
-                const routingInput = document.getElementById('routing');
-                if (routingInput) {
-                    routingInput.addEventListener('input', function(e) {
-                        let value = e.target.value.replace(/\D/g, '');
-                        if (value.length > 9) {
-                            value = value.substring(0, 9);
-                        }
-                        e.target.value = value;
-                    });
-                }
-
-                // SSN formatting for funnel application form
-                const funnelSsnInput = document.getElementById('app-ssn');
-                if (funnelSsnInput) {
-                    funnelSsnInput.addEventListener('input', function(e) {
-                        let value = e.target.value.replace(/\D/g, '');
-                        if (value.length >= 5) {
-                            value = value.replace(/(\d{3})(\d{2})(\d{4})/, '$1-$2-$3');
-                        } else if (value.length >= 3) {
-                            value = value.replace(/(\d{3})(\d{0,2})/, '$1-$2');
-                        }
-                        e.target.value = value;
-                    });
-                }
-
-                // Routing number formatting for funnel application form
-                const funnelRoutingInput = document.getElementById('app-routing');
-                if (funnelRoutingInput) {
-                    funnelRoutingInput.addEventListener('input', function(e) {
-                        let value = e.target.value.replace(/\D/g, '');
-                        if (value.length > 9) {
-                            value = value.substring(0, 9);
-                        }
-                        e.target.value = value;
-                    });
-                }
-
-                // Policy start date functionality
-                const policyStartDateInput = document.getElementById('app-policy-start-date');
+    // Function to initialize application form navigation
+    function initializeApplicationFormNavigation() {
+        const applicationNextBtn = document.getElementById('application-next-btn');
+        if (applicationNextBtn) {
+            applicationNextBtn.addEventListener('click', () => {
+                console.log('🔄 "Continue to Step 2" button clicked');
                 
-                if (policyStartDateInput) {
-                    // Set minimum and maximum dates
-                    const today = new Date();
-                    const maxDate = new Date();
-                    maxDate.setDate(today.getDate() + 30);
-                    
-                    const yyyy = today.getFullYear();
-                    const mm = String(today.getMonth() + 1).padStart(2, '0');
-                    const dd = String(today.getDate()).padStart(2, '0');
-                    
-                    const maxYyyy = maxDate.getFullYear();
-                    const maxMm = String(maxDate.getMonth() + 1).padStart(2, '0');
-                    const maxDd = String(maxDate.getDate()).padStart(2, '0');
-                    
-                    policyStartDateInput.min = `${yyyy}-${mm}-${dd}`;
-                    policyStartDateInput.max = `${maxYyyy}-${maxMm}-${maxDd}`;
-                    
-                    // Add validation on change
-                    policyStartDateInput.addEventListener('change', function(e) {
-                        const selectedDate = new Date(e.target.value);
-                        const today = new Date();
-                        const maxDate = new Date();
-                        maxDate.setDate(today.getDate() + 30);
-                        
-                        if (selectedDate < today) {
-                            alert('Please select a date today or in the future.');
-                            e.target.value = '';
-                        } else if (selectedDate > maxDate) {
-                            alert('Please select a date within the next 30 days.');
-                            e.target.value = '';
-                        }
-                    });
+                // Hide the current application form step
+                const currentForm = document.getElementById('funnel-application-form');
+                if (currentForm) {
+                    currentForm.style.display = 'none';
                 }
+                
+                // Show the final application step
+                const finalForm = document.getElementById('funnel-application-final');
+                if (finalForm) {
+                    finalForm.style.display = 'block';
+                    console.log('📝 Application step 2 displayed');
+                } else {
+                    console.error('❌ Final application form not found');
+                }
+            });
+        } else {
+            console.error('❌ Application next button not found');
+        }
+        
+        // Also handle the back button in the final step
+        const applicationBackBtn = document.querySelector('#funnel-application-final .funnel-back-btn');
+        if (applicationBackBtn) {
+            applicationBackBtn.addEventListener('click', () => {
+                console.log('⬅️ Going back to application step 1');
+                
+                // Hide the final step
+                const finalForm = document.getElementById('funnel-application-final');
+                if (finalForm) {
+                    finalForm.style.display = 'none';
+                }
+                
+                // Show the first step
+                const firstForm = document.getElementById('funnel-application-form');
+                if (firstForm) {
+                    firstForm.style.display = 'block';
+                }
+            });
+        }
+    }
+
+    // Initialize application form navigation
+    initializeApplicationFormNavigation();
+    
+    console.log('✅ All additional functionality initialized');
+
+    // Global function to handle application form navigation (for onclick attributes)
+    window.handleApplicationNext = function() {
+        console.log('🔄 "Continue to Step 2" button clicked via global function');
+        console.log('🔍 Looking for application forms...');
+        
+        // Hide the current application modal
+        const currentModal = document.getElementById('application-modal-overlay');
+        if (currentModal) {
+            currentModal.style.opacity = '0';
+            currentModal.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                if (currentModal.parentNode) {
+                    currentModal.remove();
+                }
+            }, 300);
+        }
+        
+        // Show the final application step as a new modal
+        const finalForm = document.getElementById('funnel-application-final');
+        console.log('Final form found:', !!finalForm);
+        if (finalForm) {
+            // Create a new modal container for the final application step
+            const finalModal = document.createElement('div');
+            finalModal.id = 'application-final-modal-overlay';
+            finalModal.style.position = 'fixed';
+            finalModal.style.top = '0';
+            finalModal.style.left = '0';
+            finalModal.style.width = '100%';
+            finalModal.style.height = '100%';
+            finalModal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+            finalModal.style.display = 'flex';
+            finalModal.style.justifyContent = 'center';
+            finalModal.style.alignItems = 'center';
+            finalModal.style.zIndex = '999999';
+            finalModal.style.opacity = '0';
+            finalModal.style.transition = 'opacity 0.3s ease-in-out';
+            
+            // Create content container
+            const finalContent = document.createElement('div');
+            finalContent.style.background = 'white';
+            finalContent.style.padding = '2rem';
+            finalContent.style.borderRadius = '15px';
+            finalContent.style.maxWidth = '600px';
+            finalContent.style.width = '90%';
+            finalContent.style.maxHeight = '90vh';
+            finalContent.style.overflowY = 'auto';
+            finalContent.style.transform = 'scale(0.9)';
+            finalContent.style.transition = 'transform 0.3s ease-in-out';
+            
+            // Clone the final form content
+            const formClone = finalForm.cloneNode(true);
+            formClone.style.display = 'block';
+            formClone.style.border = 'none';
+            formClone.style.padding = '0';
+            formClone.style.margin = '0';
+            
+            // Add close button
+            const closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '×';
+            closeBtn.style.position = 'absolute';
+            closeBtn.style.top = '15px';
+            closeBtn.style.right = '15px';
+            closeBtn.style.background = 'none';
+            closeBtn.style.border = 'none';
+            closeBtn.style.fontSize = '24px';
+            closeBtn.style.color = '#666';
+            closeBtn.style.cursor = 'pointer';
+            closeBtn.onclick = function() {
+                finalModal.style.opacity = '0';
+                finalContent.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    if (finalModal.parentNode) {
+                        finalModal.remove();
+                    }
+                }, 300);
+            };
+            
+            finalContent.appendChild(closeBtn);
+            finalContent.appendChild(formClone);
+            finalModal.appendChild(finalContent);
+            document.body.appendChild(finalModal);
+            
+            // Trigger smooth entrance animation
+            setTimeout(() => {
+                finalModal.style.opacity = '1';
+                finalContent.style.transform = 'scale(1)';
+            }, 10);
+            
+            console.log('📝 Application step 2 displayed as modal');
+        } else {
+            console.error('❌ Final application form not found');
+        }
+    };
+    
+    // Test function to manually test application form navigation
+    window.testApplicationNavigation = function() {
+        console.log('🧪 Testing application form navigation...');
+        const applicationNextBtn = document.getElementById('application-next-btn');
+        if (applicationNextBtn) {
+            console.log('✅ Application next button found');
+            applicationNextBtn.click();
+        } else {
+            console.error('❌ Application next button not found');
+        }
+    };
+
+    // Test function to check if the application next button exists and works
+    window.testApplicationButton = function() {
+        console.log('🧪 Testing application button...');
+        
+        // Check if button exists in the original form
+        const originalBtn = document.getElementById('application-next-btn');
+        console.log('Original button found:', !!originalBtn);
+        
+        // Check if button exists in any cloned forms
+        const allButtons = document.querySelectorAll('#application-next-btn');
+        console.log('Total application next buttons found:', allButtons.length);
+        
+        // Try to click the first button found
+        if (allButtons.length > 0) {
+            console.log('🔄 Clicking first button found...');
+            allButtons[0].click();
+        } else {
+            console.error('❌ No application next buttons found');
+        }
+    };
+
+    // Test function to verify final application form content
+    window.testFinalApplicationForm = function() {
+        console.log('🧪 Testing final application form...');
+        
+        const finalForm = document.getElementById('funnel-application-final');
+        if (finalForm) {
+            console.log('✅ Final form found');
+            console.log('Form content:', finalForm.innerHTML.substring(0, 200) + '...');
+            
+            // Check for specific fields
+            const ssnField = finalForm.querySelector('#app-ssn');
+            const bankField = finalForm.querySelector('#app-bank-name');
+            const routingField = finalForm.querySelector('#app-routing');
+            const accountField = finalForm.querySelector('#app-account');
+            
+            console.log('SSN field found:', !!ssnField);
+            console.log('Bank field found:', !!bankField);
+            console.log('Routing field found:', !!routingField);
+            console.log('Account field found:', !!accountField);
+            
+            // Test the modal display
+            handleApplicationNext();
+        } else {
+            console.error('❌ Final application form not found');
+        }
+    };
+
+    // Global function to handle application form submission
+    window.handleApplicationSubmit = function() {
+        console.log('🔄 "Submit Application" button clicked');
+        console.log('📋 Starting application submission process...');
+        
+        // Get form data
+        const finalForm = document.getElementById('funnel-application-final');
+        console.log('🔍 Looking for final application form:', finalForm ? 'Found' : 'NOT FOUND');
+        
+        if (finalForm) {
+            const formData = new FormData(finalForm);
+            const applicationData = {
+                ssn: formData.get('app-ssn'),
+                bankName: formData.get('app-bank-name'),
+                routingNumber: formData.get('app-routing'),
+                accountNumber: formData.get('app-account'),
+                policyStartDate: formData.get('app-policy-start-date')
+            };
+            
+            console.log('📝 Application data collected:', applicationData);
+            
+            // Validate required fields
+            const requiredFields = ['ssn', 'bankName', 'routingNumber', 'accountNumber', 'policyStartDate'];
+            let allFieldsValid = true;
+            
+            for (const field of requiredFields) {
+                if (!applicationData[field] || applicationData[field].trim() === '') {
+                    console.error(`❌ Missing required field: ${field}`);
+                    allFieldsValid = false;
+                }
+            }
+            
+            if (!allFieldsValid) {
+                console.error('❌ Form validation failed - cannot proceed');
+                return;
+            }
+            
+            console.log('✅ Form validation passed');
+            
+            // Hide the application modal
+            const applicationModal = document.getElementById('application-final-modal-overlay');
+            console.log('🔍 Looking for application modal to hide:', applicationModal ? 'Found' : 'NOT FOUND');
+            
+            if (applicationModal) {
+                console.log('🎭 Hiding application modal...');
+                applicationModal.style.opacity = '0';
+                applicationModal.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    if (applicationModal.parentNode) {
+                        applicationModal.remove();
+                        console.log('✅ Application modal removed from DOM');
+                    }
+                }, 300);
+            } else {
+                console.warn('⚠️ Application modal not found - continuing anyway');
+            }
+            
+            // Show comprehensive success modal with quote information
+            console.log('⏰ Scheduling final success modal display...');
+            setTimeout(() => {
+                console.log('🎉 Calling showFinalSuccessModal()...');
+                showFinalSuccessModal();
+                console.log('✅ showFinalSuccessModal() called successfully');
+            }, 350);
+            
+        } else {
+            console.error('❌ Final application form not found');
+            console.log('🔍 Available forms on page:');
+            const allForms = document.querySelectorAll('form');
+            allForms.forEach((form, index) => {
+                console.log(`  ${index + 1}. Form ID: ${form.id}, Classes: ${form.className}`);
+            });
+        }
+    };
+
+    // Test function to verify success modal
+    window.testSuccessModal = function() {
+        console.log('🧪 Testing success modal...');
+        showSuccessModal();
+        console.log('✅ Success modal should be visible');
+    };
+
+    // Test function to verify quote modal appears after application submission
+    window.testQuoteModalAfterSubmission = function() {
+        console.log('🧪 Testing quote modal after application submission...');
+        
+        // Simulate application submission
+        const testApplicationData = {
+            ssn: '123-45-6789',
+            bankName: 'Test Bank',
+            routingNumber: '123456789',
+            accountNumber: '987654321',
+            policyStartDate: '2025-08-01'
+        };
+        
+        console.log('📝 Test application data:', testApplicationData);
+        
+        // Set user age for testing (26 years old)
+        window.funnelData.age = 26;
+        
+        // Show the appropriate quote modal
+        const userAge = window.funnelData.age || 26;
+        console.log('🎯 User age for quote modal:', userAge);
+        
+        if (userAge <= 60) {
+            // Show IUL quoting tool for ages 60 and below
+            const iulModal = document.getElementById('iul-quote-modal');
+            if (iulModal) {
+                iulModal.style.display = 'flex';
+                iulModal.classList.add('active');
+                console.log('📊 IUL Quote modal displayed');
+            }
+        } else {
+            // Show final expense quoting tool for ages 61 and above
+            const coverageModal = document.getElementById('coverage-slider-modal');
+            if (coverageModal) {
+                coverageModal.style.display = 'flex';
+                coverageModal.classList.add('active');
+                console.log('📊 Coverage Slider modal displayed');
+            }
+        }
+    };
+
+    // Global function to handle IUL quote modal and transition to application
+    window.handleIULQuoteComplete = function() {
+        console.log('🔄 IUL quote completed - transitioning to application form');
+        
+        // Hide the IUL quote modal
+        const iulModal = document.getElementById('iul-quote-modal');
+        if (iulModal) {
+            iulModal.style.display = 'none';
+            iulModal.classList.remove('active');
+        }
+        
+        // Show the application form as a modal
+        setTimeout(() => {
+            showNextStepAfterCongrats();
+            console.log('📝 Application form displayed after IUL quote');
+        }, 300);
+    };
+
+    // Function to show comprehensive final success modal
+    function showFinalSuccessModal() {
+        console.log('🎉 === SHOW FINAL SUCCESS MODAL STARTED ===');
+        console.log('🔍 Checking window.funnelData:', window.funnelData);
+        
+        // Get user data for personalized message
+        const firstName = window.funnelData?.firstName || 'Michael';
+        const estimatedQuote = window.funnelData?.estimatedQuote || '$45-85/month';
+        
+        console.log('📝 User data extracted:');
+        console.log('  - First Name:', firstName);
+        console.log('  - Estimated Quote:', estimatedQuote);
+        
+        // Update the personalized greeting
+        const userFirstNameElement = document.getElementById('user-first-name');
+        console.log('🔍 Looking for user-first-name element:', userFirstNameElement ? 'Found' : 'NOT FOUND');
+        
+        if (userFirstNameElement) {
+            userFirstNameElement.textContent = firstName;
+            console.log('✅ Personalized greeting updated with name:', firstName);
+        } else {
+            console.error('❌ user-first-name element not found');
+        }
+        
+        // Show estimated quote if available
+        const finalQuoteDisplay = document.getElementById('final-quote-display');
+        const finalQuoteAmount = document.getElementById('final-quote-amount');
+        console.log('🔍 Looking for quote display elements:');
+        console.log('  - final-quote-display:', finalQuoteDisplay ? 'Found' : 'NOT FOUND');
+        console.log('  - final-quote-amount:', finalQuoteAmount ? 'Found' : 'NOT FOUND');
+        
+        if (finalQuoteDisplay && finalQuoteAmount && estimatedQuote !== '$45-85/month') {
+            finalQuoteAmount.textContent = estimatedQuote;
+            finalQuoteDisplay.style.display = 'block';
+            console.log('✅ Quote display updated and shown');
+        } else {
+            console.log('ℹ️ Quote display not shown (using default or elements not found)');
+        }
+        
+        // Show the modal
+        const modal = document.getElementById('application-congrats-modal');
+        console.log('🔍 Looking for application-congrats-modal:', modal ? 'Found' : 'NOT FOUND');
+        
+        if (modal) {
+            console.log('🎭 Current modal display style:', modal.style.display);
+            console.log('🎭 Current modal opacity:', modal.style.opacity);
+            console.log('🎭 Current modal z-index:', modal.style.zIndex);
+            
+            // Force modal to be visible
+            modal.style.display = 'flex';
+            modal.style.opacity = '1';
+            modal.style.zIndex = '999999';
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
+            
+            console.log('🎭 Modal forced to be visible');
+            console.log('🎭 New display style:', modal.style.display);
+            console.log('🎭 New opacity:', modal.style.opacity);
+            console.log('🎭 New z-index:', modal.style.zIndex);
+            
+            // Double-check visibility after a short delay
+            setTimeout(() => {
+                const computedStyle = window.getComputedStyle(modal);
+                console.log('🎭 Final modal state:');
+                console.log('  - Display:', computedStyle.display);
+                console.log('  - Opacity:', computedStyle.opacity);
+                console.log('  - Visibility:', computedStyle.visibility);
+                console.log('  - Z-index:', computedStyle.zIndex);
+                console.log('  - Position:', computedStyle.position);
+                
+                if (computedStyle.display === 'flex' && computedStyle.opacity !== '0') {
+                    console.log('✅ Modal should be visible now!');
+                } else {
+                    console.error('❌ Modal still not visible!');
+                }
+            }, 100);
+            
+            console.log('✅ Final success modal display process completed for:', firstName);
+        } else {
+            console.error('❌ application-congrats-modal not found in DOM');
+            console.log('🔍 Available modals on page:');
+            const allModals = document.querySelectorAll('[id*="modal"]');
+            allModals.forEach((modal, index) => {
+                console.log(`  ${index + 1}. Modal ID: ${modal.id}, Display: ${modal.style.display}`);
+            });
+        }
+        
+        console.log('🎉 === SHOW FINAL SUCCESS MODAL COMPLETED ===');
+    }
+    
+    // Function to close the final success modal
+    window.closeFinalSuccessModal = function() {
+        const successModal = document.getElementById('final-success-modal-overlay');
+        if (successModal) {
+            successModal.style.opacity = '0';
+            successModal.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                if (successModal.parentNode) {
+                    successModal.remove();
+                }
+            }, 300);
+        }
+    };
+
+    // Comprehensive test function to verify entire funnel flow
+    window.testCompleteFunnelFlow = function() {
+        console.log('🧪 Testing complete funnel flow...');
+        console.log('📋 PHASE 1: Medical Pre-Qualification (Steps 1-11)');
+        console.log('📋 PHASE 2: Full Application (Steps 12-15)');
+        
+        // Test data
+        window.funnelData = {
+            age: 26,
+            coverageAmount: '25001-50000',
+            state: 'FL',
+            militaryStatus: 'Veteran/retired',
+            branchOfService: 'Marine Corps',
+            maritalStatus: 'Married'
+        };
+        
+        console.log('✅ Test data set:', window.funnelData);
+        console.log('🎯 Expected flow:');
+        console.log('   1. Complete medical funnel (11 steps)');
+        console.log('   2. Loading screen → Pre-Qualified message');
+        console.log('   3. "Complete Application" → IUL Quote Modal');
+        console.log('   4. "Get Your Quote Now" → Application Step 1');
+        console.log('   5. "Continue to Step 2" → Application Step 2');
+        console.log('   6. "Submit Application" → Final Success Modal');
+        
+        return 'Complete funnel flow test ready. Run through the actual funnel to test.';
+    };
+
+    // Comprehensive functionality test
+    window.testAllFunctionality = function() {
+        console.log('🧪 Testing all functionality...');
+        
+        // Test 1: Check if all key functions exist
+        const functionsToTest = [
+            'openFunnelModal',
+            'showLoadingModal', 
+            'hideLoadingModal',
+            'showMedicalCongratsModal',
+            'hideMedicalCongratsModal',
+            'showNextStepAfterCongrats',
+            'handleApplicationSubmit',
+            'handleIULQuoteComplete',
+            'showFinalSuccessModal',
+            'closeFinalSuccessModal'
+        ];
+        
+        console.log('✅ Testing function availability:');
+        functionsToTest.forEach(funcName => {
+            if (typeof window[funcName] === 'function') {
+                console.log(`   ✅ ${funcName} exists`);
+            } else {
+                console.log(`   ❌ ${funcName} missing`);
+            }
+        });
+        
+        // Test 2: Check if all key elements exist
+        const elementsToTest = [
+            'funnel-modal',
+            'medical-congrats-modal',
+            'get-quote-btn',
+            'iul-quote-modal',
+            'coverage-slider-modal',
+            'funnel-application-form',
+            'funnel-application-final',
+            'application-next-btn',
+            'application-submit-btn'
+        ];
+        
+        console.log('✅ Testing element availability:');
+        elementsToTest.forEach(elementId => {
+            const element = document.getElementById(elementId);
+            if (element) {
+                console.log(`   ✅ ${elementId} exists`);
+            } else {
+                console.log(`   ❌ ${elementId} missing`);
+            }
+        });
+        
+        // Test 3: Check if event listeners are properly attached
+        console.log('✅ Testing event listeners:');
+        
+        const getQuoteBtn = document.getElementById('get-quote-btn');
+        if (getQuoteBtn) {
+            console.log('   ✅ get-quote-btn found');
+            // Check if it has click event listeners
+            const listeners = getEventListeners ? getEventListeners(getQuoteBtn) : 'Cannot check (DevTools required)';
+            console.log('   📊 get-quote-btn event listeners:', listeners);
+        } else {
+            console.log('   ❌ get-quote-btn not found');
+        }
+        
+        console.log('🎯 All functionality tests completed!');
+        return 'Functionality test completed - check console for results';
+    };
+
+    // Comprehensive test function to verify the complete flow
+    window.testCompleteFlow = function() {
+        console.log('🧪 Testing complete flow from medical questions to application...');
+        
+        // Step 1: Simulate completing medical questions
+        console.log('📋 Step 1: Medical questions completed');
+        
+        // Step 2: Show loading screen
+        console.log('⏳ Step 2: Showing loading screen...');
+        showLoadingModal();
+        
+        // Step 3: After loading, show congratulations
+        setTimeout(() => {
+            console.log('🎉 Step 3: Showing congratulations modal...');
+            hideLoadingModal();
+            showMedicalCongratsModal();
+            
+            // Step 4: Simulate clicking "Complete Application"
+            setTimeout(() => {
+                console.log('🔄 Step 4: Clicking "Complete Application"...');
+                const getQuoteBtn = document.getElementById('get-quote-btn');
+                if (getQuoteBtn) {
+                    getQuoteBtn.click();
+                    console.log('✅ "Complete Application" button clicked');
+                } else {
+                    console.error('❌ "Complete Application" button not found');
+                }
+                
+                // Step 5: Verify quote modal appears
+                setTimeout(() => {
+                    console.log('📊 Step 5: Checking if quote modal appeared...');
+                    const iulModal = document.getElementById('iul-quote-modal');
+                    const coverageModal = document.getElementById('coverage-slider-modal');
+                    
+                    if (iulModal && iulModal.style.display === 'flex') {
+                        console.log('✅ IUL Quote modal is visible');
+                    } else if (coverageModal && coverageModal.style.display === 'flex') {
+                        console.log('✅ Coverage Slider modal is visible');
+                    } else {
+                        console.error('❌ No quote modal is visible');
+                    }
+                    
+                    // Step 6: Simulate clicking "Get Your Quote Now"
+                    setTimeout(() => {
+                        console.log('🔄 Step 6: Simulating "Get Your Quote Now" click...');
+                        
+                        // Find and click the "Get Your Quote Now" button
+                        const getQuoteNowBtn = document.querySelector('#iul-quote-modal .cta-button') || 
+                                             document.querySelector('#coverage-slider-modal .cta-button');
+                        
+                        if (getQuoteNowBtn) {
+                            getQuoteNowBtn.click();
+                            console.log('✅ "Get Your Quote Now" button clicked');
+                            
+                            // Step 7: Verify application form appears
+                            setTimeout(() => {
+                                console.log('📝 Step 7: Checking if application form appeared...');
+                                const appModal = document.getElementById('application-modal-overlay');
+                                if (appModal) {
+                                    console.log('✅ Application form modal is visible');
+                                } else {
+                                    console.error('❌ Application form modal not found');
+                                }
+                                
+                                console.log('🎯 Complete flow test finished!');
+                            }, 1000);
+                        } else {
+                            console.error('❌ "Get Your Quote Now" button not found');
+                        }
+                    }, 2000);
+                }, 1000);
+            }, 2000);
+        }, 3000);
+    };
+
+    // Global function to handle IUL "Get Your Quote Now" button click
+    window.handleIULQuoteNow = function() {
+        try {
+            console.log('🔄 IUL "Get Your Quote Now" button clicked');
+            
+            // Get the current IUL quote slider instance
+            if (window.iulQuoteSlider) {
+                window.iulQuoteSlider.showSecureQuoteModal();
+            } else {
+                console.error('❌ IUL Quote Slider not initialized');
+                // Fallback: manually trigger the application form
+                showNextStepAfterCongrats();
+            }
+        } catch (error) {
+            console.error('❌ Error handling IUL quote now button:', error);
+            // Fallback: manually trigger the application form
+            showNextStepAfterCongrats();
+        }
+    };
+
+    // Global function to handle Coverage "Get Your Quote Now" button click
+    window.handleCoverageQuoteNow = function() {
+        try {
+            console.log('🔄 Coverage "Get Your Quote Now" button clicked');
+            
+            // Get the current Coverage slider instance
+            if (window.coverageSlider) {
+                window.coverageSlider.showApplicationModal();
+            } else {
+                console.error('❌ Coverage Slider not initialized');
+                // Fallback: manually trigger the application form
+                showNextStepAfterCongrats();
+            }
+        } catch (error) {
+            console.error('❌ Error handling Coverage quote now button:', error);
+            // Fallback: manually trigger the application form
+            showNextStepAfterCongrats();
+        }
+    };
+
+    // Comprehensive test function to verify all buttons and sliders
+    window.testAllButtonsAndSliders = function() {
+        console.log('🧪 Testing all buttons and sliders...');
+        
+        // Test 1: Check if all sliders exist and are functional
+        console.log('📊 Testing sliders...');
+        const sliders = document.querySelectorAll('input[type="range"]');
+        sliders.forEach((slider, index) => {
+            if (slider) {
+                console.log(`   ✅ Slider ${index + 1} found:`, slider.id || slider.name);
+                // Test if slider can be changed
+                const originalValue = slider.value;
+                slider.value = parseInt(slider.value) + 1000;
+                slider.dispatchEvent(new Event('input'));
+                console.log(`   📊 Slider ${index + 1} value changed from ${originalValue} to ${slider.value}`);
+            } else {
+                console.log(`   ❌ Slider ${index + 1} not found`);
+            }
+        });
+
+        // Test 2: Check if all buttons exist and are clickable
+        console.log('🔘 Testing buttons...');
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach((button, index) => {
+            if (button) {
+                console.log(`   ✅ Button ${index + 1} found:`, button.textContent?.trim() || button.innerHTML?.trim());
+                // Test if button is not disabled
+                if (!button.disabled) {
+                    console.log(`   ✅ Button ${index + 1} is enabled`);
+                } else {
+                    console.log(`   ⚠️ Button ${index + 1} is disabled`);
+                }
+            } else {
+                console.log(`   ❌ Button ${index + 1} not found`);
+            }
+        });
+
+        // Test 3: Check if all radio buttons exist
+        console.log('📻 Testing radio buttons...');
+        const radioButtons = document.querySelectorAll('input[type="radio"]');
+        radioButtons.forEach((radio, index) => {
+            if (radio) {
+                console.log(`   ✅ Radio button ${index + 1} found:`, radio.name, radio.value);
+            } else {
+                console.log(`   ❌ Radio button ${index + 1} not found`);
+            }
+        });
+
+        // Test 4: Check if all modals exist
+        console.log('🪟 Testing modals...');
+        const modals = document.querySelectorAll('.modal-overlay');
+        modals.forEach((modal, index) => {
+            if (modal) {
+                console.log(`   ✅ Modal ${index + 1} found:`, modal.id);
+            } else {
+                console.log(`   ❌ Modal ${index + 1} not found`);
+            }
+        });
+
+        // Test 5: Test IUL Quote Slider specifically
+        console.log('📊 Testing IUL Quote Slider...');
+        if (window.iulQuoteSlider) {
+            console.log('   ✅ IUL Quote Slider instance exists');
+            try {
+                window.iulQuoteSlider.updateQuote();
+                console.log('   ✅ IUL Quote Slider updateQuote() works');
+            } catch (error) {
+                console.error('   ❌ Error in IUL Quote Slider updateQuote():', error);
+            }
+        } else {
+            console.log('   ❌ IUL Quote Slider instance not found');
+        }
+
+        // Test 6: Test Coverage Slider specifically
+        console.log('📊 Testing Coverage Slider...');
+        if (window.coverageSlider) {
+            console.log('   ✅ Coverage Slider instance exists');
+            try {
+                window.coverageSlider.updateQuote();
+                console.log('   ✅ Coverage Slider updateQuote() works');
+            } catch (error) {
+                console.error('   ❌ Error in Coverage Slider updateQuote():', error);
+            }
+        } else {
+            console.log('   ❌ Coverage Slider instance not found');
+        }
+
+        console.log('🎯 All buttons and sliders test completed!');
+        return 'Button and slider test completed - check console for results';
+    };
+
+    // Test function to verify IUL sliders are working
+    window.testIULSliders = function() {
+        console.log('🧪 Testing IUL sliders...');
+        
+        // Test 1: Check if sliders exist
+        const coverageSlider = document.getElementById('iul-coverage-slider');
+        const ageSlider = document.getElementById('iul-age-slider');
+        const quoteDisplay = document.getElementById('iul-quote-card');
+        
+        console.log('📊 Coverage slider found:', !!coverageSlider);
+        console.log('📊 Age slider found:', !!ageSlider);
+        console.log('📊 Quote display found:', !!quoteDisplay);
+        
+        // Test 2: Check if IULQuoteSlider instance exists
+        if (window.iulQuoteSlider) {
+            console.log('✅ IULQuoteSlider instance exists');
+            console.log('📊 Current age:', window.iulQuoteSlider.userAge);
+            console.log('📊 Current coverage:', window.iulQuoteSlider.currentValue);
+            console.log('📊 Coverage range:', window.iulQuoteSlider.coverageRange);
+            
+            // Test 3: Simulate slider movement
+            if (coverageSlider) {
+                const originalValue = coverageSlider.value;
+                coverageSlider.value = parseInt(originalValue) + 10000;
+                coverageSlider.dispatchEvent(new Event('input'));
+                console.log('📊 Coverage slider moved from', originalValue, 'to', coverageSlider.value);
+            }
+            
+            // Test 4: Check if quote updates
+            setTimeout(() => {
+                const quoteText = quoteDisplay ? quoteDisplay.textContent : '';
+                console.log('📊 Quote display content:', quoteText);
+                console.log('✅ IUL sliders test completed');
+            }, 100);
+        } else {
+            console.error('❌ IULQuoteSlider instance not found');
+        }
+    };
+
+    // Comprehensive workflow test function
+    window.testCompleteWorkflow = function() {
+        console.log('🧪 Testing complete workflow...');
+        
+        // Test 1: Verify all buttons exist and work
+        console.log('🔘 Testing all workflow buttons...');
+        const buttonsToTest = [
+            { id: 'get-quote-btn', text: 'Complete Application' },
+            { id: 'iul-quote-modal .cta-button', text: 'Secure Your Rate' },
+            { id: 'application-next-btn', text: 'Continue to Step 2' },
+            { id: 'application-submit-btn', text: 'Submit Application' }
+        ];
+        
+        buttonsToTest.forEach(button => {
+            const element = document.querySelector(button.id);
+            if (element) {
+                console.log(`   ✅ ${button.text} button found`);
+            } else {
+                console.log(`   ❌ ${button.text} button not found`);
+            }
+        });
+        
+        // Test 2: Verify IUL quote calculation
+        console.log('💰 Testing IUL quote calculation...');
+        if (window.iulQuoteSlider) {
+            const testQuote = window.iulQuoteSlider.getIULQuote();
+            console.log(`   ✅ IUL quote calculated: $${testQuote.toLocaleString()}`);
+        } else {
+            console.log('   ❌ IUL Quote Slider not initialized');
+        }
+        
+        // Test 3: Verify workflow functions exist
+        console.log('🔧 Testing workflow functions...');
+        const functionsToTest = [
+            'showNextStepAfterCongrats',
+            'handleIULQuoteNow',
+            'handleApplicationSubmit',
+            'showFinalSuccessModal'
+        ];
+        
+        functionsToTest.forEach(funcName => {
+            if (typeof window[funcName] === 'function') {
+                console.log(`   ✅ ${funcName} function exists`);
+            } else {
+                console.log(`   ❌ ${funcName} function missing`);
+            }
+        });
+        
+        // Test 4: Verify modal transitions
+        console.log('🪟 Testing modal transitions...');
+        const modalsToTest = [
+            'medical-congrats-modal',
+            'iul-quote-modal',
+            'funnel-application-form',
+            'funnel-application-final',
+            'application-congrats-modal'
+        ];
+        
+        modalsToTest.forEach(modalId => {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                console.log(`   ✅ ${modalId} modal exists`);
+            } else {
+                console.log(`   ❌ ${modalId} modal not found`);
+            }
+        });
+        
+        console.log('🎯 Complete workflow test finished!');
+        console.log('📋 Expected flow:');
+        console.log('   1. Medical questions (11 steps)');
+        console.log('   2. Loading screen → Pre-Qualified message');
+        console.log('   3. "Complete Application" → IUL Quote Modal');
+        console.log('   4. IUL modal shows rate + "Secure this rate"');
+        console.log('   5. "Secure Your Rate" → Application Step 1');
+        console.log('   6. "Continue to Step 2" → Application Step 2');
+        console.log('   7. "Submit Application" → Final Success Modal');
+        
+        return 'Complete workflow test finished - check console for results';
+    };
+
+    // Quick test to verify "See If I Qualify" button is working
+    window.testSeeIfQualifyButton = function() {
+        console.log('🧪 Testing "See If I Qualify" button...');
+        
+        const seeIfQualifyBtn = document.querySelector('.qualify-button, .cta-button.qualify-button, #see-if-qualify-btn, [data-action="open-funnel"]');
+        
+        if (seeIfQualifyBtn) {
+            console.log('✅ "See If I Qualify" button found');
+            console.log('Button text:', seeIfQualifyBtn.textContent.trim());
+            console.log('Button classes:', seeIfQualifyBtn.className);
+            
+            // Test if button is clickable
+            if (!seeIfQualifyBtn.disabled) {
+                console.log('✅ Button is enabled and clickable');
+            } else {
+                console.log('❌ Button is disabled');
+            }
+            
+            // Test if event listener is attached
+            const events = getEventListeners(seeIfQualifyBtn);
+            console.log('Event listeners attached:', events ? Object.keys(events) : 'None');
+            
+            return 'See If I Qualify button test completed - check console for results';
+        } else {
+            console.log('❌ "See If I Qualify" button not found');
+            
+            // Check for alternative buttons
+            const allButtons = document.querySelectorAll('button');
+            console.log('All buttons found:', allButtons.length);
+            allButtons.forEach((btn, index) => {
+                const text = btn.textContent.trim();
+                if (text.toLowerCase().includes('qualify') || text.toLowerCase().includes('see')) {
+                    console.log(`Potential qualify button ${index}:`, text);
+                }
+            });
+            
+            return 'See If I Qualify button not found - check console for alternatives';
+        }
+    };
+
+    // Helper functions for IUL Quote Slider
+    function calculateAgeFromPreviousStep() {
+        try {
+            if (window.funnelData && window.funnelData.contactInfo && window.funnelData.contactInfo.dateOfBirth) {
+                const birthDate = new Date(window.funnelData.contactInfo.dateOfBirth);
+                const today = new Date();
+                const age = today.getFullYear() - birthDate.getFullYear();
+                const monthDiff = today.getMonth() - birthDate.getMonth();
+                const finalAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) ? age - 1 : age;
+                console.log('📊 Age calculated from birthday:', finalAge);
+                return finalAge;
+            } else {
+                console.log('📊 No birthday data found, using default age 30');
+                return 30;
+            }
+        } catch (error) {
+            console.error('❌ Error calculating age from previous step:', error);
+            return 30;
+        }
+    }
+
+    function getCoverageRangeFromPreviousStep() {
+        try {
+            if (window.funnelData && window.funnelData.coverageAmount) {
+                const coverage = window.funnelData.coverageAmount;
+                let min, max;
+                
+                switch(coverage) {
+                    case '25000-50000':
+                        min = 25000;
+                        max = 50000;
+                        break;
+                    case '50001-100000':
+                        min = 50001;
+                        max = 100000;
+                        break;
+                    case '100001-200000':
+                        min = 100001;
+                        max = 200000;
+                        break;
+                    case '200001-500000':
+                        min = 200001;
+                        max = 500000;
+                        break;
+                    case '500001+':
+                        min = 500001;
+                        max = 1000000;
+                        break;
+                    default:
+                        min = 25000;
+                        max = 100000;
+                }
+                
+                console.log('📊 Coverage range from previous step:', { min, max });
+                return { min, max };
+            } else {
+                console.log('📊 No coverage data found, using default range');
+                return { min: 25000, max: 100000 };
+            }
+        } catch (error) {
+            console.error('❌ Error getting coverage range from previous step:', error);
+            return { min: 25000, max: 100000 };
+        }
+    }
+
+    // Test function to manually trigger final success modal
+    window.testFinalSuccessModal = function() {
+        console.log('🧪 === TESTING FINAL SUCCESS MODAL ===');
+        
+        // Set test data
+        window.funnelData = {
+            firstName: 'TestUser',
+            estimatedQuote: '$150/month'
+        };
+        
+        console.log('📝 Test data set:', window.funnelData);
+        
+        // Call the function directly
+        showFinalSuccessModal();
+        
+        return 'Final success modal test initiated - check console for logs';
+    };
+
+    // Test function to check if final success modal HTML exists
+    window.testModalHTML = function() {
+        console.log('🔍 === TESTING MODAL HTML EXISTENCE ===');
+        
+        const modal = document.getElementById('application-congrats-modal');
+        console.log('🔍 application-congrats-modal found:', modal ? 'YES' : 'NO');
+        
+        if (modal) {
+            console.log('📋 Modal properties:');
+            console.log('  - ID:', modal.id);
+            console.log('  - Classes:', modal.className);
+            console.log('  - Display:', modal.style.display);
+            console.log('  - Z-index:', modal.style.zIndex);
+            console.log('  - Children count:', modal.children.length);
+            
+            // Check for key elements inside modal
+            const userFirstName = document.getElementById('user-first-name');
+            const finalQuoteDisplay = document.getElementById('final-quote-display');
+            const finalQuoteAmount = document.getElementById('final-quote-amount');
+            
+            console.log('🔍 Key elements found:');
+            console.log('  - user-first-name:', userFirstName ? 'YES' : 'NO');
+            console.log('  - final-quote-display:', finalQuoteDisplay ? 'YES' : 'NO');
+            console.log('  - final-quote-amount:', finalQuoteAmount ? 'YES' : 'NO');
+            
+            // Show modal briefly for visual test
+            modal.style.display = 'flex';
+            modal.style.opacity = '1';
+            modal.style.zIndex = '999999';
+            
+            console.log('👁️ Modal should be visible now for 3 seconds...');
+            
+            setTimeout(() => {
+                modal.style.display = 'none';
+                console.log('✅ Modal hidden again');
+            }, 3000);
+            
+        } else {
+            console.error('❌ Modal not found in DOM');
+            console.log('🔍 Available elements with "modal" in ID:');
+            const allElements = document.querySelectorAll('[id*="modal"]');
+            allElements.forEach((el, index) => {
+                console.log(`  ${index + 1}. ${el.id}`);
+            });
+        }
+        
+        return 'Modal HTML test completed - check console for results';
+    };
+
+    // Simple test function to check final confirmation modal
+    window.testFinalConfirmation = function() {
+        console.log('🧪 === TESTING FINAL CONFIRMATION MODAL ===');
+        
+        // Check if modal HTML exists
+        const modal = document.getElementById('application-congrats-modal');
+        console.log('🔍 Modal HTML exists:', modal ? 'YES' : 'NO');
+        
+        if (modal) {
+            console.log('📋 Modal properties:');
+            console.log('  - ID:', modal.id);
+            console.log('  - Classes:', modal.className);
+            console.log('  - Current display:', modal.style.display);
+            console.log('  - Current z-index:', modal.style.zIndex);
+            
+            // Check for key elements
+            const userFirstName = document.getElementById('user-first-name');
+            const finalQuoteDisplay = document.getElementById('final-quote-display');
+            const finalQuoteAmount = document.getElementById('final-quote-amount');
+            
+            console.log('🔍 Key elements:');
+            console.log('  - user-first-name:', userFirstName ? 'Found' : 'Missing');
+            console.log('  - final-quote-display:', finalQuoteDisplay ? 'Found' : 'Missing');
+            console.log('  - final-quote-amount:', finalQuoteAmount ? 'Found' : 'Missing');
+            
+            // Try to show the modal
+            console.log('🎭 Attempting to show modal...');
+            modal.style.display = 'flex';
+            modal.style.opacity = '1';
+            modal.style.zIndex = '999999';
+            
+            console.log('✅ Modal should now be visible!');
+            console.log('🎭 New display style:', modal.style.display);
+            console.log('🎭 New opacity:', modal.style.opacity);
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                modal.style.display = 'none';
+                console.log('✅ Modal hidden again');
+            }, 5000);
+            
+        } else {
+            console.error('❌ Modal not found!');
+            console.log('🔍 Available modals on page:');
+            const allModals = document.querySelectorAll('[id*="modal"]');
+            allModals.forEach((modal, index) => {
+                console.log(`  ${index + 1}. ${modal.id}`);
+            });
+        }
+        
+        return 'Final confirmation test completed - check console for results';
+    };
+
+    // Test function to simulate complete application submission
+    window.testCompleteSubmission = function() {
+        console.log('🧪 === TESTING COMPLETE APPLICATION SUBMISSION ===');
+        
+        // Set test data
+        window.funnelData = {
+            firstName: 'TestUser',
+            lastName: 'TestLast',
+            age: 30,
+            coverageAmount: '25001-50000',
+            estimatedQuote: '$150/month'
+        };
+        
+        console.log('📝 Test data set:', window.funnelData);
+        
+        // Simulate clicking "Submit Application" button
+        console.log('🔄 Simulating "Submit Application" button click...');
+        
+        // Call the handleApplicationSubmit function directly
+        if (typeof window.handleApplicationSubmit === 'function') {
+            console.log('✅ handleApplicationSubmit function found, calling it...');
+            window.handleApplicationSubmit();
+        } else {
+            console.error('❌ handleApplicationSubmit function not found!');
+        }
+        
+        return 'Complete submission test initiated - watch console for logs';
+    };
+
 });

@@ -271,8 +271,7 @@ header {
 }
 
 .cta-button.primary {
-    /* This class is now used mainly as a selector, color is inherited from the base. */
-    /* Specific overrides can go here if needed in the future. */
+    /* Primary button styling inherited from base .cta-button */
 }
 
 .cta-button.secondary {
@@ -1637,44 +1636,59 @@ html {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.6);
     z-index: 1000;
     justify-content: center;
     align-items: center;
     overflow-y: auto;
-    padding: 20px 0;
+    padding: 20px;
+    backdrop-filter: blur(4px);
 }
 
 .funnel-modal-content {
     background-color: #fff;
-    padding: 2.5rem 2.5rem 2rem 2.5rem;
-    border-radius: 22px;
-    width: 90%;
-    max-width: 450px;
+    padding: 2.5rem;
+    border-radius: 16px;
+    width: 85%;
+    max-width: 400px;
     position: relative;
-    box-shadow: 0 8px 40px 0 rgba(30, 58, 138, 0.18), 0 2px 12px 0 rgba(30,58,138,0.10);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 8px 25px rgba(0, 0, 0, 0.2);
     margin: auto;
-    max-height: calc(100vh - 40px);
-    overflow-y: auto;
-    border: 1.5px solid #e5eaf3;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-    position: relative;
+    transform: scale(1);
+    opacity: 1;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.funnel-modal {
+    display: flex;
 }
 
 .funnel-modal form {
     display: none;
     text-align: center;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
 }
 
 .funnel-modal form:first-child {
-    display: block;
+    display: flex;
 }
 
 .funnel-modal h2 {
     text-align: center;
-    margin-bottom: 1.1rem;
+    margin-bottom: 1.5rem;
+    margin-top: 1rem;
     color: #22304a;
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: 700;
     letter-spacing: 0.01em;
 }
@@ -1710,7 +1724,7 @@ html {
     font-size: 1.25rem;
     font-weight: 700;
     box-shadow: 0 2px 10px rgba(30,58,138,0.07);
-    margin-top: 1.2em;
+    margin-top: 2em;
     letter-spacing: 0.01em;
 }
 
@@ -1971,13 +1985,17 @@ html {
 /* Mobile Responsiveness */
 @media (max-width: 640px) {
     .funnel-modal {
-        padding: 10px;
+        padding: 8px;
+        align-items: flex-start;
+        padding-top: 15px;
     }
     
     .funnel-modal-content {
-        width: 95%;
-        padding: 1rem;
-        max-height: calc(100vh - 20px);
+        width: 92%;
+        padding: 1.5rem;
+        height: 450px;
+        margin: 0 auto;
+        border-radius: 12px;
     }
 
     .form-field input {
@@ -2846,38 +2864,47 @@ html {
   }
 } 
 
+.funnel-progress-container {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    right: 25px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
 .funnel-progress-tracker {
-  position: absolute;
-  top: 18px;
-  left: 22px;
-  font-size: 1.08rem;
-  color: #b6c2d6;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  opacity: 0.98;
-  z-index: 10;
-  pointer-events: none;
-  background: rgba(255,255,255,0.85);
-  padding: 2px 12px;
-  border-radius: 12px;
-  box-shadow: 0 1px 4px rgba(30,58,138,0.04);
-}
-@media (max-width: 600px) {
-  .funnel-progress-tracker {
-    top: 10px;
-    left: 10px;
-    font-size: 0.98rem;
-    padding: 2px 8px;
-  }
-}
-#funnel-medical-tobacco,
-#funnel-medical-conditions,
-#funnel-medical-hospital,
-#funnel-medical-diabetes {
-  position: relative;
+    background: rgba(59, 110, 234, 0.1);
+    color: var(--primary-color);
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid rgba(59, 110, 234, 0.2);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px rgba(59, 110, 234, 0.1);
+    align-self: flex-start;
 }
 
+.funnel-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(59, 110, 234, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
 
+.funnel-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  border-radius: 3px;
+  transition: width 0.3s ease-in-out;
+  box-shadow: 0 1px 3px rgba(59, 110, 234, 0.3);
+}
 
 /* Medical Processing Modal - Black/White Style */
 #medical-processing-modal .processing-modal-content {
@@ -2920,8 +2947,8 @@ html {
   }
 }
 
-/* Progress Tracker Styles */
-.funnel-progress-tracker {
+/* Progress Tracker Styles - Consolidated */
+.progress-tracker {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3236,8 +3263,7 @@ html {
 
 .form-input:focus {
     outline: none;
-    ring: 2px;
-    ring-color: #60a5fa;
+    box-shadow: 0 0 0 2px #60a5fa;
 }
 
 .submit-button {
@@ -4306,4 +4332,583 @@ html {
 /* Ensure the quote display has proper padding */
 #iul-quote-modal .quote-display {
   padding: 20px 0;
+}
+
+/* Comprehensive Mobile Optimizations for All Funnel Pages */
+
+/* General Mobile Optimizations */
+@media (max-width: 768px) {
+    /* Ensure proper viewport and touch targets */
+    .funnel-modal-content {
+        padding: 1.5rem;
+        margin: 1rem;
+        max-height: 90vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Improve form field spacing and touch targets */
+    .form-field {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-field input,
+    .form-field select,
+    .form-field textarea {
+        min-height: 44px; /* iOS minimum touch target */
+        font-size: 16px; /* Prevent zoom on iOS */
+        padding: 12px 16px;
+    }
+    
+    /* Optimize radio and checkbox options for mobile */
+    .funnel-military-options label,
+    .funnel-checkbox-options label {
+        min-height: 44px;
+        padding: 12px 16px;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .funnel-military-options span,
+    .funnel-checkbox-options span {
+        font-size: 16px;
+        line-height: 1.4;
+    }
+    
+    /* Improve button sizing for mobile */
+    .cta-button {
+        min-height: 48px;
+        font-size: 16px;
+        padding: 12px 24px;
+        width: 100%;
+        margin-top: 1rem;
+    }
+    
+    /* Optimize back button for mobile */
+    .funnel-back-btn {
+        min-height: 44px;
+        font-size: 16px;
+        padding: 10px 16px;
+        margin-bottom: 1rem;
+    }
+    
+    /* Improve modal titles and descriptions */
+    .funnel-modal h2 {
+        font-size: 1.5rem;
+        line-height: 1.3;
+        margin-bottom: 0.75rem;
+    }
+    
+    .funnel-modal p {
+        font-size: 1rem;
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Optimize progress tracker for mobile */
+    .funnel-progress-tracker {
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    
+    .progress-step {
+        min-width: 60px;
+        max-width: 80px;
+    }
+    
+    .step-number {
+        width: 2rem;
+        height: 2rem;
+        font-size: 0.875rem;
+    }
+    
+    .step-label {
+        font-size: 0.75rem;
+        line-height: 1.2;
+    }
+}
+
+/* Small Mobile Optimizations */
+@media (max-width: 480px) {
+    .funnel-modal-content {
+        padding: 1rem;
+        margin: 0.5rem;
+        border-radius: 12px;
+    }
+    
+    .funnel-modal h2 {
+        font-size: 1.25rem;
+    }
+    
+    .funnel-modal p {
+        font-size: 0.875rem;
+    }
+    
+    .form-field input,
+    .form-field select,
+    .form-field textarea {
+        font-size: 16px;
+        padding: 10px 12px;
+    }
+    
+    .cta-button {
+        min-height: 44px;
+        font-size: 16px;
+        padding: 10px 20px;
+    }
+    
+    /* Stack form fields vertically on very small screens */
+    .form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem;
+    }
+    
+    /* Optimize radio/checkbox options for very small screens */
+    .funnel-military-options label,
+    .funnel-checkbox-options label {
+        padding: 10px 12px;
+        min-height: 40px;
+    }
+    
+    .funnel-military-options span,
+    .funnel-checkbox-options span {
+        font-size: 14px;
+    }
+}
+
+/* Landscape Mobile Optimizations */
+@media (max-width: 768px) and (orientation: landscape) {
+    .funnel-modal {
+        padding: 3px;
+        align-items: flex-start;
+        padding-top: 8px;
+    }
+    
+    .funnel-modal-content {
+        height: 400px;
+        padding: 1rem;
+        width: 85%;
+        border-radius: 12px;
+    }
+    
+    .funnel-modal h2 {
+        font-size: 1.1rem;
+        margin-bottom: 0.75rem;
+        margin-top: 0.5rem;
+    }
+    
+    .funnel-modal p {
+        font-size: 0.8rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    /* Reduce spacing in landscape mode */
+    .form-field {
+        margin-bottom: 0.75rem;
+    }
+    
+    .cta-button {
+        margin-top: 0.75rem;
+    }
+}
+
+/* Specific Mobile Optimizations for Each Funnel Step */
+
+/* State Selection Step */
+@media (max-width: 768px) {
+    #funnel-state-select {
+        min-height: 44px;
+        font-size: 16px;
+        padding: 12px 16px;
+    }
+}
+
+/* Military Status Step */
+@media (max-width: 768px) {
+    .funnel-military-options {
+        gap: 0.75rem;
+    }
+    
+    .funnel-military-options label {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
+/* Branch of Service Step */
+@media (max-width: 768px) {
+    .funnel-military-options {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Marital Status Step */
+@media (max-width: 768px) {
+    .funnel-military-options {
+        gap: 0.75rem;
+    }
+}
+
+/* Coverage Amount Step */
+@media (max-width: 768px) {
+    .funnel-military-options {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Contact Information Step */
+@media (max-width: 768px) {
+    .contact-form-fields {
+        gap: 1rem;
+    }
+    
+    .form-field {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Medical Questions Steps */
+@media (max-width: 768px) {
+    .medical-form-fields {
+        gap: 1rem;
+    }
+    
+    .medical-form-fields .form-field {
+        margin-bottom: 1rem;
+    }
+    
+    .medical-form-fields label {
+        font-size: 16px;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Optimize height/weight inputs */
+    .medical-form-fields input[type="text"] {
+        min-height: 44px;
+        font-size: 16px;
+    }
+}
+
+/* Application Form Step */
+@media (max-width: 768px) {
+    #funnel-application-form {
+        padding: 1rem;
+    }
+    
+    #funnel-application-form h2 {
+        font-size: 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    #funnel-application-form p {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    #funnel-application-form .form-section {
+        margin-bottom: 2rem;
+        padding: 1rem;
+    }
+    
+    #funnel-application-form .form-section h3 {
+        font-size: 1.125rem;
+        margin-bottom: 1rem;
+    }
+    
+    #funnel-application-form .form-field {
+        margin-bottom: 1.5rem;
+    }
+    
+    #funnel-application-form .form-field label {
+        font-size: 16px;
+        margin-bottom: 0.5rem;
+    }
+    
+    #funnel-application-form .form-field input,
+    #funnel-application-form .form-field select {
+        min-height: 44px;
+        font-size: 16px;
+        padding: 12px 16px;
+    }
+}
+
+/* Processing and Success Modals */
+@media (max-width: 768px) {
+    .processing-modal-content,
+    .congrats-modal-content {
+        padding: 2rem 1.5rem;
+        margin: 1rem;
+        max-width: 90vw;
+    }
+    
+    .processing-modal-content h2,
+    .congrats-modal-content h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .processing-modal-content p,
+    .congrats-modal-content p {
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+    
+    .processing-spinner {
+        width: 3rem;
+        height: 3rem;
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Trust Indicators and Security Notes */
+@media (max-width: 768px) {
+    .trust-indicators {
+        flex-direction: column;
+        gap: 0.75rem;
+        text-align: center;
+    }
+    
+    .trust-indicators i {
+        font-size: 1.25rem;
+    }
+    
+    .trust-indicators span {
+        font-size: 0.875rem;
+    }
+    
+    .security-note {
+        font-size: 0.875rem;
+        padding: 0.75rem;
+        margin-top: 1rem;
+    }
+}
+
+/* Consent Checkboxes */
+@media (max-width: 768px) {
+    .consent-checkboxes {
+        gap: 0.75rem;
+    }
+    
+    .consent-label {
+        font-size: 14px;
+        line-height: 1.4;
+        padding: 0.75rem;
+        min-height: 44px;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .consent-label input[type="checkbox"] {
+        margin-top: 2px;
+        flex-shrink: 0;
+    }
+}
+
+/* Error Messages */
+@media (max-width: 768px) {
+    .error-message {
+        font-size: 14px;
+        padding: 0.75rem;
+        margin-top: 0.5rem;
+    }
+}
+
+/* Ensure proper spacing for all form elements */
+@media (max-width: 768px) {
+    .form-field:last-child {
+        margin-bottom: 0;
+    }
+    
+    .funnel-modal form:last-child {
+        margin-bottom: 0;
+    }
+}
+
+/* Prevent horizontal scrolling */
+@media (max-width: 768px) {
+    .funnel-modal-content {
+        overflow-x: hidden;
+    }
+    
+    .funnel-modal {
+        overflow-x: hidden;
+    }
+}
+
+/* Optimize for different mobile screen densities */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .funnel-modal-content {
+        border-width: 0.5px;
+    }
+    
+    .form-field input,
+    .form-field select {
+        border-width: 0.5px;
+    }
+}
+
+/* Ensure proper focus states for accessibility */
+@media (max-width: 768px) {
+    .form-field input:focus,
+    .form-field select:focus,
+    .form-field textarea:focus {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
+    }
+    
+    .cta-button:focus {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
+    }
+}
+
+/* Hero Buttons Layout */
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.hero-buttons .cta-button {
+    flex: 1;
+    min-width: 200px;
+}
+
+.load-screen-button {
+    background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+    border: 2px solid #64748b;
+}
+
+.load-screen-button:hover {
+    background: linear-gradient(135deg, #475569 0%, #334155 100%);
+    border-color: #475569;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(100, 116, 139, 0.3);
+}
+
+/* Load Screen Modal Styles */
+.load-screen-content {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    position: relative;
+}
+
+.load-screen-logo {
+    margin-bottom: 2rem;
+}
+
+.load-screen-logo img {
+    height: 80px;
+    width: auto;
+    object-fit: contain;
+}
+
+.load-screen-content h2 {
+    color: #1e293b;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    line-height: 1.4;
+}
+
+/* Professional Loading Spinner */
+.load-screen-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.spinner-ring {
+    width: 60px;
+    height: 60px;
+    border: 4px solid #e2e8f0;
+    border-top: 4px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Mobile Responsiveness for Load Screen */
+@media (max-width: 768px) {
+    .hero-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .hero-buttons .cta-button {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .load-screen-content {
+        padding: 2rem 1.5rem;
+        margin: 1rem;
+    }
+    
+    .load-screen-logo img {
+        height: 60px;
+    }
+    
+    .load-screen-content h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .spinner-ring {
+        width: 50px;
+        height: 50px;
+        border-width: 3px;
+    }
+}
+
+@media (max-width: 480px) {
+    .load-screen-content {
+        padding: 1.5rem 1rem;
+    }
+    
+    .load-screen-logo img {
+        height: 50px;
+    }
+    
+    .load-screen-content h2 {
+        font-size: 1.125rem;
+    }
+    
+    .spinner-ring {
+        width: 40px;
+        height: 40px;
+        border-width: 2px;
+    }
+}
+
+@media (max-width: 600px) {
+  .funnel-progress-container {
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    gap: 6px;
+  }
+  
+  .funnel-progress-tracker {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+  
+  .funnel-progress-bar {
+    height: 4px;
+  }
 }

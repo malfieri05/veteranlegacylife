@@ -127,9 +127,6 @@ const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzXsVqxd
                 data.formType = 'Test';
                 data.timestamp = new Date().toISOString();
                 
-                console.log('🚨 TEST FORM SUBMITTING 🚨');
-                console.log('Data:', data);
-                
                 // Submit to Google Apps Script
                 const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
                     method: 'POST',
@@ -140,16 +137,12 @@ const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzXsVqxd
                     body: JSON.stringify(data)
                 });
                 
-                console.log('Response status:', response.status);
-                
                 if (!response.ok) {
                     const errorText = await response.text();
-                    console.error('Response error:', errorText);
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
                 const result = await response.json();
-                console.log('Success result:', result);
                 
                 resultDiv.className = 'result success';
                 resultDiv.innerHTML = `
