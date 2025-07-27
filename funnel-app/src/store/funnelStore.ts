@@ -232,14 +232,16 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
       get().submitLead()
     }
     
-    // Submit lead partial data after step 11 (diabetes medication)
-    if (currentStep === 11) {
+    // Submit lead partial data and start streaming loading after step 10 (hospital care)
+    if (currentStep === 10) {
       get().submitLeadPartial()
       // Start streaming loading for 7-10 seconds
       set({ isStreamingLoading: true })
+      // Delay the step change until after the streaming loading completes
       setTimeout(() => {
-        set({ isStreamingLoading: false })
+        set({ isStreamingLoading: false, currentStep: nextStep })
       }, 9000) // 9 seconds total
+      return // Don't proceed to next step immediately
     }
     
     // Submit application data after step 15 (success)
@@ -265,8 +267,8 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
       const formDataParams = new URLSearchParams()
       formDataParams.append('formType', 'LeadPartial')
       formDataParams.append('sessionId', sessionId)
-      formDataParams.append('currentStep', '11') // Diabetes Medication step
-      formDataParams.append('stepName', 'Diabetes Medication')
+      formDataParams.append('currentStep', '10') // Hospital Care step
+      formDataParams.append('stepName', 'Hospital Care')
       formDataParams.append('formData', JSON.stringify(formData))
       formDataParams.append('userAgent', navigator.userAgent)
       formDataParams.append('referrer', document.referrer)
