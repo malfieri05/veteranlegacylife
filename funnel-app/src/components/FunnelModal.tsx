@@ -189,7 +189,10 @@ export const FunnelModal: React.FC = () => {
           ×
         </button>
 
-        <ProgressBar currentStep={currentStep} totalSteps={TOTAL_STEPS} />
+        {/* Don't show progress bar during loading screen */}
+        {!isStreamingLoading && (
+          <ProgressBar currentStep={currentStep} totalSteps={TOTAL_STEPS} />
+        )}
 
         <AnimatePresence mode="wait">
           <motion.div
@@ -203,32 +206,35 @@ export const FunnelModal: React.FC = () => {
           </motion.div>
         </AnimatePresence>
 
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          marginTop: '2rem',
-          gap: '1rem'
-        }}>
-          {currentStep > 1 && (
-            <Button
-              variant="secondary"
-              onClick={handleBack}
-            >
-              Back
-            </Button>
-          )}
-          
-          <div style={{ flex: 1 }}></div>
-          
-          {currentStep < TOTAL_STEPS && (
-            <Button
-              onClick={handleNext}
-              disabled={!canGoNext()}
-            >
-              {currentStep === TOTAL_STEPS - 1 ? 'Submit' : 'Continue'}
-            </Button>
-          )}
-        </div>
+        {/* Don't show action buttons during loading screen */}
+        {!isStreamingLoading && (
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            marginTop: '2rem',
+            gap: '1rem'
+          }}>
+            {currentStep > 1 && (
+              <Button
+                variant="secondary"
+                onClick={handleBack}
+              >
+                Back
+              </Button>
+            )}
+            
+            <div style={{ flex: 1 }}></div>
+            
+            {currentStep < TOTAL_STEPS && (
+              <Button
+                onClick={handleNext}
+                disabled={!canGoNext()}
+              >
+                {currentStep === TOTAL_STEPS - 1 ? 'Submit' : 'Continue'}
+              </Button>
+            )}
+          </div>
+        )}
       </motion.div>
     </motion.div>
     </>
