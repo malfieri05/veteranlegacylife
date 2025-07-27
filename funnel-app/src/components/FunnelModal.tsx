@@ -96,10 +96,10 @@ export const FunnelModal: React.FC = () => {
         return !!formData.medicalAnswers?.height && !!formData.medicalAnswers?.weight
       case 9:
         return !!formData.medicalAnswers?.hospitalCare
-      case 9.5:
-        return false // Loading step - no manual progression
       case 10:
         return !!formData.medicalAnswers?.diabetesMedication
+      case 10.5:
+        return false // Loading step - no manual progression
       case 11:
         return true // Success step - can always proceed
       case 12:
@@ -145,12 +145,12 @@ export const FunnelModal: React.FC = () => {
           branchOfService={formData.branchOfService || 'Military'}
           isVisible={isStreamingLoading}
           onComplete={() => setStreamingLoading(false)}
-          onStepComplete={() => {
-            // Automatically progress to the next step after loading completes
-            if (currentStep === 9.5) {
-              goToNextStep()
-            }
-          }}
+                  onStepComplete={() => {
+          // Automatically progress to the next step after loading completes
+          if (currentStep === 10.5) {
+            goToNextStep()
+          }
+        }}
         />
       </>
     )
