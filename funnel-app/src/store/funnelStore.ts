@@ -286,7 +286,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
       const formDataParams = new URLSearchParams()
       formDataParams.append('formType', 'LeadPartial')
       formDataParams.append('sessionId', sessionId)
-      formDataParams.append('currentStep', '10') // Diabetes Medication step
+      formDataParams.append('currentStep', '11') // Diabetes Medication step
       formDataParams.append('stepName', 'Diabetes Medication')
       formDataParams.append('formData', JSON.stringify(formData))
       formDataParams.append('userAgent', navigator.userAgent)
