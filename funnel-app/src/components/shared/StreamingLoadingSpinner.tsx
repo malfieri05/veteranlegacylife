@@ -110,13 +110,13 @@ export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = (
   const getMessageStyle = () => {
     switch (messageType) {
       case 'loading':
-        return 'bg-blue-50 border-l-4 border-blue-500'
+        return 'bg-blue-50 border-l-blue-500'
       case 'iul':
-        return 'bg-green-50 border-l-4 border-green-500'
+        return 'bg-green-50 border-l-green-500'
       case 'veteran':
-        return 'bg-purple-50 border-l-4 border-purple-500'
+        return 'bg-purple-50 border-l-purple-500'
       default:
-        return 'bg-blue-50 border-l-4 border-blue-500'
+        return 'bg-blue-50 border-l-blue-500'
     }
   }
 
@@ -147,23 +147,26 @@ export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = (
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 shadow-2xl">
-        {/* Logo and Header */}
+    <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+      <div className="bg-white rounded-[20px] p-12 max-w-[500px] w-[90%] shadow-2xl transform scale-100 transition-all duration-400">
+        {/* Logo */}
         <div className="text-center mb-8">
-          <div className="mb-4">
+          <div className="mb-8">
             <img 
               src="/assets/logo.png" 
-              alt="Veteran Life Insurance" 
-              className="h-12 mx-auto"
+              alt="Veteran Legacy Life Logo" 
+              className="h-20 w-auto object-contain mx-auto"
               onError={(e) => {
                 // Fallback if logo doesn't load
                 e.currentTarget.style.display = 'none'
               }}
             />
           </div>
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+        </div>
+
+        {/* Title */}
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-2 leading-relaxed">
             Calculating Your Policy Options
           </h2>
           <p className="text-gray-600">
@@ -172,12 +175,29 @@ export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = (
         </div>
 
         {/* Single Message Display */}
-        <div className={`p-6 rounded-lg ${getMessageStyle()}`}>
-          <h3 className="font-semibold text-gray-800 mb-3">{getMessageTitle()}</h3>
-          <p className={`text-lg min-h-[2rem] ${getMessageTextColor()}`}>
-            {currentMessage}
-            {isTyping && <span className="animate-pulse">|</span>}
-          </p>
+        <div className="mb-8">
+          <div className={`p-6 rounded-lg border-l-4 ${getMessageStyle()}`}>
+            <h3 className="font-semibold text-gray-800 mb-3 text-lg">{getMessageTitle()}</h3>
+            <p className={`text-base leading-relaxed min-h-[3rem] ${getMessageTextColor()}`}>
+              {currentMessage}
+              {isTyping && <span className="animate-pulse">|</span>}
+            </p>
+          </div>
+        </div>
+
+        {/* Spinner */}
+        <div className="flex justify-center items-center mt-8">
+          <div 
+            className="w-15 h-15 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"
+            style={{
+              width: '60px',
+              height: '60px',
+              border: '4px solid #e2e8f0',
+              borderTop: '4px solid #3b82f6',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite'
+            }}
+          ></div>
         </div>
 
         <div className="mt-6 text-center">
