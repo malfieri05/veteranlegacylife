@@ -188,7 +188,7 @@
   height: 8px;
   background: var(--border-color);
   border-radius: 4px;
-  overflow: hidden;
+  position: relative;
 }
 
 .veteran-funnel .progress-fill {
@@ -196,6 +196,9 @@
   background: var(--gradient-primary);
   border-radius: 4px;
   transition: width 0.3s ease;
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 .veteran-funnel .progress-text {
