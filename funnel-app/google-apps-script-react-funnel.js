@@ -1478,4 +1478,38 @@ function cleanupTestSessions() {
   }
   
   Logger.log(`Cleanup complete. Deleted ${deletedCount} test sessions.`);
+}
+
+// CRITICAL: Function to fix the sheet structure immediately
+function fixSheetStructureNow() {
+  Logger.log('=== FIXING SHEET STRUCTURE ===');
+  
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  if (!spreadsheet) {
+    Logger.log('ERROR: No active spreadsheet found');
+    return false;
+  }
+  
+  const sheet = spreadsheet.getActiveSheet();
+  
+  // Check current structure
+  const currentHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  Logger.log(`Current sheet has ${currentHeaders.length} columns`);
+  Logger.log(`Current headers: ${currentHeaders.join(', ')}`);
+  
+  // Reset to unified structure
+  resetSheetStructure();
+  
+  // Verify the fix
+  const newHeaders = sheet.getRange(1, 1, 1, 48).getValues()[0];
+  Logger.log(`New sheet has ${newHeaders.length} columns`);
+  Logger.log(`New headers: ${newHeaders.join(', ')}`);
+  
+  if (newHeaders.length === 48) {
+    Logger.log('✅ Sheet structure fixed successfully!');
+    return true;
+  } else {
+    Logger.log('❌ Sheet structure fix failed!');
+    return false;
+  }
 } 
