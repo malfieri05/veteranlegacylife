@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { getApiUrl } from '../config/api'
 
 // Types
 export interface ContactInfo {
@@ -181,7 +182,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
       formDataParams.append('utmMedium', new URLSearchParams(window.location.search).get('utm_medium') || '')
       formDataParams.append('utmCampaign', new URLSearchParams(window.location.search).get('utm_campaign') || '')
       
-      const response = await fetch('https://script.google.com/macros/s/AKfycbzSYFrwwTMIITMCFPmTRaQEr2DazQjKamxPChDZeJjKh96XIdZ8O-w0x5YYmpJvlU9y/exec', {
+      const response = await fetch(getApiUrl(), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -273,7 +274,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
       formDataParams.append('utmMedium', new URLSearchParams(window.location.search).get('utm_medium') || '')
       formDataParams.append('utmCampaign', new URLSearchParams(window.location.search).get('utm_campaign') || '')
       
-      const response = await fetch('https://script.google.com/macros/s/AKfycbzSYFrwwTMIITMCFPmTRaQEr2DazQjKamxPChDZeJjKh96XIdZ8O-w0x5YYmpJvlU9y/exec', {
+      const response = await fetch(getApiUrl(), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -317,7 +318,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
       formDataParams.append('utmMedium', new URLSearchParams(window.location.search).get('utm_medium') || '')
       formDataParams.append('utmCampaign', new URLSearchParams(window.location.search).get('utm_campaign') || '')
       
-      const response = await fetch('https://script.google.com/macros/s/AKfycbzSYFrwwTMIITMCFPmTRaQEr2DazQjKamxPChDZeJjKh96XIdZ8O-w0x5YYmpJvlU9y/exec', {
+      const response = await fetch(getApiUrl(), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -363,7 +364,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
       formDataParams.append('utmMedium', new URLSearchParams(window.location.search).get('utm_medium') || '')
       formDataParams.append('utmCampaign', new URLSearchParams(window.location.search).get('utm_campaign') || '')
       
-      const response = await fetch('https://script.google.com/macros/s/AKfycbzSYFrwwTMIITMCFPmTRaQEr2DazQjKamxPChDZeJjKh96XIdZ8O-w0x5YYmpJvlU9y/exec', {
+      const response = await fetch(getApiUrl(), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',

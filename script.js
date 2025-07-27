@@ -12,7 +12,8 @@
 // 6. Set "Execute as" to "Me"
 // 7. Set "Who has access" to "Anyone"
 // 8. Click "Deploy" and copy the URL below
-const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSYFrwwTMIITMCFPmTRaQEr2DazQjKamxPChDZeJjKh96XIdZ8O-w0x5YYmpJvlU9y/exec';
+// Use centralized config
+const GOOGLE_APPS_SCRIPT_URL = getApiUrl();
 
 // Test function to verify Google Apps Script connection
 async function testGoogleAppsScript() {
