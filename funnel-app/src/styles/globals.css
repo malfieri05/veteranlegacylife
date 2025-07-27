@@ -199,7 +199,7 @@
 }
 
 .veteran-funnel .progress-text {
-  text-align: center;
+  text-align: left;
   margin-top: 0.5rem;
   font-size: 0.875rem;
   color: var(--text-light);
