@@ -206,7 +206,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
     const nextStep = currentStep + 1
     
     // Submit partial data after every step (except the last step)
-    if (currentStep < 15) {
+    if (currentStep < 16) {
       const stepNames = [
         'State Selection',
         'Military Status',
@@ -218,6 +218,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
         'Medical Conditions',
         'Height & Weight',
         'Hospital Care',
+        'Loading Quote', // New step 10.5
         'Diabetes Medication',
         'Pre-Qualified Success',
         'IUL Quote Modal',
@@ -232,20 +233,21 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
       get().submitLead()
     }
     
-    // Submit lead partial data and start streaming loading after step 10 (hospital care)
+    // After step 10 (Hospital Care), go to loading step (10.5) and submit lead partial
     if (currentStep === 10) {
       get().submitLeadPartial()
-      // Start streaming loading for 7-10 seconds
-      set({ isStreamingLoading: true })
-      // Delay the step change until after the streaming loading completes
-      setTimeout(() => {
-        set({ isStreamingLoading: false, currentStep: nextStep })
-      }, 9000) // 9 seconds total
-      return // Don't proceed to next step immediately
+      set({ currentStep: 10.5, isStreamingLoading: true })
+      return
     }
     
-    // Submit application data after step 15 (success)
-    if (currentStep === 15) {
+    // After loading step (10.5), go to step 11 (Diabetes Medication)
+    if (currentStep === 10.5) {
+      set({ isStreamingLoading: false, currentStep: 11 })
+      return
+    }
+    
+    // Submit application data after step 16 (success)
+    if (currentStep === 16) {
       get().submitApplication()
     }
     
@@ -255,7 +257,16 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
   goToPreviousStep: () => {
     const { currentStep } = get()
     if (currentStep > 1) {
-      set({ currentStep: currentStep - 1 })
+      // Handle special case for loading step
+      if (currentStep === 11) {
+        // If we're on step 11 (Diabetes Medication), go back to step 10 (Hospital Care)
+        set({ currentStep: 10 })
+      } else if (currentStep === 10.5) {
+        // If we're on loading step, go back to step 10 (Hospital Care)
+        set({ currentStep: 10, isStreamingLoading: false })
+      } else {
+        set({ currentStep: currentStep - 1 })
+      }
     }
   },
   

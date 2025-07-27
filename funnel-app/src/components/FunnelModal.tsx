@@ -19,7 +19,7 @@ import { ApplicationStep2 } from './steps/ApplicationStep2'
 import { FinalSuccessModal } from './steps/FinalSuccessModal'
 import { validateContactInfo } from '../utils/validation'
 
-const TOTAL_STEPS = 15
+const TOTAL_STEPS = 16
 
 export const FunnelModal: React.FC = () => {
   const { 
@@ -93,16 +93,24 @@ export const FunnelModal: React.FC = () => {
       case 9:
         return <HospitalCare />
       case 10:
-        return <DiabetesMedication />
+        return <HospitalCare />
+      case 10.5:
+        // This is the loading step - handled by StreamingLoadingSpinner
+        return <div>
+          <h2>Loading Your Quote</h2>
+          <p>Please wait while we calculate your personalized options...</p>
+        </div>
       case 11:
-        return <PreQualifiedSuccess />
+        return <DiabetesMedication />
       case 12:
-        return <IULQuoteModal />
+        return <PreQualifiedSuccess />
       case 13:
-        return <ApplicationStep1 />
+        return <IULQuoteModal />
       case 14:
-        return <ApplicationStep2 />
+        return <ApplicationStep1 />
       case 15:
+        return <ApplicationStep2 />
+      case 16:
         return <FinalSuccessModal />
       default:
         return <div>
@@ -134,12 +142,16 @@ export const FunnelModal: React.FC = () => {
       case 9:
         return !!formData.medicalAnswers?.hospitalCare
       case 10:
-        return !!formData.medicalAnswers?.diabetesMedication
+        return !!formData.medicalAnswers?.hospitalCare
+      case 10.5:
+        return false // Loading step - no manual progression
       case 11:
-        return true // Success step - can always proceed
+        return !!formData.medicalAnswers?.diabetesMedication
       case 12:
-        return true // IUL Quote Modal - can always proceed
+        return true // Success step - can always proceed
       case 13:
+        return true // IUL Quote Modal - can always proceed
+      case 14:
         return !!formData.applicationData?.address?.street && 
                !!formData.applicationData?.address?.city && 
                !!formData.applicationData?.address?.state && 
@@ -178,6 +190,12 @@ export const FunnelModal: React.FC = () => {
         branchOfService={formData.branchOfService || 'Military'}
         isVisible={isStreamingLoading}
         onComplete={() => setStreamingLoading(false)}
+        onStepComplete={() => {
+          // Automatically progress to the next step after loading completes
+          if (currentStep === 10.5) {
+            goToNextStep()
+          }
+        }}
       />
       
       <motion.div

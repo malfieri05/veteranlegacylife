@@ -4,6 +4,7 @@ interface StreamingLoadingSpinnerProps {
   branchOfService: string
   isVisible: boolean
   onComplete: () => void
+  onStepComplete?: () => void
 }
 
 const loadingMessages = [
@@ -35,7 +36,8 @@ const veteranBenefits = [
 export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = ({
   branchOfService,
   isVisible,
-  onComplete
+  onComplete,
+  onStepComplete
 }) => {
   const [displayedMessage, setDisplayedMessage] = useState('')
   const [displayedTip, setDisplayedTip] = useState('')
@@ -70,6 +72,10 @@ export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = (
                                 // Complete after the last message
                                 setTimeout(() => {
                                   onComplete()
+                                  // Also trigger step progression if callback provided
+                                  if (onStepComplete) {
+                                    onStepComplete()
+                                  }
                                 }, 1000)
                               })
                             }, 800)
