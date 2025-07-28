@@ -3,6 +3,39 @@
  * Captures all questions from both pre-qualification and application phases
  */
 
+// =============== CONFIGURATION SECTION ===============
+// Update these values when deploying to production or changing environments
+
+const CONFIG = {
+  // Email Configuration
+  EMAIL: {
+    // Admin email (where notifications are sent)
+    ADMIN: 'lindsey08092@gmail.com',
+    // From email (sender)
+    FROM: 'lindsey@veteranlegacylife.com',
+    // To email (recipient) - change to actual user email when authorized
+    TO: 'lindsey@veteranlegacylife.com',
+    // Reply-to email
+    REPLY_TO: 'lindsey@veteranlegacylife.com'
+  },
+  
+  // Google Sheet Configuration
+  GOOGLE_SHEET: {
+    // Google Sheet ID (found in the URL of the sheet)
+    SHEET_ID: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
+    // Sheet name (tab name)
+    SHEET_NAME: 'Veteran Legacy Life Funnel Data'
+  },
+  
+  // Company Information
+  COMPANY: {
+    NAME: 'Veteran Legacy Life',
+    PHONE: '(800) VET-INSURANCE',
+    PHONE_DIALABLE: '180083847467', // Actual number to dial (800-VET-INSURANCE)
+    WEBSITE: 'https://veteranlegacylife.com'
+  }
+};
+
 // Column reference map for unified sheet structure
 const SHEET_COLUMNS = {
   // Core (1-4)
@@ -11,63 +44,65 @@ const SHEET_COLUMNS = {
   STATUS: 3,
   LAST_ACTIVITY: 4,
   
-  // Contact (5-9)
+  // Contact (5-10)
   FIRST_NAME: 5,
   LAST_NAME: 6,
   EMAIL: 7,
   PHONE: 8,
   DOB: 9,
+  TRANSACTIONAL_CONSENT: 10,
+  MARKETING_CONSENT: 11,
   
-  // Pre-qualification (10-14)
-  STATE: 10,
-  MILITARY_STATUS: 11,
-  BRANCH: 12,
-  MARITAL_STATUS: 13,
-  COVERAGE_AMOUNT: 14,
+  // Pre-qualification (12-16)
+  STATE: 12,
+  MILITARY_STATUS: 13,
+  BRANCH: 14,
+  MARITAL_STATUS: 15,
+  COVERAGE_AMOUNT: 16,
   
-  // Medical (15-20)
-  TOBACCO_USE: 15,
-  MEDICAL_CONDITIONS: 16,
-  HEIGHT: 17,
-  WEIGHT: 18,
-  HOSPITAL_CARE: 19,
-  DIABETES_MEDICATION: 20,
+  // Medical (17-22)
+  TOBACCO_USE: 17,
+  MEDICAL_CONDITIONS: 18,
+  HEIGHT: 19,
+  WEIGHT: 20,
+  HOSPITAL_CARE: 21,
+  DIABETES_MEDICATION: 22,
   
-  // Application (21-32)
-  STREET_ADDRESS: 21,
-  CITY: 22,
-  APPLICATION_STATE: 23,
-  ZIP_CODE: 24,
-  BENEFICIARY_NAME: 25,
-  BENEFICIARY_RELATIONSHIP: 26,
-  VA_NUMBER: 27,
-  SERVICE_CONNECTED: 28,
-  SSN: 29,
-  BANK_NAME: 30,
-  ROUTING_NUMBER: 31,
-  ACCOUNT_NUMBER: 32,
+  // Application (23-34)
+  STREET_ADDRESS: 23,
+  CITY: 24,
+  APPLICATION_STATE: 25,
+  ZIP_CODE: 26,
+  BENEFICIARY_NAME: 27,
+  BENEFICIARY_RELATIONSHIP: 28,
+  VA_NUMBER: 29,
+  SERVICE_CONNECTED: 30,
+  SSN: 31,
+  BANK_NAME: 32,
+  ROUTING_NUMBER: 33,
+  ACCOUNT_NUMBER: 34,
   
-  // Quote (33-38)
-  POLICY_DATE: 33,
-  QUOTE_COVERAGE: 34,
-  QUOTE_PREMIUM: 35,
-  QUOTE_AGE: 36,
-  QUOTE_GENDER: 37,
-  QUOTE_TYPE: 38,
+  // Quote (35-40)
+  POLICY_DATE: 35,
+  QUOTE_COVERAGE: 36,
+  QUOTE_PREMIUM: 37,
+  QUOTE_AGE: 38,
+  QUOTE_GENDER: 39,
+  QUOTE_TYPE: 40,
   
-  // Tracking (39-46)
-  CURRENT_STEP: 39,
-  STEP_NAME: 40,
-  FORM_TYPE: 41,
-  USER_AGENT: 42,
-  REFERRER: 43,
-  UTM_SOURCE: 44,
-  UTM_MEDIUM: 45,
-  UTM_CAMPAIGN: 46,
+  // Tracking (41-48)
+  CURRENT_STEP: 41,
+  STEP_NAME: 42,
+  FORM_TYPE: 43,
+  USER_AGENT: 44,
+  REFERRER: 45,
+  UTM_SOURCE: 46,
+  UTM_MEDIUM: 47,
+  UTM_CAMPAIGN: 48,
   
-  // Email Status (47-48)
-  PARTIAL_EMAIL_SENT: 47,
-  COMPLETED_EMAIL_SENT: 48
+  // Email Status (49-50)
+  PARTIAL_EMAIL_SENT: 49,
+  COMPLETED_EMAIL_SENT: 50
 };
 
 function doPost(e) {
@@ -79,6 +114,12 @@ function doPost(e) {
   try {
     Logger.log(`[${sessionId}] =============== START REQUEST ===============`);
     Logger.log(`[${sessionId}] Timestamp: ${timestamp}`);
+    
+    // Validate spreadsheet access first
+    const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    if (!spreadsheet) {
+      throw new Error('No active spreadsheet found. Please ensure the script is bound to a Google Sheet.');
+    }
     
     // Validate and parse incoming data
     let data = {};
@@ -338,8 +379,8 @@ function handleApplicationSubmission(data, sessionId) {
   // Send completion email BEFORE marking as completed
   const emailSent = sendApplicationNotification(data, sessionId);
   
-  // THEN update session status to completed
-  updateSessionStatus(sessionId, 'completed');
+  // THEN update session status to submitted
+  updateSessionStatus(sessionId, 'submitted');
   
   Logger.log(`[${sessionId}] Application submission completed successfully`);
   
@@ -569,7 +610,7 @@ function setupUnifiedSheet(sheet) {
     'Completed Email Sent'
   ];
   
-  // TOTAL: 48 columns exactly
+  // TOTAL: 50 columns exactly
   
   sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
   sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
@@ -585,13 +626,13 @@ function validateSheetStructure() {
   const sheet = spreadsheet.getActiveSheet();
   
   // Check if headers exist
-  const headerRange = sheet.getRange(1, 1, 1, 48);
+  const headerRange = sheet.getRange(1, 1, 1, 50);
   const headers = headerRange.getValues()[0];
   
   Logger.log(`Current sheet has ${headers.length} columns`);
-  Logger.log(`Expected: 48 columns`);
+  Logger.log(`Expected: 50 columns`);
   
-  if (headers.length !== 48) {
+  if (headers.length !== 50) {
     Logger.log('❌ SHEET STRUCTURE MISMATCH');
     Logger.log('Run setupUnifiedSheet() to fix');
     return false;
@@ -630,8 +671,17 @@ function buildUnifiedRowData(data, sessionId) {
     }
   }
   
-  // Build exactly 48 values in correct order
-  const rowData = new Array(48).fill(''); // Initialize all 48 columns
+  // Log the parsed data for debugging
+  Logger.log(`[${sessionId}] Parsed form data keys: ${Object.keys(parsedFormData)}`);
+  if (parsedFormData.contactInfo) {
+    Logger.log(`[${sessionId}] Contact info keys: ${Object.keys(parsedFormData.contactInfo)}`);
+  }
+  if (parsedFormData.applicationData) {
+    Logger.log(`[${sessionId}] Application data keys: ${Object.keys(parsedFormData.applicationData)}`);
+  }
+  
+  // Build exactly 50 values in correct order
+  const rowData = new Array(50).fill(''); // Initialize all 50 columns
   
   // Core (1-4)
   rowData[SHEET_COLUMNS.TIMESTAMP - 1] = new Date();
@@ -639,21 +689,24 @@ function buildUnifiedRowData(data, sessionId) {
   rowData[SHEET_COLUMNS.STATUS - 1] = getStatusFromFormType(data.formType);
   rowData[SHEET_COLUMNS.LAST_ACTIVITY - 1] = new Date();
   
-  // Contact (5-9)
+  // Contact (5-11)
   rowData[SHEET_COLUMNS.FIRST_NAME - 1] = parsedFormData.contactInfo?.firstName || '';
   rowData[SHEET_COLUMNS.LAST_NAME - 1] = parsedFormData.contactInfo?.lastName || '';
   rowData[SHEET_COLUMNS.EMAIL - 1] = parsedFormData.contactInfo?.email || '';
   rowData[SHEET_COLUMNS.PHONE - 1] = parsedFormData.contactInfo?.phone || '';
-  rowData[SHEET_COLUMNS.DOB - 1] = parsedFormData.contactInfo?.dateOfBirth || '';
+  // Date of birth from top level
+  rowData[SHEET_COLUMNS.DOB - 1] = parsedFormData.dateOfBirth || '';
+  rowData[SHEET_COLUMNS.TRANSACTIONAL_CONSENT - 1] = parsedFormData.contactInfo?.transactionalConsent ? 'TRUE' : 'FALSE';
+  rowData[SHEET_COLUMNS.MARKETING_CONSENT - 1] = parsedFormData.contactInfo?.marketingConsent ? 'TRUE' : 'FALSE';
   
-  // Pre-qualification (10-14)
+  // Pre-qualification (12-16)
   rowData[SHEET_COLUMNS.STATE - 1] = parsedFormData.state || data.state || '';
   rowData[SHEET_COLUMNS.MILITARY_STATUS - 1] = parsedFormData.militaryStatus || data.militaryStatus || '';
   rowData[SHEET_COLUMNS.BRANCH - 1] = parsedFormData.branchOfService || data.branchOfService || '';
   rowData[SHEET_COLUMNS.MARITAL_STATUS - 1] = parsedFormData.maritalStatus || data.maritalStatus || '';
   rowData[SHEET_COLUMNS.COVERAGE_AMOUNT - 1] = parsedFormData.coverageAmount || data.coverageAmount || '';
   
-  // Medical (15-20)
+  // Medical (17-22)
   rowData[SHEET_COLUMNS.TOBACCO_USE - 1] = parsedFormData.medicalAnswers?.tobaccoUse || '';
   rowData[SHEET_COLUMNS.MEDICAL_CONDITIONS - 1] = Array.isArray(parsedFormData.medicalAnswers?.medicalConditions) 
     ? parsedFormData.medicalAnswers.medicalConditions.join(', ') : '';
@@ -662,7 +715,7 @@ function buildUnifiedRowData(data, sessionId) {
   rowData[SHEET_COLUMNS.HOSPITAL_CARE - 1] = parsedFormData.medicalAnswers?.hospitalCare || '';
   rowData[SHEET_COLUMNS.DIABETES_MEDICATION - 1] = parsedFormData.medicalAnswers?.diabetesMedication || '';
   
-  // Application (21-32)
+  // Application (23-34)
   rowData[SHEET_COLUMNS.STREET_ADDRESS - 1] = parsedFormData.applicationData?.address?.street || '';
   rowData[SHEET_COLUMNS.CITY - 1] = parsedFormData.applicationData?.address?.city || '';
   rowData[SHEET_COLUMNS.APPLICATION_STATE - 1] = parsedFormData.applicationData?.address?.state || '';
@@ -676,7 +729,7 @@ function buildUnifiedRowData(data, sessionId) {
   rowData[SHEET_COLUMNS.ROUTING_NUMBER - 1] = parsedFormData.applicationData?.banking?.routingNumber || '';
   rowData[SHEET_COLUMNS.ACCOUNT_NUMBER - 1] = parsedFormData.applicationData?.banking?.accountNumber || '';
   
-  // Quote (33-38)
+  // Quote (35-40)
   rowData[SHEET_COLUMNS.POLICY_DATE - 1] = parsedFormData.applicationData?.policyDate || '';
   rowData[SHEET_COLUMNS.QUOTE_COVERAGE - 1] = parsedFormData.applicationData?.quoteData?.coverageAmount || '';
   rowData[SHEET_COLUMNS.QUOTE_PREMIUM - 1] = parsedFormData.applicationData?.quoteData?.monthlyPremium || '';
@@ -684,7 +737,7 @@ function buildUnifiedRowData(data, sessionId) {
   rowData[SHEET_COLUMNS.QUOTE_GENDER - 1] = parsedFormData.applicationData?.quoteData?.userGender || '';
   rowData[SHEET_COLUMNS.QUOTE_TYPE - 1] = parsedFormData.applicationData?.quoteData?.quoteType || '';
   
-  // Tracking (39-46)
+  // Tracking (41-48)
   rowData[SHEET_COLUMNS.CURRENT_STEP - 1] = data.currentStep || '';
   rowData[SHEET_COLUMNS.STEP_NAME - 1] = data.stepName || '';
   rowData[SHEET_COLUMNS.FORM_TYPE - 1] = data.formType || '';
@@ -694,7 +747,7 @@ function buildUnifiedRowData(data, sessionId) {
   rowData[SHEET_COLUMNS.UTM_MEDIUM - 1] = data.utmMedium || '';
   rowData[SHEET_COLUMNS.UTM_CAMPAIGN - 1] = data.utmCampaign || '';
   
-  // Email Status (47-48)
+  // Email Status (49-50)
   rowData[SHEET_COLUMNS.PARTIAL_EMAIL_SENT - 1] = 'FALSE';
   rowData[SHEET_COLUMNS.COMPLETED_EMAIL_SENT - 1] = 'FALSE';
   
@@ -703,11 +756,11 @@ function buildUnifiedRowData(data, sessionId) {
 
 function getStatusFromFormType(formType) {
   switch (formType) {
-    case 'Lead': return 'Pre-Qualified';
-    case 'Application': return 'Submitted';
-    case 'Partial': return 'Active';
-    case 'LeadPartial': return 'Active';
-    default: return 'Unknown';
+    case 'Lead': return 'pre-qualified';
+    case 'Application': return 'submitted';
+    case 'Partial': return 'active';
+    case 'LeadPartial': return 'active';
+    default: return 'unknown';
   }
 }
 
@@ -911,9 +964,8 @@ function sendPartialLeadEmail(data, sessionId) {
   `;
   
   // Send to admin email
-  const adminEmail = 'lindsey08092@gmail.com';
   MailApp.sendEmail({
-    to: adminEmail,
+    to: CONFIG.EMAIL.ADMIN,
     subject: subject,
     htmlBody: body
   });
@@ -978,9 +1030,8 @@ function sendLeadNotification(data) {
   `;
   
   // Send to admin email
-  const adminEmail = 'lindsey08092@gmail.com';
   MailApp.sendEmail({
-    to: adminEmail,
+    to: CONFIG.EMAIL.ADMIN,
     subject: subject,
     htmlBody: body
   });
@@ -1004,7 +1055,7 @@ function sendLeadNotification(data) {
       <p>A licensed insurance representative will contact you within 24 hours to discuss your options.</p>
       
       <p><strong>Need immediate assistance?</strong><br>
-      Call us at (555) 123-4567<br>
+      Call us at ${CONFIG.COMPANY.PHONE}<br>
       Monday-Friday 8AM-6PM EST</p>
       
       <hr>
@@ -1090,51 +1141,60 @@ function sendApplicationNotification(data, sessionId) {
     <p><em>This application was submitted through the React Funnel at ${new Date().toLocaleString()}</em></p>
   `;
   
-  // Send to admin email
-  const adminEmail = 'lindsey08092@gmail.com';
-  MailApp.sendEmail({
-    to: adminEmail,
-    subject: subject,
-    htmlBody: body
-  });
-  
-  // Send confirmation to applicant
-  if (email) {
-    const confirmationSubject = 'Your application has been submitted successfully';
-    const confirmationBody = `
-      <h2>Let's Talk, ${firstName}!</h2>
-      
-      <p>Your application has been submitted successfully! A licensed insurance representative will contact you within 24 hours to finalize your policy.</p>
-      
-      <h3>Your Quote Summary:</h3>
-      <ul>
-        <li><strong>Monthly Premium:</strong> $${monthlyPremium.toLocaleString()}</li>
-        <li><strong>Coverage Amount:</strong> $${coverageAmount.toLocaleString()}</li>
-        <li><strong>Policy Type:</strong> IUL</li>
-        <li><strong>Application Status:</strong> Submitted</li>
-      </ul>
-      
-      <h3>What Happens Next?</h3>
-      <ul>
-        <li>You'll receive a confirmation email within 5 minutes</li>
-        <li>A licensed agent will call you within 24 hours</li>
-        <li>Your policy will be processed and finalized</li>
-        <li>Coverage will begin on your selected start date</li>
-      </ul>
-      
-      <p><strong>Need immediate assistance?</strong><br>
-      Call us at (555) 123-4567<br>
-      Monday-Friday 8AM-6PM EST</p>
-      
-      <hr>
-      <p><em>Veteran Life Insurance</em></p>
-    `;
-    
+  // Send to admin email with error handling
+  try {
     MailApp.sendEmail({
-      to: email,
-      subject: confirmationSubject,
-      htmlBody: confirmationBody
+      to: CONFIG.EMAIL.ADMIN,
+      subject: subject,
+      htmlBody: body
     });
+    Logger.log(`[${sessionId}] Admin email sent successfully`);
+  } catch (error) {
+    Logger.log(`[${sessionId}] ERROR sending admin email: ${error.toString()}`);
+  }
+  
+  // Send confirmation to applicant with error handling
+  if (email) {
+    try {
+      const confirmationSubject = 'Your application has been submitted successfully';
+      const confirmationBody = `
+        <h2>Let's Talk, ${firstName}!</h2>
+        
+        <p>Your application has been submitted successfully! A licensed insurance representative will contact you within 24 hours to finalize your policy.</p>
+        
+        <h3>Your Quote Summary:</h3>
+        <ul>
+          <li><strong>Monthly Premium:</strong> $${monthlyPremium.toLocaleString()}</li>
+          <li><strong>Coverage Amount:</strong> $${coverageAmount.toLocaleString()}</li>
+          <li><strong>Policy Type:</strong> IUL</li>
+          <li><strong>Application Status:</strong> Submitted</li>
+        </ul>
+        
+        <h3>What Happens Next?</h3>
+        <ul>
+          <li>You'll receive a confirmation email within 5 minutes</li>
+          <li>A licensed agent will call you within 24 hours</li>
+          <li>Your policy will be processed and finalized</li>
+          <li>Coverage will begin on your selected start date</li>
+        </ul>
+        
+        <p><strong>Need immediate assistance?</strong><br>
+        Call us at ${CONFIG.COMPANY.PHONE}<br>
+        Monday-Friday 8AM-6PM EST</p>
+        
+        <hr>
+        <p><em>Veteran Life Insurance</em></p>
+      `;
+      
+      MailApp.sendEmail({
+        to: email,
+        subject: confirmationSubject,
+        htmlBody: confirmationBody
+      });
+      Logger.log(`[${sessionId}] User confirmation email sent successfully`);
+    } catch (error) {
+      Logger.log(`[${sessionId}] ERROR sending user confirmation email: ${error.toString()}`);
+    }
   }
   
   // Mark email as sent
@@ -1274,9 +1334,8 @@ function sendLeadPartialNotification(data, parsedFormData) {
   `;
   
   // Send to admin email
-  const adminEmail = 'lindsey08092@gmail.com';
   MailApp.sendEmail({
-    to: adminEmail,
+    to: CONFIG.EMAIL.ADMIN,
     subject: subject,
     htmlBody: body
   });
@@ -1306,7 +1365,7 @@ function sendLeadPartialNotification(data, parsedFormData) {
       </ul>
       
       <p><strong>Need immediate assistance?</strong><br>
-      Call us at (555) 123-4567<br>
+      Call us at ${CONFIG.COMPANY.PHONE}<br>
       Monday-Friday 8AM-6PM EST</p>
       
       <hr>
@@ -1334,7 +1393,7 @@ function testScript() {
       firstName: 'John',
       lastName: 'Doe',
       email: 'john.doe@example.com',
-      phone: '(555) 123-4567',
+      phone: '${CONFIG.COMPANY.PHONE}',
       dateOfBirth: '1980-01-01'
     },
     medicalAnswers: {
@@ -1501,11 +1560,11 @@ function fixSheetStructureNow() {
   resetSheetStructure();
   
   // Verify the fix
-  const newHeaders = sheet.getRange(1, 1, 1, 48).getValues()[0];
+  const newHeaders = sheet.getRange(1, 1, 1, 50).getValues()[0];
   Logger.log(`New sheet has ${newHeaders.length} columns`);
   Logger.log(`New headers: ${newHeaders.join(', ')}`);
   
-  if (newHeaders.length === 48) {
+  if (newHeaders.length === 50) {
     Logger.log('✅ Sheet structure fixed successfully!');
     return true;
   } else {

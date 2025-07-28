@@ -84,7 +84,8 @@ export const validateContactInfo = (contactInfo: {
   lastName: string
   email: string
   phone: string
-  dateOfBirth: string
+  transactionalConsent?: boolean
+  marketingConsent?: boolean
 }): { isValid: boolean; errors: Record<string, string> } => {
   const errors: Record<string, string> = {}
   
@@ -112,12 +113,12 @@ export const validateContactInfo = (contactInfo: {
     errors.phone = 'Please enter a valid phone number'
   }
   
-  if (!isRequired(contactInfo.dateOfBirth)) {
-    errors.dateOfBirth = 'Date of birth is required'
-  } else if (!isValidDate(contactInfo.dateOfBirth)) {
-    errors.dateOfBirth = 'Please enter a valid date of birth'
-  } else if (!isValidAge(contactInfo.dateOfBirth)) {
-    errors.dateOfBirth = 'You must be at least 18 years old'
+  if (!contactInfo.transactionalConsent) {
+    errors.transactionalConsent = 'Transactional consent is required'
+  }
+  
+  if (!contactInfo.marketingConsent) {
+    errors.marketingConsent = 'Marketing consent is required'
   }
   
   return {

@@ -38,6 +38,8 @@ export const MedicalConditions: React.FC = () => {
     { value: 'None', label: 'None of the above' }
   ]
 
+
+
   return (
     <div>
       <h2>Medical Questions</h2>

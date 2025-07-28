@@ -207,20 +207,55 @@ export const calculateIULQuote = (coverageAmount: number, age: number, gender: s
     
     console.log(`✅ Coverage ranges found for age bracket ${ageBracket}:`, Object.keys(coverageRanges));
     
-    // Find the appropriate coverage range
+    // Find the appropriate coverage range and calculate interpolated premium
     let selectedPremium = 0;
+    let foundRange = false;
     
-    for (const [range, premium] of Object.entries(coverageRanges)) {
+    // Sort coverage ranges by minimum coverage for proper interpolation
+    const sortedRanges = Object.entries(coverageRanges).sort((a, b) => {
+      const aMin = parseInt(a[0].split('-')[0]);
+      const bMin = parseInt(b[0].split('-')[0]);
+      return aMin - bMin;
+    });
+    
+    for (let i = 0; i < sortedRanges.length; i++) {
+      const [range, premium] = sortedRanges[i];
       const [minCoverage, maxCoverage] = range.split('-').map(Number);
       console.log(`🔍 Checking range ${range}: ${minCoverage}-${maxCoverage}, coverageAmount=${coverageAmount}`);
+      
       if (coverageAmount >= minCoverage && coverageAmount <= maxCoverage) {
-        selectedPremium = premium;
-        console.log(`✅ Found matching coverage range: ${range}, premium: ${premium}`);
+        // If coverage amount is exactly at the bracket boundaries, use the fixed premium
+        if (coverageAmount === minCoverage || coverageAmount === maxCoverage) {
+          selectedPremium = premium;
+          console.log(`✅ Exact match at boundary - Coverage: ${coverageAmount}, Premium: ${selectedPremium}`);
+        } else {
+          // Interpolate between the current bracket and the next bracket if available
+          let interpolatedPremium = premium;
+          
+          if (i < sortedRanges.length - 1) {
+            const [, nextPremium] = sortedRanges[i + 1];
+            
+            // Calculate interpolation factor
+            const rangeSize = maxCoverage - minCoverage;
+            const positionInRange = coverageAmount - minCoverage;
+            const interpolationFactor = positionInRange / rangeSize;
+            
+            // Interpolate between current and next premium
+            const premiumDifference = nextPremium - premium;
+            interpolatedPremium = Math.round(premium + (premiumDifference * interpolationFactor));
+            
+            console.log(`✅ Interpolated premium - Factor: ${interpolationFactor.toFixed(3)}, Premium: ${interpolatedPremium}`);
+          }
+          
+          selectedPremium = interpolatedPremium;
+        }
+        
+        foundRange = true;
         break;
       }
     }
     
-    if (selectedPremium === 0) {
+    if (!foundRange) {
       console.error('❌ Coverage amount out of range:', coverageAmount);
       console.error('❌ Available ranges:', Object.keys(coverageRanges));
       return 0;
@@ -234,6 +269,33 @@ export const calculateIULQuote = (coverageAmount: number, age: number, gender: s
     return 0;
   }
 }
+
+// Test function to verify interpolation logic
+export const testIULInterpolation = () => {
+  console.log('🧪 Testing IUL interpolation logic...');
+  
+  const testCases = [
+    { age: 26, gender: 'male', coverage: 25000, expected: 55 },
+    { age: 26, gender: 'male', coverage: 37500, expected: 65 }, // Should interpolate between 55 and 75
+    { age: 26, gender: 'male', coverage: 50000, expected: 55 },
+    { age: 26, gender: 'male', coverage: 75000, expected: 75 },
+    { age: 26, gender: 'male', coverage: 100000, expected: 75 },
+    { age: 26, gender: 'female', coverage: 25000, expected: 45 },
+    { age: 26, gender: 'female', coverage: 37500, expected: 55 }, // Should interpolate between 45 and 65
+    { age: 26, gender: 'female', coverage: 50000, expected: 45 },
+    { age: 26, gender: 'female', coverage: 75000, expected: 65 },
+    { age: 26, gender: 'female', coverage: 100000, expected: 65 }
+  ];
+  
+  testCases.forEach((testCase, index) => {
+    const result = calculateIULQuote(testCase.coverage, testCase.age, testCase.gender);
+    const status = result === testCase.expected ? '✅' : '❌';
+    console.log(`${status} Test ${index + 1}: Age ${testCase.age}, Gender ${testCase.gender}, Coverage ${testCase.coverage.toLocaleString()}`);
+    console.log(`   Expected: $${testCase.expected}, Got: $${result}`);
+  });
+  
+  console.log('🧪 Interpolation test completed');
+};
 
 // Determine insurance type based on age
 export const getInsuranceType = (age: number): 'IUL' | 'Final Expense' => {

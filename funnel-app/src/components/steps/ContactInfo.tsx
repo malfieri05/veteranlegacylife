@@ -1,13 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useFunnelStore } from '../../store/funnelStore'
 import { FormField } from '../shared/FormField'
 import { validateContactInfo } from '../../utils/validation'
 
 export const ContactInfo: React.FC = () => {
-  const { formData, updateFormData } = useFunnelStore()
+  const { formData, updateFormData, goToNextStep, autoAdvanceEnabled, setAutoAdvanceEnabled } = useFunnelStore()
   const [errors, setErrors] = useState<Record<string, string>>({})
   
-  const handleContactInfoChange = (field: keyof typeof formData.contactInfo, value: string) => {
+  const handleContactInfoChange = (field: keyof typeof formData.contactInfo, value: string | boolean) => {
     updateFormData({
       contactInfo: {
         ...formData.contactInfo,
@@ -19,6 +19,9 @@ export const ContactInfo: React.FC = () => {
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }))
     }
+    
+    // Re-enable auto-advance when user makes a change
+    setAutoAdvanceEnabled(true)
   }
   
   const validateForm = () => {
@@ -33,6 +36,16 @@ export const ContactInfo: React.FC = () => {
       validateForm()
     }
   }, [formData.contactInfo])
+  
+  // Auto-advance when all required fields are filled and form is valid
+  useEffect(() => {
+    if (autoAdvanceEnabled && validateForm()) {
+      const timer = setTimeout(() => {
+        goToNextStep()
+      }, 500) // Small delay for better UX
+      return () => clearTimeout(timer)
+    }
+  }, [formData.contactInfo, autoAdvanceEnabled, goToNextStep])
   
   return (
     <div>
@@ -85,16 +98,48 @@ export const ContactInfo: React.FC = () => {
         required
       />
       
-      <FormField
-        label="Date of Birth"
-        name="dateOfBirth"
-        type="date"
-        value={formData.contactInfo.dateOfBirth}
-        onChange={(value) => handleContactInfoChange('dateOfBirth', value)}
-        error={errors.dateOfBirth}
-        placeholder="MM/DD/YYYY"
-        required
-      />
+
+      
+      {/* Required Consent Checkboxes */}
+      <div style={{ marginTop: '1.5rem' }}>
+        <h3 style={{ fontSize: '1rem', marginBottom: '1rem', color: '#374151' }}>Required Consents</h3>
+        
+        <div style={{ marginBottom: '1rem' }}>
+          <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={formData.contactInfo.transactionalConsent || false}
+              onChange={(e) => handleContactInfoChange('transactionalConsent', e.target.checked)}
+              style={{ marginTop: '0.125rem' }}
+              required
+            />
+            <div style={{ fontSize: '0.875rem', lineHeight: '1.4' }}>
+              <strong>Transactional Communications Consent</strong>
+              <div style={{ color: '#6b7280', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                I consent to receive transactional communications related to my insurance quote and application, including policy updates, billing information, and customer service communications.
+              </div>
+            </div>
+          </label>
+        </div>
+        
+        <div style={{ marginBottom: '1rem' }}>
+          <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={formData.contactInfo.marketingConsent || false}
+              onChange={(e) => handleContactInfoChange('marketingConsent', e.target.checked)}
+              style={{ marginTop: '0.125rem' }}
+              required
+            />
+            <div style={{ fontSize: '0.875rem', lineHeight: '1.4' }}>
+              <strong>Marketing Communications Consent</strong>
+              <div style={{ color: '#6b7280', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                I consent to receive marketing communications about insurance products, special offers, and educational content. You can unsubscribe at any time.
+              </div>
+            </div>
+          </label>
+        </div>
+      </div>
       
       <div className="security-note">
         <i className="fas fa-shield-alt"></i>

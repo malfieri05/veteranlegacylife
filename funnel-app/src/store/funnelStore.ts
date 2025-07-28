@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { getApiUrl } from '../config/api'
+import { getApiUrl } from '../config/globalConfig'
 
 // Types
 export interface ContactInfo {
@@ -7,11 +7,13 @@ export interface ContactInfo {
   lastName: string
   email: string
   phone: string
-  dateOfBirth: string
+  transactionalConsent?: boolean
+  marketingConsent?: boolean
 }
 
 export interface MedicalAnswers {
   tobaccoUse: string
+  age: string
   medicalConditions: string[]
   height: string
   weight: string
@@ -58,6 +60,7 @@ export interface FormData {
   branchOfService: string
   maritalStatus: string
   coverageAmount: string
+  dateOfBirth: string
   contactInfo: ContactInfo
   medicalAnswers: MedicalAnswers
   
@@ -70,7 +73,6 @@ interface FunnelStore {
   currentStep: number
   isModalOpen: boolean
   isLoading: boolean
-  isStreamingLoading: boolean
   
   // Auto-advance management
   autoAdvanceEnabled: boolean
@@ -86,7 +88,6 @@ interface FunnelStore {
   openModal: () => void
   closeModal: () => void
   setLoading: (loading: boolean) => void
-  setStreamingLoading: (loading: boolean) => void
   setAutoAdvanceEnabled: (enabled: boolean) => void
   updateFormData: (data: Partial<FormData>) => void
   submitPartial: (currentStep: number, stepName: string) => Promise<void>
@@ -104,21 +105,24 @@ const initialState: FormData = {
   branchOfService: '',
   maritalStatus: '',
   coverageAmount: '',
-  contactInfo: {
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    dateOfBirth: ''
-  },
-  medicalAnswers: {
-    tobaccoUse: '',
-    medicalConditions: [],
-    height: '',
-    weight: '',
-    hospitalCare: '',
-    diabetesMedication: ''
-  },
+  dateOfBirth: '',
+      contactInfo: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      transactionalConsent: false,
+      marketingConsent: false
+    },
+      medicalAnswers: {
+      tobaccoUse: '',
+      age: '',
+      medicalConditions: [],
+      height: '',
+      weight: '',
+      hospitalCare: '',
+      diabetesMedication: ''
+    },
   applicationData: {
     address: {
       street: '',
@@ -165,8 +169,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
   
   closeModal: () => set({ isModalOpen: false }),
   
-  setLoading: (loading) => set({ isLoading: loading }),
-  setStreamingLoading: (loading) => set({ isStreamingLoading: loading }),
+      setLoading: (loading) => set({ isLoading: loading }),
   setAutoAdvanceEnabled: (enabled) => set({ autoAdvanceEnabled: enabled }),
   
   updateFormData: (data) => set((state) => ({
@@ -240,16 +243,10 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
       get().submitLead()
     }
     
-    // After step 11 (Diabetes Medication), go to loading step (11.5) and submit lead partial
-    if (currentStep === 11) {
+    // After step 12 (Diabetes Medication), go to loading step (13) and submit lead partial
+    if (currentStep === 12) {
       get().submitLeadPartial()
-      set({ currentStep: 11.5, isStreamingLoading: true })
-      return
-    }
-    
-    // After loading step (11.5), go to step 12 (Pre-Qualified Success)
-    if (currentStep === 11.5) {
-      set({ isStreamingLoading: false, currentStep: 12 })
+      set({ currentStep: 13 })
       return
     }
     
@@ -268,12 +265,12 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
       set({ autoAdvanceEnabled: false })
       
       // Handle special case for loading step
-      if (currentStep === 12) {
-        // If we're on step 12 (Pre-Qualified Success), go back to step 11 (Diabetes Medication)
-        set({ currentStep: 11 })
-      } else if (currentStep === 11.5) {
-        // If we're on loading step, go back to step 11 (Diabetes Medication)
-        set({ currentStep: 11, isStreamingLoading: false })
+      if (currentStep === 14) {
+        // If we're on step 14 (Pre-Qualified Success), go back to step 12 (Diabetes Medication)
+        set({ currentStep: 12 })
+      } else if (currentStep === 13) {
+        // If we're on loading step, go back to step 12 (Diabetes Medication)
+        set({ currentStep: 12 })
       } else {
         set({ currentStep: currentStep - 1 })
       }
@@ -390,7 +387,6 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
     currentStep: 1,
     isModalOpen: false,
     isLoading: false,
-    isStreamingLoading: false,
     sessionId: generateSessionId(),
     formData: initialState
   })

@@ -6,7 +6,7 @@ export const PreQualifiedSuccess: React.FC = () => {
 
   const handleCompleteApplication = () => {
     // Move to the IUL Quote Modal step
-    useFunnelStore.getState().setCurrentStep(13)
+    useFunnelStore.getState().setCurrentStep(15)
   }
 
   return (

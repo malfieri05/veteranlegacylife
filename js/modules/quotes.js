@@ -223,10 +223,12 @@ const QuotesModule = (function() {
      */
     function calculateIULQuote(coverage, age, gender = 'male') {
         try {
-            // IUL rate table data
+            // IUL rate table data - Updated to match React version with lower coverage brackets
             const iulData = {
                 male: {
                     "18-25": {
+                        "25000-50000": 45,
+                        "51000-100000": 65,
                         "100000-250000": 85,
                         "251000-500000": 165,
                         "501000-1000000": 325,
@@ -234,6 +236,8 @@ const QuotesModule = (function() {
                         "2001000-5000000": 1625
                     },
                     "26-30": {
+                        "25000-50000": 55,
+                        "51000-100000": 75,
                         "100000-250000": 95,
                         "251000-500000": 185,
                         "501000-1000000": 365,
@@ -241,6 +245,8 @@ const QuotesModule = (function() {
                         "2001000-5000000": 1825
                     },
                     "31-35": {
+                        "25000-50000": 65,
+                        "51000-100000": 85,
                         "100000-250000": 110,
                         "251000-500000": 215,
                         "501000-1000000": 425,
@@ -248,6 +254,8 @@ const QuotesModule = (function() {
                         "2001000-5000000": 2125
                     },
                     "36-40": {
+                        "25000-50000": 75,
+                        "51000-100000": 95,
                         "100000-250000": 130,
                         "251000-500000": 255,
                         "501000-1000000": 505,
@@ -255,6 +263,8 @@ const QuotesModule = (function() {
                         "2001000-5000000": 2525
                     },
                     "41-45": {
+                        "25000-50000": 85,
+                        "51000-100000": 105,
                         "100000-250000": 155,
                         "251000-500000": 305,
                         "501000-1000000": 605,
@@ -262,6 +272,8 @@ const QuotesModule = (function() {
                         "2001000-5000000": 3025
                     },
                     "46-50": {
+                        "25000-50000": 95,
+                        "51000-100000": 115,
                         "100000-250000": 185,
                         "251000-500000": 365,
                         "501000-1000000": 725,
@@ -269,6 +281,8 @@ const QuotesModule = (function() {
                         "2001000-5000000": 3625
                     },
                     "51-55": {
+                        "25000-50000": 115,
+                        "51000-100000": 135,
                         "100000-250000": 225,
                         "251000-500000": 445,
                         "501000-1000000": 885,
@@ -276,6 +290,8 @@ const QuotesModule = (function() {
                         "2001000-5000000": 4425
                     },
                     "56-60": {
+                        "25000-50000": 135,
+                        "51000-100000": 155,
                         "100000-250000": 275,
                         "251000-500000": 545,
                         "501000-1000000": 1085,
@@ -285,6 +301,8 @@ const QuotesModule = (function() {
                 },
                 female: {
                     "18-25": {
+                        "25000-50000": 35,
+                        "51000-100000": 55,
                         "100000-250000": 75,
                         "251000-500000": 145,
                         "501000-1000000": 285,
@@ -292,6 +310,8 @@ const QuotesModule = (function() {
                         "2001000-5000000": 1425
                     },
                     "26-30": {
+                        "25000-50000": 45,
+                        "51000-100000": 65,
                         "100000-250000": 85,
                         "251000-500000": 165,
                         "501000-1000000": 325,
@@ -299,6 +319,8 @@ const QuotesModule = (function() {
                         "2001000-5000000": 1625
                     },
                     "31-35": {
+                        "25000-50000": 55,
+                        "51000-100000": 75,
                         "100000-250000": 95,
                         "251000-500000": 185,
                         "501000-1000000": 365,
@@ -306,6 +328,8 @@ const QuotesModule = (function() {
                         "2001000-5000000": 1825
                     },
                     "36-40": {
+                        "25000-50000": 65,
+                        "51000-100000": 85,
                         "100000-250000": 110,
                         "251000-500000": 215,
                         "501000-1000000": 425,
@@ -313,6 +337,8 @@ const QuotesModule = (function() {
                         "2001000-5000000": 2125
                     },
                     "41-45": {
+                        "25000-50000": 75,
+                        "51000-100000": 95,
                         "100000-250000": 130,
                         "251000-500000": 255,
                         "501000-1000000": 505,
@@ -320,6 +346,8 @@ const QuotesModule = (function() {
                         "2001000-5000000": 2525
                     },
                     "46-50": {
+                        "25000-50000": 85,
+                        "51000-100000": 105,
                         "100000-250000": 155,
                         "251000-500000": 305,
                         "501000-1000000": 605,
@@ -327,6 +355,8 @@ const QuotesModule = (function() {
                         "2001000-5000000": 3025
                     },
                     "51-55": {
+                        "25000-50000": 105,
+                        "51000-100000": 125,
                         "100000-250000": 185,
                         "251000-500000": 365,
                         "501000-1000000": 725,
@@ -334,6 +364,8 @@ const QuotesModule = (function() {
                         "2001000-5000000": 3625
                     },
                     "56-60": {
+                        "25000-50000": 125,
+                        "51000-100000": 145,
                         "100000-250000": 225,
                         "251000-500000": 445,
                         "501000-1000000": 885,
@@ -342,51 +374,99 @@ const QuotesModule = (function() {
                     }
                 }
             };
+
+            Config.log('info', `🔍 calculateIULQuote called with: coverageAmount=${coverage}, age=${age}, gender=${gender}`);
             
             // Get the appropriate gender table
             const genderTable = iulData[gender];
             if (!genderTable) {
-                Config.log('error', `❌ Invalid gender: ${gender}`);
+                Config.log('error', '❌ Invalid gender:', gender);
                 return 0;
             }
+            
+            Config.log('info', `✅ Gender table found for: ${gender}`);
             
             // Find the appropriate age bracket
             let ageBracket = null;
             const ageBrackets = Object.keys(genderTable);
+            Config.log('info', `🔍 Available age brackets: ${ageBrackets.join(', ')}`);
             
             for (const bracket of ageBrackets) {
                 const [minAge, maxAge] = bracket.split('-').map(Number);
+                Config.log('info', `🔍 Checking bracket ${bracket}: ${minAge}-${maxAge}, age=${age}`);
                 if (age >= minAge && age <= maxAge) {
                     ageBracket = bracket;
+                    Config.log('info', `✅ Found matching age bracket: ${ageBracket}`);
                     break;
                 }
             }
             
             if (!ageBracket) {
-                Config.log('error', `❌ Age out of range: ${age}`);
+                Config.log('error', '❌ Age out of range:', age);
                 return 0;
             }
             
             // Get the coverage ranges for this age bracket
             const coverageRanges = genderTable[ageBracket];
             if (!coverageRanges) {
-                Config.log('error', `❌ No coverage ranges found for age bracket: ${ageBracket}`);
+                Config.log('error', '❌ No coverage ranges found for age bracket:', ageBracket);
                 return 0;
             }
             
-            // Find the appropriate coverage range
-            let selectedPremium = 0;
+            Config.log('info', `✅ Coverage ranges found for age bracket ${ageBracket}:`, Object.keys(coverageRanges));
             
-            for (const [range, premium] of Object.entries(coverageRanges)) {
+            // Find the appropriate coverage range and calculate interpolated premium
+            let selectedPremium = 0;
+            let foundRange = false;
+            
+            // Sort coverage ranges by minimum coverage for proper interpolation
+            const sortedRanges = Object.entries(coverageRanges).sort((a, b) => {
+                const aMin = parseInt(a[0].split('-')[0]);
+                const bMin = parseInt(b[0].split('-')[0]);
+                return aMin - bMin;
+            });
+            
+            for (let i = 0; i < sortedRanges.length; i++) {
+                const [range, premium] = sortedRanges[i];
                 const [minCoverage, maxCoverage] = range.split('-').map(Number);
+                Config.log('info', `🔍 Checking range ${range}: ${minCoverage}-${maxCoverage}, coverageAmount=${coverage}`);
+                
                 if (coverage >= minCoverage && coverage <= maxCoverage) {
-                    selectedPremium = premium;
+                    // If coverage amount is exactly at the bracket boundaries, use the fixed premium
+                    if (coverage === minCoverage || coverage === maxCoverage) {
+                        selectedPremium = premium;
+                        Config.log('info', `✅ Exact match at boundary - Coverage: ${coverage}, Premium: ${selectedPremium}`);
+                    } else {
+                        // Interpolate between the current bracket and the next bracket if available
+                        let interpolatedPremium = premium;
+                        
+                        if (i < sortedRanges.length - 1) {
+                            const [nextRange, nextPremium] = sortedRanges[i + 1];
+                            const [nextMinCoverage] = nextRange.split('-').map(Number);
+                            
+                            // Calculate interpolation factor
+                            const rangeSize = maxCoverage - minCoverage;
+                            const positionInRange = coverage - minCoverage;
+                            const interpolationFactor = positionInRange / rangeSize;
+                            
+                            // Interpolate between current and next premium
+                            const premiumDifference = nextPremium - premium;
+                            interpolatedPremium = Math.round(premium + (premiumDifference * interpolationFactor));
+                            
+                            Config.log('info', `✅ Interpolated premium - Factor: ${interpolationFactor.toFixed(3)}, Premium: ${interpolatedPremium}`);
+                        }
+                        
+                        selectedPremium = interpolatedPremium;
+                    }
+                    
+                    foundRange = true;
                     break;
                 }
             }
             
-            if (selectedPremium === 0) {
-                Config.log('error', `❌ Coverage amount out of range: ${coverage}`);
+            if (!foundRange) {
+                Config.log('error', '❌ Coverage amount out of range:', coverage);
+                Config.log('error', '❌ Available ranges:', Object.keys(coverageRanges));
                 return 0;
             }
             

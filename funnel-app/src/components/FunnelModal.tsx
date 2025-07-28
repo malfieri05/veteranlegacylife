@@ -10,11 +10,13 @@ import { BranchOfService } from './steps/BranchOfService'
 import { MaritalStatus } from './steps/MaritalStatus'
 import { CoverageAmount } from './steps/CoverageAmount'
 import { ContactInfo } from './steps/ContactInfo'
+import { Birthday } from './steps/Birthday'
 import { TobaccoUse } from './steps/TobaccoUse'
 import { MedicalConditions } from './steps/MedicalConditions'
 import { HeightWeight } from './steps/HeightWeight'
 import { HospitalCare } from './steps/HospitalCare'
 import { DiabetesMedication } from './steps/DiabetesMedication'
+
 import { PreQualifiedSuccess } from './steps/PreQualifiedSuccess'
 import { IULQuoteModal } from './steps/IULQuoteModal'
 import { ApplicationStep1 } from './steps/ApplicationStep1'
@@ -22,7 +24,7 @@ import { ApplicationStep2 } from './steps/ApplicationStep2'
 import { FinalSuccessModal } from './steps/FinalSuccessModal'
 import { validateContactInfo } from '../utils/validation'
 
-const TOTAL_STEPS = 16
+const TOTAL_STEPS = 18
 
 export const FunnelModal: React.FC = () => {
   const { 
@@ -32,8 +34,6 @@ export const FunnelModal: React.FC = () => {
     goToNextStep, 
     goToPreviousStep,
     formData,
-    isStreamingLoading,
-    setStreamingLoading,
     setAutoAdvanceEnabled
   } = useFunnelStore()
 
@@ -52,24 +52,34 @@ export const FunnelModal: React.FC = () => {
       case 6:
         return <ContactInfo />
       case 7:
+        return <Birthday />
+            case 8:
         return <TobaccoUse />
-      case 8:
-        return <MedicalConditions />
       case 9:
-        return <HeightWeight />
+        return <MedicalConditions />
       case 10:
-        return <HospitalCare />
+        return <HeightWeight />
       case 11:
-        return <DiabetesMedication />
+        return <HospitalCare />
       case 12:
-        return <PreQualifiedSuccess />
+        return <DiabetesMedication />
       case 13:
-        return <IULQuoteModal />
+        return (
+          <StreamingLoadingSpinner
+            branchOfService={formData.branchOfService || 'Military'}
+            isVisible={true}
+            onComplete={() => goToNextStep()}
+          />
+        )
       case 14:
-        return <ApplicationStep1 />
+        return <PreQualifiedSuccess />
       case 15:
-        return <ApplicationStep2 />
+        return <IULQuoteModal />
       case 16:
+        return <ApplicationStep1 />
+      case 17:
+        return <ApplicationStep2 />
+      case 18:
         return <FinalSuccessModal />
       default:
         return <div>
@@ -95,35 +105,37 @@ export const FunnelModal: React.FC = () => {
         const validation = validateContactInfo(formData.contactInfo)
         return validation.isValid
       case 7:
+        return !!formData.dateOfBirth
+            case 8:
         return !!formData.medicalAnswers?.tobaccoUse
-      case 8:
-        return formData.medicalAnswers?.medicalConditions && formData.medicalAnswers.medicalConditions.length > 0
       case 9:
-        return !!formData.medicalAnswers?.height && !!formData.medicalAnswers?.weight
+        return formData.medicalAnswers?.medicalConditions && formData.medicalAnswers.medicalConditions.length > 0
       case 10:
-        return !!formData.medicalAnswers?.hospitalCare
+        return !!formData.medicalAnswers?.height && !!formData.medicalAnswers?.weight
       case 11:
-        return !!formData.medicalAnswers?.diabetesMedication
-      case 11.5:
-        return false // Loading step - no manual progression
+        return !!formData.medicalAnswers?.hospitalCare
       case 12:
-        return true // Success step - can always proceed
+        return !!formData.medicalAnswers?.diabetesMedication
       case 13:
-        return true // IUL Quote Modal - can always proceed
+        return false // Loading step - no manual progression
       case 14:
+        return true // Success step - can always proceed
+      case 15:
+        return true // IUL Quote Modal - can always proceed
+      case 16:
         return !!formData.applicationData?.address?.street && 
                !!formData.applicationData?.address?.city && 
                !!formData.applicationData?.address?.state && 
                !!formData.applicationData?.address?.zipCode &&
                !!formData.applicationData?.beneficiary?.name &&
                !!formData.applicationData?.beneficiary?.relationship
-      case 15:
+      case 17:
         return !!formData.applicationData?.ssn &&
                !!formData.applicationData?.banking?.bankName &&
                !!formData.applicationData?.banking?.routingNumber &&
                !!formData.applicationData?.banking?.accountNumber &&
                !!formData.applicationData?.policyDate
-      case 15:
+      case 18:
         return true // Final success - can always proceed
       default:
         return true
@@ -143,40 +155,6 @@ export const FunnelModal: React.FC = () => {
   }
 
   if (!isModalOpen) return null
-
-  // Don't render modal content when streaming loading is active
-  if (isStreamingLoading) {
-    return (
-      <motion.div
-        className="modal-overlay active"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={closeModal}
-      >
-        <motion.div
-          className="modal-content"
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 50, opacity: 0 }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Streaming Loading Spinner */}
-          <StreamingLoadingSpinner
-            branchOfService={formData.branchOfService || 'Military'}
-            isVisible={isStreamingLoading}
-            onComplete={() => setStreamingLoading(false)}
-            onStepComplete={() => {
-              // Automatically progress to the next step after loading completes
-              if (currentStep === 11.5) {
-                goToNextStep()
-              }
-            }}
-          />
-        </motion.div>
-      </motion.div>
-    )
-  }
 
   return (
     <>
@@ -212,7 +190,7 @@ export const FunnelModal: React.FC = () => {
         </button>
 
         {/* Don't show progress bar during loading screen */}
-        {!isStreamingLoading && (
+        {currentStep !== 13 && (
           <ProgressBar currentStep={currentStep} totalSteps={TOTAL_STEPS} />
         )}
 
@@ -228,8 +206,8 @@ export const FunnelModal: React.FC = () => {
           </motion.div>
         </AnimatePresence>
 
-        {/* Don't show action buttons during loading screen */}
-        {!isStreamingLoading && (
+        {/* Don't show action buttons during loading screen or for IULQuoteModal */}
+        {currentStep !== 13 && currentStep !== 15 && (
           <div style={{ 
             display: 'flex', 
             justifyContent: 'space-between', 
