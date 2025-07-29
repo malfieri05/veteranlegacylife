@@ -42,10 +42,9 @@ const SHEET_COLUMNS = {
 
 function doPost(e) {
   try {
-    const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    Logger.log(`[${sessionId}] Processing request`);
-    Logger.log(`[${sessionId}] e.postData: ${JSON.stringify(e.postData)}`);
-    Logger.log(`[${sessionId}] e.parameter: ${JSON.stringify(e.parameter)}`);
+    Logger.log(`Processing request`);
+    Logger.log(`e.postData: ${JSON.stringify(e.postData)}`);
+    Logger.log(`e.parameter: ${JSON.stringify(e.parameter)}`);
     
     // Check for test function call first
     if (e.postData && e.postData.contents) {
@@ -53,11 +52,11 @@ function doPost(e) {
       try {
         const data = JSON.parse(e.postData.contents);
         if (data.action === 'testNewEntriesAndEmails') {
-          Logger.log(`[${sessionId}] Running testNewEntriesAndEmails`);
+          Logger.log(`Running testNewEntriesAndEmails`);
           return testNewEntriesAndEmails();
         }
         if (data.action === 'setupHeaders') {
-          Logger.log(`[${sessionId}] Running setupHeaders`);
+          Logger.log(`Running setupHeaders`);
           return setupHeaders();
         }
       } catch (e) {
@@ -110,11 +109,15 @@ function doPost(e) {
     } else {
       throw new Error('No data received');
     }
-    Logger.log(`[${sessionId}] Parsed data: ${JSON.stringify(parsedData)}`);
+    Logger.log(`Parsed data: ${JSON.stringify(parsedData)}`);
+    
+    // Extract sessionId from frontend data
+    const sessionId = parsedData.sessionId || 'unknown_session';
+    Logger.log(`Using sessionId from frontend: ${sessionId}`);
     
     // Determine form type and route accordingly
     const formType = parsedData.formType || 'Unknown';
-    Logger.log(`[${sessionId}] Form type: ${formType}`);
+    Logger.log(`Form type: ${formType}`);
     
     let result;
     switch (formType) {
@@ -233,10 +236,18 @@ function handleApplicationSubmission(data, sessionId) {
     rowData[SHEET_COLUMNS.PARTIAL_EMAIL_SENT - 1] = 'No';
     rowData[SHEET_COLUMNS.COMPLETED_EMAIL_SENT - 1] = 'No';
     
-    Logger.log(`[${sessionId}] About to append row with ${rowData.length} elements`);
+    Logger.log(`[${sessionId}] About to write row with ${rowData.length} elements`);
     Logger.log(`[${sessionId}] Quote data: ${rowData[35]}, ${rowData[36]}, ${rowData[37]}, ${rowData[38]}, ${rowData[39]}, ${rowData[40]}`);
     
-    sheet.appendRow(rowData);
+    // Find existing row or create new one
+    const existingRow = findRowBySessionId(sheet, sessionId);
+    if (existingRow) {
+      Logger.log(`[${sessionId}] Updating existing row ${existingRow}`);
+      sheet.getRange(existingRow, 1, 1, rowData.length).setValues([rowData]);
+    } else {
+      Logger.log(`[${sessionId}] Creating new row`);
+      sheet.appendRow(rowData);
+    }
     Logger.log(`[${sessionId}] Row written successfully`);
     
     return {
@@ -249,6 +260,16 @@ function handleApplicationSubmission(data, sessionId) {
     Logger.log(`[${sessionId}] Error in handleApplicationSubmission: ${error.toString()}`);
     throw error;
   }
+}
+
+function findRowBySessionId(sheet, sessionId) {
+  const data = sheet.getDataRange().getValues();
+  for (let i = 1; i < data.length; i++) { // Start from row 2 (skip header)
+    if (data[i][SHEET_COLUMNS.SESSION_ID - 1] === sessionId) {
+      return i + 1; // Return 1-based row number
+    }
+  }
+  return null; // Not found
 }
 
 function handlePartialSubmission(data, sessionId) {
@@ -325,7 +346,15 @@ function handlePartialSubmission(data, sessionId) {
     rowData[SHEET_COLUMNS.PARTIAL_EMAIL_SENT - 1] = 'No';
     rowData[SHEET_COLUMNS.COMPLETED_EMAIL_SENT - 1] = 'No';
     
-    sheet.appendRow(rowData);
+    // Find existing row or create new one
+    const existingRow = findRowBySessionId(sheet, sessionId);
+    if (existingRow) {
+      Logger.log(`[${sessionId}] Updating existing row ${existingRow}`);
+      sheet.getRange(existingRow, 1, 1, rowData.length).setValues([rowData]);
+    } else {
+      Logger.log(`[${sessionId}] Creating new row`);
+      sheet.appendRow(rowData);
+    }
     
     return {
       success: true,
@@ -401,7 +430,15 @@ function handleLeadSubmission(data, sessionId) {
     rowData[SHEET_COLUMNS.PARTIAL_EMAIL_SENT - 1] = 'No';
     rowData[SHEET_COLUMNS.COMPLETED_EMAIL_SENT - 1] = 'No';
     
-    sheet.appendRow(rowData);
+    // Find existing row or create new one
+    const existingRow = findRowBySessionId(sheet, sessionId);
+    if (existingRow) {
+      Logger.log(`[${sessionId}] Updating existing row ${existingRow}`);
+      sheet.getRange(existingRow, 1, 1, rowData.length).setValues([rowData]);
+    } else {
+      Logger.log(`[${sessionId}] Creating new row`);
+      sheet.appendRow(rowData);
+    }
     
     return {
       success: true,
@@ -477,7 +514,15 @@ function handleLeadPartialSubmission(data, sessionId) {
     rowData[SHEET_COLUMNS.PARTIAL_EMAIL_SENT - 1] = 'No';
     rowData[SHEET_COLUMNS.COMPLETED_EMAIL_SENT - 1] = 'No';
     
-    sheet.appendRow(rowData);
+    // Find existing row or create new one
+    const existingRow = findRowBySessionId(sheet, sessionId);
+    if (existingRow) {
+      Logger.log(`[${sessionId}] Updating existing row ${existingRow}`);
+      sheet.getRange(existingRow, 1, 1, rowData.length).setValues([rowData]);
+    } else {
+      Logger.log(`[${sessionId}] Creating new row`);
+      sheet.appendRow(rowData);
+    }
     
     return {
       success: true,
