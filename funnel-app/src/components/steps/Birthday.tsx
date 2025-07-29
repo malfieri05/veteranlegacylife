@@ -4,6 +4,7 @@ import { useFunnelStore } from '../../store/funnelStore'
 export const Birthday: React.FC = () => {
   const { formData, updateFormData, goToNextStep, autoAdvanceEnabled, setAutoAdvanceEnabled } = useFunnelStore()
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false)
   const [month, setMonth] = useState('')
   const [day, setDay] = useState('')
   const [year, setYear] = useState('')
@@ -78,7 +79,10 @@ export const Birthday: React.FC = () => {
 
     if (!month || !day || !year) {
       newErrors.dateOfBirth = 'Please complete all date fields'
-      setErrors(newErrors)
+      // Only set errors if user has attempted to submit
+      if (hasAttemptedSubmit) {
+        setErrors(newErrors)
+      }
       return false
     }
 
@@ -87,7 +91,10 @@ export const Birthday: React.FC = () => {
     
     if (!dateRegex.test(dateString)) {
       newErrors.dateOfBirth = 'Please enter a valid date'
-      setErrors(newErrors)
+      // Only set errors if user has attempted to submit
+      if (hasAttemptedSubmit) {
+        setErrors(newErrors)
+      }
       return false
     }
 
@@ -107,26 +114,36 @@ export const Birthday: React.FC = () => {
       newErrors.dateOfBirth = 'Please enter a valid date of birth'
     }
 
-    setErrors(newErrors)
+    // Only set errors if user has attempted to submit
+    if (hasAttemptedSubmit) {
+      setErrors(newErrors)
+    }
     return Object.keys(newErrors).length === 0
   }
 
   // Auto-continue when all fields are filled and valid (only if auto-advance is enabled)
   useEffect(() => {
-    if (month && day && year && autoAdvanceEnabled && validateForm()) {
-      const timer = setTimeout(() => {
-        goToNextStep()
-      }, 500) // Small delay for better UX
-      return () => clearTimeout(timer)
+    if (autoAdvanceEnabled) {
+      const validation = validateForm()
+      if (validation) {
+        const timer = setTimeout(() => {
+          goToNextStep()
+        }, 500) // Small delay for better UX
+        return () => clearTimeout(timer)
+      } else {
+        // If form is invalid and auto-advance is enabled, user has attempted to submit
+        setHasAttemptedSubmit(true)
+        validateForm() // This will now show errors since hasAttemptedSubmit is true
+      }
     }
   }, [month, day, year, autoAdvanceEnabled, goToNextStep])
 
-  // Validate when any field changes
+  // Only validate and show errors when user has attempted to submit
   useEffect(() => {
-    if (month || day || year) {
+    if (hasAttemptedSubmit && (month || day || year)) {
       validateForm()
     }
-  }, [month, day, year])
+  }, [month, day, year, hasAttemptedSubmit])
 
   return (
     <div>
