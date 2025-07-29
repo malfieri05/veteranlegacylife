@@ -52,6 +52,10 @@ function doPost(e) {
         Logger.log(`[${sessionId}] Running testNewEntriesAndEmails`);
         return testNewEntriesAndEmails();
       }
+      if (data.action === 'setupHeaders') {
+        Logger.log(`[${sessionId}] Running setupHeaders`);
+        return setupHeaders();
+      }
     }
     
     // Parse the incoming data
@@ -625,6 +629,96 @@ function testNewEntriesAndEmails() {
     
   } catch (error) {
     Logger.log(`Error in testNewEntriesAndEmails: ${error.toString()}`);
+    return ContentService.createTextOutput(JSON.stringify({
+      success: false,
+      error: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+} 
+
+function setupHeaders() {
+  try {
+    const spreadsheet = SpreadsheetApp.openById(CONFIG.GOOGLE_SHEET.SHEET_ID);
+    const sheet = spreadsheet.getSheetByName(CONFIG.GOOGLE_SHEET.SHEET_NAME);
+    
+    // Define headers for 51 columns
+    const headers = [
+      'Timestamp',
+      'Session ID', 
+      'Status',
+      'Last Activity',
+      'First Name',
+      'Last Name',
+      'Email',
+      'Phone',
+      'Date of Birth',
+      'Transactional Consent',
+      'Marketing Consent',
+      'State',
+      'Military Status',
+      'Branch of Service',
+      'Marital Status',
+      'Coverage Amount',
+      'Tobacco Use',
+      'Medical Conditions',
+      'Height',
+      'Weight',
+      'Hospital Care',
+      'Diabetes Medication',
+      'Street Address',
+      'City',
+      'Application State',
+      'ZIP Code',
+      'Beneficiary Name',
+      'Beneficiary Relationship',
+      'VA Number',
+      'Service Connected',
+      'SSN',
+      'Driver\'s License',
+      'Bank Name',
+      'Routing Number',
+      'Account Number',
+      'Policy Date',
+      'Quote Coverage',
+      'Quote Premium',
+      'Quote Age',
+      'Quote Gender',
+      'Quote Type',
+      'Current Step',
+      'Step Name',
+      'Form Type',
+      'User Agent',
+      'Referrer',
+      'UTM Source',
+      'UTM Medium',
+      'UTM Campaign',
+      'Partial Email Sent',
+      'Completed Email Sent'
+    ];
+    
+    // Clear existing headers and set new ones
+    sheet.clear();
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    
+    // Format header row
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setFontWeight('bold');
+    headerRange.setBackground('#4285f4');
+    headerRange.setFontColor('white');
+    
+    // Auto-resize columns
+    for (let i = 1; i <= headers.length; i++) {
+      sheet.autoResizeColumn(i);
+    }
+    
+    Logger.log('Headers setup completed successfully');
+    return ContentService.createTextOutput(JSON.stringify({
+      success: true,
+      message: 'Headers setup completed successfully'
+    })).setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (error) {
+    Logger.log(`Error in setupHeaders: ${error.toString()}`);
     return ContentService.createTextOutput(JSON.stringify({
       success: false,
       error: error.toString()
