@@ -100,8 +100,7 @@ function handleApplicationSubmission(data, sessionId) {
   Logger.log(`[${sessionId}] Processing Application submission`);
   
   try {
-    const spreadsheet = SpreadsheetApp.openById(CONFIG.GOOGLE_SHEET.SHEET_ID);
-    const sheet = spreadsheet.getSheetByName(CONFIG.GOOGLE_SHEET.SHEET_NAME);
+    const sheet = SpreadsheetApp.getActiveSheet();
     const rowData = new Array(51).fill('');
     
     // Contact Info (columns 5-11)
@@ -200,8 +199,7 @@ function handlePartialSubmission(data, sessionId) {
   Logger.log(`[${sessionId}] Quote data received: ${JSON.stringify(data.quoteData)}`);
   
   try {
-    const spreadsheet = SpreadsheetApp.openById(CONFIG.GOOGLE_SHEET.SHEET_ID);
-    const sheet = spreadsheet.getSheetByName(CONFIG.GOOGLE_SHEET.SHEET_NAME);
+    const sheet = SpreadsheetApp.getActiveSheet();
     const rowData = new Array(51).fill('');
     
     // Same mapping as Application but with Partial status
@@ -288,8 +286,7 @@ function handleLeadSubmission(data, sessionId) {
   Logger.log(`[${sessionId}] Processing Lead submission`);
   
   try {
-    const spreadsheet = SpreadsheetApp.openById(CONFIG.GOOGLE_SHEET.SHEET_ID);
-    const sheet = spreadsheet.getSheetByName(CONFIG.GOOGLE_SHEET.SHEET_NAME);
+    const sheet = SpreadsheetApp.getActiveSheet();
     const rowData = new Array(51).fill('');
     
     // Same mapping as Application but with Lead status
@@ -365,8 +362,7 @@ function handleLeadPartialSubmission(data, sessionId) {
   Logger.log(`[${sessionId}] Processing LeadPartial submission`);
   
   try {
-    const spreadsheet = SpreadsheetApp.openById(CONFIG.GOOGLE_SHEET.SHEET_ID);
-    const sheet = spreadsheet.getSheetByName(CONFIG.GOOGLE_SHEET.SHEET_NAME);
+    const sheet = SpreadsheetApp.getActiveSheet();
     const rowData = new Array(51).fill('');
     
     // Same mapping as Application but with LeadPartial status
@@ -638,21 +634,14 @@ function testNewEntriesAndEmails() {
 
 function setupHeaders() {
   try {
-    Logger.log('Opening spreadsheet with ID: ' + CONFIG.GOOGLE_SHEET.SHEET_ID);
-    const spreadsheet = SpreadsheetApp.openById(CONFIG.GOOGLE_SHEET.SHEET_ID);
+    Logger.log('Using active sheet for setupHeaders');
+    const sheet = SpreadsheetApp.getActiveSheet();
     
-    if (!spreadsheet) {
-      throw new Error('Could not open spreadsheet with ID: ' + CONFIG.GOOGLE_SHEET.SHEET_ID);
-    }
-    
-    Logger.log('Looking for sheet: ' + CONFIG.GOOGLE_SHEET.SHEET_NAME);
-    let sheet = spreadsheet.getSheetByName(CONFIG.GOOGLE_SHEET.SHEET_NAME);
-    
-    // If sheet doesn't exist, create it
     if (!sheet) {
-      Logger.log('Sheet not found, creating new sheet: ' + CONFIG.GOOGLE_SHEET.SHEET_NAME);
-      sheet = spreadsheet.insertSheet(CONFIG.GOOGLE_SHEET.SHEET_NAME);
+      throw new Error('No active sheet found');
     }
+    
+    Logger.log('Active sheet name: ' + sheet.getName());
     
     // Define headers for 51 columns
     const headers = [
