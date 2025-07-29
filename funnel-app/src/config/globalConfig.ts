@@ -3,16 +3,20 @@
 
 export const GLOBAL_CONFIG = {
   // Google Apps Script Deployment URL
-  GOOGLE_APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxcWggxWdEJzsSW_noiLBbfP6ovmTHWLRIDnWvc6jAj4-1HV_sEp9OBw4UCvXBsEu3M/exec',
+  GOOGLE_APPS_SCRIPT: {
+    URL: 'https://script.google.com/macros/s/AKfycbxxIKg0H2YSi4OI1ZMfmY9zwNbcwr8G1m2GlBB_SlvmTZckcPX_vRH8nfnAa5SqK3xs/exec'
+  },
   
   // Email Configuration
   EMAIL: {
+    // Admin email (where notifications are sent)
+    ADMIN: 'lindsey08092@gmail.com',
     // From email (sender)
-    FROM: 'lindsey@veteranlegacylife.com',
+    FROM: 'lindsey08092@gmail.com',
     // To email (recipient) - change to actual user email when authorized
-    TO: 'lindsey@veteranlegacylife.com',
+    TO: 'lindsey08092@gmail.com',
     // Reply-to email
-    REPLY_TO: 'lindsey@veteranlegacylife.com'
+    REPLY_TO: 'lindsey08092@gmail.com'
   },
   
   // Google Sheet Configuration
@@ -30,10 +34,10 @@ export const GLOBAL_CONFIG = {
     PHONE_DIALABLE: '180083847467', // Actual number to dial (800-VET-INSURANCE)
     WEBSITE: 'https://veteranlegacylife.com'
   }
-}
+} as const;
 
 // Helper function to get API URL
-export const getApiUrl = () => GLOBAL_CONFIG.GOOGLE_APPS_SCRIPT_URL
+export const getApiUrl = () => GLOBAL_CONFIG.GOOGLE_APPS_SCRIPT.URL
 
 // Helper function to get email configuration
 export const getEmailConfig = () => GLOBAL_CONFIG.EMAIL

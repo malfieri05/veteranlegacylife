@@ -12,12 +12,10 @@ export const calculateAge = (birthDate: string): number => {
   return age
 }
 
-// IUL rate table data
+// IUL rate table data - ACTUAL RATES
 const iulData = {
   male: {
     "18-25": {
-      "25000-50000": 45,
-      "51000-100000": 65,
       "100000-250000": 85,
       "251000-500000": 165,
       "501000-1000000": 325,
@@ -25,8 +23,6 @@ const iulData = {
       "2001000-5000000": 1625
     },
     "26-30": {
-      "25000-50000": 55,
-      "51000-100000": 75,
       "100000-250000": 95,
       "251000-500000": 185,
       "501000-1000000": 365,
@@ -34,8 +30,6 @@ const iulData = {
       "2001000-5000000": 1825
     },
     "31-35": {
-      "25000-50000": 65,
-      "51000-100000": 85,
       "100000-250000": 110,
       "251000-500000": 215,
       "501000-1000000": 425,
@@ -43,8 +37,6 @@ const iulData = {
       "2001000-5000000": 2125
     },
     "36-40": {
-      "25000-50000": 75,
-      "51000-100000": 95,
       "100000-250000": 130,
       "251000-500000": 255,
       "501000-1000000": 505,
@@ -52,8 +44,6 @@ const iulData = {
       "2001000-5000000": 2525
     },
     "41-45": {
-      "25000-50000": 85,
-      "51000-100000": 105,
       "100000-250000": 155,
       "251000-500000": 305,
       "501000-1000000": 605,
@@ -61,8 +51,6 @@ const iulData = {
       "2001000-5000000": 3025
     },
     "46-50": {
-      "25000-50000": 95,
-      "51000-100000": 115,
       "100000-250000": 185,
       "251000-500000": 365,
       "501000-1000000": 725,
@@ -70,8 +58,6 @@ const iulData = {
       "2001000-5000000": 3625
     },
     "51-55": {
-      "25000-50000": 115,
-      "51000-100000": 135,
       "100000-250000": 225,
       "251000-500000": 445,
       "501000-1000000": 885,
@@ -79,8 +65,6 @@ const iulData = {
       "2001000-5000000": 4425
     },
     "56-60": {
-      "25000-50000": 135,
-      "51000-100000": 155,
       "100000-250000": 275,
       "251000-500000": 545,
       "501000-1000000": 1085,
@@ -90,8 +74,6 @@ const iulData = {
   },
   female: {
     "18-25": {
-      "25000-50000": 35,
-      "51000-100000": 55,
       "100000-250000": 75,
       "251000-500000": 145,
       "501000-1000000": 285,
@@ -99,8 +81,6 @@ const iulData = {
       "2001000-5000000": 1425
     },
     "26-30": {
-      "25000-50000": 45,
-      "51000-100000": 65,
       "100000-250000": 85,
       "251000-500000": 165,
       "501000-1000000": 325,
@@ -108,8 +88,6 @@ const iulData = {
       "2001000-5000000": 1625
     },
     "31-35": {
-      "25000-50000": 55,
-      "51000-100000": 75,
       "100000-250000": 95,
       "251000-500000": 185,
       "501000-1000000": 365,
@@ -117,8 +95,6 @@ const iulData = {
       "2001000-5000000": 1825
     },
     "36-40": {
-      "25000-50000": 65,
-      "51000-100000": 85,
       "100000-250000": 110,
       "251000-500000": 215,
       "501000-1000000": 425,
@@ -126,8 +102,6 @@ const iulData = {
       "2001000-5000000": 2125
     },
     "41-45": {
-      "25000-50000": 75,
-      "51000-100000": 95,
       "100000-250000": 130,
       "251000-500000": 255,
       "501000-1000000": 505,
@@ -135,8 +109,6 @@ const iulData = {
       "2001000-5000000": 2525
     },
     "46-50": {
-      "25000-50000": 85,
-      "51000-100000": 105,
       "100000-250000": 155,
       "251000-500000": 305,
       "501000-1000000": 605,
@@ -144,8 +116,6 @@ const iulData = {
       "2001000-5000000": 3025
     },
     "51-55": {
-      "25000-50000": 105,
-      "51000-100000": 125,
       "100000-250000": 185,
       "251000-500000": 365,
       "501000-1000000": 725,
@@ -153,8 +123,6 @@ const iulData = {
       "2001000-5000000": 3625
     },
     "56-60": {
-      "25000-50000": 125,
-      "51000-100000": 145,
       "100000-250000": 225,
       "251000-500000": 445,
       "501000-1000000": 885,
@@ -224,12 +192,22 @@ export const calculateIULQuote = (coverageAmount: number, age: number, gender: s
       console.log(`🔍 Checking range ${range}: ${minCoverage}-${maxCoverage}, coverageAmount=${coverageAmount}`);
       
       if (coverageAmount >= minCoverage && coverageAmount <= maxCoverage) {
-        // If coverage amount is exactly at the bracket boundaries, use the fixed premium
-        if (coverageAmount === minCoverage || coverageAmount === maxCoverage) {
+        // For boundary cases, use the premium for that bracket
+        if (coverageAmount === minCoverage) {
           selectedPremium = premium;
-          console.log(`✅ Exact match at boundary - Coverage: ${coverageAmount}, Premium: ${selectedPremium}`);
+          console.log(`✅ Exact match at min boundary - Coverage: ${coverageAmount}, Premium: ${selectedPremium}`);
+        } else if (coverageAmount === maxCoverage) {
+          // At max boundary, use the next bracket's premium if available, otherwise current premium
+          if (i < sortedRanges.length - 1) {
+            const [, nextPremium] = sortedRanges[i + 1];
+            selectedPremium = nextPremium;
+            console.log(`✅ At max boundary, using next bracket premium - Coverage: ${coverageAmount}, Premium: ${selectedPremium}`);
+          } else {
+            selectedPremium = premium;
+            console.log(`✅ At max boundary, using current premium - Coverage: ${coverageAmount}, Premium: ${selectedPremium}`);
+          }
         } else {
-          // Interpolate between the current bracket and the next bracket if available
+          // Interpolate between current bracket and next bracket
           let interpolatedPremium = premium;
           
           if (i < sortedRanges.length - 1) {
@@ -244,7 +222,15 @@ export const calculateIULQuote = (coverageAmount: number, age: number, gender: s
             const premiumDifference = nextPremium - premium;
             interpolatedPremium = Math.round(premium + (premiumDifference * interpolationFactor));
             
-            console.log(`✅ Interpolated premium - Factor: ${interpolationFactor.toFixed(3)}, Premium: ${interpolatedPremium}`);
+            console.log(`✅ Interpolated premium between brackets - Factor: ${interpolationFactor.toFixed(3)}, Premium: ${interpolatedPremium}`);
+          } else {
+            // If no next bracket, use simple interpolation within current bracket
+            const rangeSize = maxCoverage - minCoverage;
+            const positionInRange = coverageAmount - minCoverage;
+            const interpolationFactor = positionInRange / rangeSize;
+            interpolatedPremium = Math.round(premium * (1 + interpolationFactor * 0.1));
+            
+            console.log(`✅ Interpolated premium within bracket - Factor: ${interpolationFactor.toFixed(3)}, Premium: ${interpolatedPremium}`);
           }
           
           selectedPremium = interpolatedPremium;
@@ -297,9 +283,151 @@ export const testIULInterpolation = () => {
   console.log('🧪 Interpolation test completed');
 };
 
+// Final Expense rate table data (based on quote-utils.js)
+const finalExpenseData: {
+  male: { [age: number]: { [coverage: number]: number } }
+  female: { [age: number]: { [coverage: number]: number } }
+} = {
+  male: {
+    60: { 5000: 23.46, 10000: 43.12, 15000: 62.78, 20000: 82.44 },
+    61: { 5000: 24.68, 10000: 45.56, 15000: 66.44, 20000: 87.32 },
+    62: { 5000: 25.90, 10000: 48.00, 15000: 70.11, 20000: 92.21 },
+    63: { 5000: 26.92, 10000: 50.05, 15000: 73.17, 20000: 96.29 },
+    64: { 5000: 27.94, 10000: 52.09, 15000: 76.23, 20000: 100.38 },
+    65: { 5000: 28.98, 10000: 54.15, 15000: 79.33, 20000: 104.50 },
+    66: { 5000: 30.44, 10000: 57.08, 15000: 83.72, 20000: 110.36 },
+    67: { 5000: 31.90, 10000: 60.00, 15000: 88.10, 20000: 116.20 },
+    68: { 5000: 33.39, 10000: 62.98, 15000: 92.57, 20000: 122.16 },
+    69: { 5000: 35.38, 10000: 66.96, 15000: 98.54, 20000: 130.12 },
+    70: { 5000: 37.37, 10000: 70.94, 15000: 104.50, 20000: 138.07 },
+    71: { 5000: 39.64, 10000: 75.47, 15000: 111.30, 20000: 147.13 },
+    72: { 5000: 41.90, 10000: 80.00, 15000: 118.10, 20000: 156.20 },
+    73: { 5000: 44.75, 10000: 85.70, 15000: 126.65, 20000: 167.60 },
+    74: { 5000: 47.60, 10000: 91.40, 15000: 135.20, 20000: 179.00 },
+    75: { 5000: 50.45, 10000: 97.10, 15000: 143.75, 20000: 190.40 },
+    76: { 5000: 54.18, 10000: 104.55, 15000: 154.93, 20000: 205.30 },
+    77: { 5000: 57.90, 10000: 112.00, 15000: 166.09, 20000: 220.19 },
+    78: { 5000: 61.86, 10000: 119.59, 15000: 177.32, 20000: 235.05 },
+    79: { 5000: 65.83, 10000: 127.18, 15000: 188.54, 20000: 249.90 },
+    80: { 5000: 69.79, 10000: 135.78, 15000: 201.78, 20000: 267.77 }
+  },
+  female: {
+    60: { 5000: 19.32, 10000: 34.84, 15000: 50.35, 20000: 65.87 },
+    61: { 5000: 20.11, 10000: 36.42, 15000: 52.73, 20000: 69.05 },
+    62: { 5000: 20.90, 10000: 38.00, 15000: 55.10, 20000: 72.20 },
+    63: { 5000: 21.50, 10000: 39.21, 15000: 56.91, 20000: 74.61 },
+    64: { 5000: 22.11, 10000: 40.41, 15000: 58.72, 20000: 77.03 },
+    65: { 5000: 22.71, 10000: 41.63, 15000: 60.54, 20000: 79.46 },
+    66: { 5000: 23.71, 10000: 43.61, 15000: 63.52, 20000: 83.43 },
+    67: { 5000: 24.70, 10000: 45.60, 15000: 66.50, 20000: 87.40 },
+    68: { 5000: 25.95, 10000: 48.11, 15000: 70.26, 20000: 92.42 },
+    69: { 5000: 27.21, 10000: 50.62, 15000: 74.02, 20000: 97.43 },
+    70: { 5000: 28.47, 10000: 53.13, 15000: 77.80, 20000: 102.47 },
+    71: { 5000: 29.80, 10000: 55.79, 15000: 81.79, 20000: 113.11 },
+    72: { 5000: 31.13, 10000: 58.45, 15000: 85.78, 20000: 113.11 },
+    73: { 5000: 33.45, 10000: 63.10, 15000: 92.75, 20000: 122.40 },
+    74: { 5000: 35.77, 10000: 67.74, 15000: 99.72, 20000: 131.69 },
+    75: { 5000: 38.10, 10000: 72.40, 15000: 106.70, 20000: 141.00 },
+    76: { 5000: 40.87, 10000: 77.95, 15000: 115.02, 20000: 152.10 },
+    77: { 5000: 43.65, 10000: 83.50, 15000: 123.34, 20000: 163.19 },
+    78: { 5000: 46.13, 10000: 88.46, 15000: 130.80, 20000: 173.13 },
+    79: { 5000: 48.62, 10000: 93.43, 15000: 138.25, 20000: 183.07 },
+    80: { 5000: 51.11, 10000: 98.42, 15000: 145.73, 20000: 193.04 }
+  }
+}
+
+// Calculate Final Expense quote
+export const calculateFinalExpenseQuote = (coverageAmount: number, age: number, gender: string = 'male'): number => {
+  try {
+    console.log(`🔍 calculateFinalExpenseQuote called with: coverageAmount=${coverageAmount}, age=${age}, gender=${gender}`);
+    
+    // Get the appropriate gender table
+    const genderTable = finalExpenseData[gender as keyof typeof finalExpenseData];
+    if (!genderTable) {
+      console.error('❌ Invalid gender for Final Expense:', gender);
+      return 0;
+    }
+    
+    console.log(`✅ Gender table found for Final Expense: ${gender}`);
+    
+    // Find the appropriate age
+    if (!genderTable[age]) {
+      console.error('❌ Age out of range for Final Expense:', age);
+      console.error('❌ Available ages:', Object.keys(genderTable).join(', '));
+      return 0;
+    }
+    
+    const ageRates = genderTable[age];
+    console.log(`✅ Age rates found for age ${age}:`, ageRates);
+    
+    // Find the appropriate coverage amount
+    const coverages = Object.keys(ageRates).map(Number).sort((a, b) => a - b);
+    console.log(`🔍 Available coverages: ${coverages.join(', ')}`);
+    
+    // Check if coverage amount is exactly available
+    if (ageRates[coverageAmount]) {
+      const premium = ageRates[coverageAmount];
+      console.log(`✅ Exact coverage match - Coverage: ${coverageAmount}, Premium: ${premium}`);
+      return premium;
+    }
+    
+    // Find the closest coverage range for interpolation
+    let lowerCoverage = coverages[0];
+    let upperCoverage = coverages[coverages.length - 1];
+    
+    for (let i = 0; i < coverages.length - 1; i++) {
+      if (coverageAmount > coverages[i] && coverageAmount < coverages[i + 1]) {
+        lowerCoverage = coverages[i];
+        upperCoverage = coverages[i + 1];
+        break;
+      }
+    }
+    
+    // If coverage is outside the range, use the closest boundary
+    if (coverageAmount <= lowerCoverage) {
+      const premium = ageRates[lowerCoverage];
+      console.log(`✅ Using lower boundary - Coverage: ${lowerCoverage}, Premium: ${premium}`);
+      return premium;
+    }
+    
+    if (coverageAmount >= upperCoverage) {
+      const premium = ageRates[upperCoverage];
+      console.log(`✅ Using upper boundary - Coverage: ${upperCoverage}, Premium: ${premium}`);
+      return premium;
+    }
+    
+    // Interpolate between the two closest coverage amounts
+    const lowerPremium = ageRates[lowerCoverage];
+    const upperPremium = ageRates[upperCoverage];
+    
+    const interpolationFactor = (coverageAmount - lowerCoverage) / (upperCoverage - lowerCoverage);
+    const interpolatedPremium = Math.round(lowerPremium + (interpolationFactor * (upperPremium - lowerPremium)));
+    
+    console.log(`✅ Interpolated Final Expense premium - Factor: ${interpolationFactor.toFixed(3)}, Premium: ${interpolatedPremium}`);
+    return interpolatedPremium;
+    
+  } catch (error) {
+    console.error('❌ Error calculating Final Expense quote:', error);
+    return 0;
+  }
+}
+
+// Calculate quote based on insurance type
+export const calculateQuote = (coverageAmount: number, age: number, gender: string = 'male'): { premium: number, type: 'IUL' | 'Final Expense' } => {
+  const insuranceType = getInsuranceType(age);
+  
+  if (insuranceType === 'IUL') {
+    const premium = calculateIULQuote(coverageAmount, age, gender);
+    return { premium, type: 'IUL' };
+  } else {
+    const premium = calculateFinalExpenseQuote(coverageAmount, age, gender);
+    return { premium, type: 'Final Expense' };
+  }
+}
+
 // Determine insurance type based on age
 export const getInsuranceType = (age: number): 'IUL' | 'Final Expense' => {
-  return age <= 75 ? 'IUL' : 'Final Expense'
+  return age <= 60 ? 'IUL' : 'Final Expense'
 }
 
 // Calculate health tier based on medical answers

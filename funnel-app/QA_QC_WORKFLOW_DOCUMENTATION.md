@@ -1,357 +1,439 @@
-# Veteran Legacy Life Funnel - QA/QC Workflow Documentation
+# QA/QC Workflow Documentation - Veteran Life Insurance Funnel
 
-## Overview
-This document details the complete funnel workflow, including all steps, their functionality, data collection, navigation, and email triggers. Use this as the single source of truth when making changes.
+## **CORRECT FUNNEL FLOW (18 Steps Total)**
 
-## Step-by-Step Workflow
+### **Step-by-Step Flow:**
+```
+1. State Selection
+2. Military Status  
+3. Branch of Service
+4. Marital Status
+5. Coverage Amount
+6. Contact Information (Name, Email, Phone, Consents)
+7. Date of Birth (Birthday component)
+8. Tobacco Use
+9. Medical Conditions
+10. Height & Weight
+11. Hospital Care
+12. Diabetes Medication
+13. Loading Screen (Pre-qualification processing)
+14. Pre-Qualified Success Modal
+15. IUL Quote Modal (when clicking "Complete Application")
+16. Application Step 1 (Address, Beneficiary info)
+17. Application Step 2 (SSN, Banking, Policy Date)  
+18. Final Success Modal
+```
 
-### **Step 1: StateSelection**
-- **Component**: `StateSelection.tsx`
-- **Question**: "What state do you live in?"
-- **Data Variable**: `formData.state`
-- **Google Sheet Column**: `STATE` (column 12)
-- **Buttons**: Back (disabled), Continue
-- **Auto-Advance**: Yes (500ms delay when state selected)
-- **Validation**: Must select a state
-- **Navigation**: Step 1 → Step 2
+## **COMPREHENSIVE TESTING SCENARIOS**
 
-### **Step 2: MilitaryStatus**
-- **Component**: `MilitaryStatus.tsx`
-- **Question**: "Military Status" (radio buttons)
-- **Data Variable**: `formData.militaryStatus`
-- **Google Sheet Column**: `MILITARY_STATUS` (column 13)
-- **Buttons**: Back, Continue
-- **Auto-Advance**: Yes (500ms delay when selection made)
-- **Validation**: Must select military status
-- **Navigation**: Step 2 → Step 3
+### **Test Scenario 1: Complete Application Flow**
 
-### **Step 3: BranchOfService**
-- **Component**: `BranchOfService.tsx`
-- **Question**: "Branch of Service" (radio buttons)
-- **Data Variable**: `formData.branchOfService`
-- **Google Sheet Column**: `BRANCH` (column 14)
-- **Buttons**: Back, Continue
-- **Auto-Advance**: Yes (500ms delay when selection made)
-- **Validation**: Must select branch
-- **Navigation**: Step 3 → Step 4
+#### **Step-by-Step Test:**
+1. **Complete Pre-Qualification (Steps 1-14):**
+   - State: `California`
+   - Military Status: `Veteran` 
+   - Branch: `Army`
+   - Marital Status: `Married`
+   - Coverage Amount: `$100,000`
+   - First Name: `John`, Last Name: `TestLead`
+   - Email: `john.testlead@example.com`
+   - Phone: `(555) 123-4567`
+   - Transactional Consent: ✅, Marketing Consent: ✅
+   - DOB: `01/15/1985`
+   - Tobacco: `No`, Medical Conditions: `None`
+   - Height: `5'10"`, Weight: `180 lbs`
+   - Hospital Care: `No`, Diabetes Meds: `No`
+   
+2. **IUL Quote Modal (Step 15):**
+   - Verify quote displays correctly
+   - Click "Lock in This Rate"
+   
+3. **Application Step 1 (Step 16):**
+   - Street Address: `123 Test Street`
+   - City: `Test City`
+   - State: `CA`
+   - ZIP Code: `90210`
+   - Beneficiary Name: `Jane TestLead`
+   - Beneficiary Relationship: `Spouse`
+   - Click "Continue"
+   
+4. **Application Step 2 (Step 17):**
+   - SSN: `123-45-6789`
+   - Bank Name: `Test Bank`
+   - Routing Number: `123456789`
+   - Account Number: `987654321`
+   - Policy Start Date: `02/01/2025`
+   - Click "Submit Application"
+   
+5. **Final Success Modal (Step 18):**
+   - Verify success message displays
+   - Verify all data is correct
 
-### **Step 4: MaritalStatus**
-- **Component**: `MaritalStatus.tsx`
-- **Question**: "Marital Status" (radio buttons: Single, Married, Divorced, Widowed)
-- **Data Variable**: `formData.maritalStatus`
-- **Google Sheet Column**: `MARITAL_STATUS` (column 15)
-- **Buttons**: Back, Continue
-- **Auto-Advance**: Yes (500ms delay when selection made)
-- **Validation**: Must select marital status
-- **Navigation**: Step 4 → Step 5
+#### **CRITICAL: Complete Google Sheet Verification (All 50 Columns):**
 
-### **Step 5: CoverageAmount**
-- **Component**: `CoverageAmount.tsx`
-- **Question**: "Coverage Amount" (radio buttons: $10K, $25K, $50K, $100K, $250K, $500K, $1M)
-- **Data Variable**: `formData.coverageAmount`
-- **Google Sheet Column**: `COVERAGE_AMOUNT` (column 16)
-- **Buttons**: Back, Continue
-- **Auto-Advance**: Yes (500ms delay when selection made)
-- **Validation**: Must select coverage amount
-- **Navigation**: Step 5 → Step 6
-- **Email Trigger**: `submitLead()` - Sends initial lead data
+**Columns 1-4 (Core):**
+- [ ] Timestamp: `[Current DateTime]`
+- [ ] Session ID: `[UUID format]`
+- [ ] Status: `submitted`
+- [ ] Last Activity: `[Current DateTime]`
 
-### **Step 6: ContactInfo**
-- **Component**: `ContactInfo.tsx`
-- **Questions**: 
-  - First Name
-  - Last Name
-  - Email Address
-  - Phone Number
-  - Transactional Consent (checkbox)
-  - Marketing Consent (checkbox)
-- **Data Variables**: 
-  - `formData.contactInfo.firstName`
-  - `formData.contactInfo.lastName`
-  - `formData.contactInfo.email`
-  - `formData.contactInfo.phone`
-  - `formData.contactInfo.transactionalConsent`
-  - `formData.contactInfo.marketingConsent`
-- **Google Sheet Columns**: 
-  - `FIRST_NAME` (column 5)
-  - `LAST_NAME` (column 6)
-  - `EMAIL` (column 7)
-  - `PHONE` (column 8)
-  - `TRANSACTIONAL_CONSENT` (column 10)
-  - `MARKETING_CONSENT` (column 11)
-- **Buttons**: Back, Continue
-- **Auto-Advance**: Yes (500ms delay when all fields filled and valid)
-- **Validation**: All fields required, email format, phone format, both checkboxes must be checked
-- **Navigation**: Step 6 → Step 7
+**Columns 5-11 (Contact):**
+- [ ] First Name: `John`
+- [ ] Last Name: `TestLead`
+- [ ] Email: `john.testlead@example.com`
+- [ ] Phone: `(555) 123-4567`
+- [ ] DOB: `01/15/1985`
+- [ ] Transactional Consent: `TRUE`
+- [ ] Marketing Consent: `TRUE`
 
-### **Step 7: Birthday**
-- **Component**: `Birthday.tsx`
-- **Question**: "What is your date of birth?"
-- **Data Variable**: `formData.dateOfBirth` (top-level)
-- **Google Sheet Column**: `DOB` (column 9)
-- **Buttons**: Back, Continue
-- **Auto-Advance**: Yes (500ms delay when all fields filled)
-- **Validation**: Must be 18-100 years old, valid date format
-- **Navigation**: Step 7 → Step 8
+**Columns 12-16 (Pre-qualification):**
+- [ ] State: `California`
+- [ ] Military Status: `Veteran`
+- [ ] Branch: `Army`
+- [ ] Marital Status: `Married`
+- [ ] Coverage Amount: `$100,000`
 
-### **Step 8: TobaccoUse**
-- **Component**: `TobaccoUse.tsx`
-- **Question**: "Have you used any form of tobacco or nicotine in the past 12 months?" (radio buttons: Yes/No)
-- **Data Variable**: `formData.medicalAnswers.tobaccoUse`
-- **Google Sheet Column**: `TOBACCO_USE` (column 17)
-- **Buttons**: Back, Continue
-- **Auto-Advance**: Yes (500ms delay when selection made)
-- **Validation**: Must select yes/no
-- **Navigation**: Step 8 → Step 9
+**Columns 17-22 (Medical):**
+- [ ] Tobacco Use: `No`
+- [ ] Medical Conditions: `None`
+- [ ] Height: `5'10"`
+- [ ] Weight: `180 lbs`
+- [ ] Hospital Care: `No`
+- [ ] Diabetes Medication: `No`
 
-### **Step 9: MedicalConditions**
-- **Component**: `MedicalConditions.tsx`
-- **Question**: "Have you ever been diagnosed with or treated for any of the following? (Check all that apply)" (checkboxes)
-- **Data Variable**: `formData.medicalAnswers.medicalConditions` (array)
-- **Google Sheet Column**: `MEDICAL_CONDITIONS` (column 18)
-- **Buttons**: Back, Continue
-- **Auto-Advance**: No (manual continue required)
-- **Validation**: Must select at least one condition
-- **Navigation**: Step 9 → Step 10
+**Columns 23-34 (Application) - Based on Steps 16-17:**
+- [ ] Street Address: `123 Test Street`
+- [ ] City: `Test City`
+- [ ] Application State: `CA`
+- [ ] ZIP Code: `90210`
+- [ ] Beneficiary Name: `Jane TestLead`
+- [ ] Beneficiary Relationship: `Spouse`
+- [ ] VA Number: `(empty - not collected in current funnel)`
+- [ ] Service Connected: `(empty - not collected in current funnel)`
+- [ ] SSN: `123-45-6789`
+- [ ] Bank Name: `Test Bank`
+- [ ] Routing Number: `123456789`
+- [ ] Account Number: `987654321`
 
-### **Step 10: HeightWeight**
-- **Component**: `HeightWeight.tsx`
-- **Questions**: 
-  - Height (ft/in)
-  - Weight (lbs)
-- **Data Variables**: 
-  - `formData.medicalAnswers.height`
-  - `formData.medicalAnswers.weight`
-- **Google Sheet Columns**: 
-  - `HEIGHT` (column 19)
-  - `WEIGHT` (column 20)
-- **Buttons**: Back, Continue
-- **Auto-Advance**: Yes (500ms delay when both filled)
-- **Validation**: Both height and weight required
-- **Navigation**: Step 10 → Step 11
+**Columns 35-40 (Quote):**
+- [ ] Policy Date: `02/01/2025` (from Step 17)
+- [ ] Quote Coverage: `100000`
+- [ ] Quote Premium: `[Calculated Amount]`
+- [ ] Quote Age: `39`
+- [ ] Quote Gender: `[From Form]`
+- [ ] Quote Type: `IUL`
 
-### **Step 11: HospitalCare**
-- **Component**: `HospitalCare.tsx`
-- **Question**: "Are you currently in a hospital, nursing home, or receiving hospice care?" (radio buttons: Yes/No)
-- **Data Variable**: `formData.medicalAnswers.hospitalCare`
-- **Google Sheet Column**: `HOSPITAL_CARE` (column 21)
-- **Buttons**: Back, Continue
-- **Auto-Advance**: Yes (500ms delay when selection made)
-- **Validation**: Must select yes/no
-- **Navigation**: Step 11 → Step 12
+**Columns 41-48 (Tracking):**
+- [ ] Current Step: `18`
+- [ ] Step Name: `FinalSuccessModal`
+- [ ] Form Type: `Application`
+- [ ] User Agent: `[Browser Info]`
+- [ ] Referrer: `[Page URL]`
+- [ ] UTM Source: `[If Present]`
+- [ ] UTM Medium: `[If Present]`
+- [ ] UTM Campaign: `[If Present]`
 
-### **Step 12: DiabetesMedication**
-- **Component**: `DiabetesMedication.tsx`
-- **Question**: "Do you take medication for diabetes?" (radio buttons: No, Yes I take pills, Yes I take insulin)
-- **Data Variable**: `formData.medicalAnswers.diabetesMedication`
-- **Google Sheet Column**: `DIABETES_MEDICATION` (column 22)
-- **Buttons**: Back, Continue
-- **Auto-Advance**: Yes (500ms delay when selection made)
-- **Validation**: Must select an option
-- **Navigation**: Step 12 → Step 13
-- **Email Trigger**: `submitLeadPartial()` - Sends partial lead data
+**Columns 49-50 (Email Status):**
+- [ ] Partial Email Sent: `FALSE`
+- [ ] Completed Email Sent: `TRUE`
 
-### **Step 13: LoadingScreen**
-- **Component**: `StreamingLoadingSpinner` (with logo)
-- **Function**: Processing animation with typing effect
-- **Data Variables**: None (display only)
-- **Google Sheet Columns**: None
-- **Buttons**: None (auto-advance only)
-- **Auto-Advance**: Yes (8 seconds total duration)
-- **Validation**: None
-- **Navigation**: Step 13 → Step 14
+### **Test Scenario 2: Partial Lead (Pre-Qualification Only)**
 
-### **Step 14: PreQualifiedSuccess**
-- **Component**: `PreQualifiedSuccess.tsx`
-- **Function**: Success message with "Complete Application" button
-- **Data Variables**: None (display only)
-- **Google Sheet Columns**: None
-- **Buttons**: "Complete Application" (custom button)
-- **Auto-Advance**: No
-- **Validation**: None
-- **Navigation**: Step 14 → Step 15 (via custom button)
+#### **Step-by-Step Test:**
+1. **Complete Steps 1-14 (Pre-Qualification):**
+   - Use same data as Test Scenario 1
+   - Stop at Pre-Qualified Success Modal
+   - Do NOT click "Complete Application"
 
-### **Step 15: IULQuoteModal**
-- **Component**: `IULQuoteModal.tsx`
-- **Function**: Display personalized IUL quote with coverage slider
-- **Data Variables**: 
-  - `formData.applicationData.quoteData.coverageAmount`
-  - `formData.applicationData.quoteData.monthlyPremium`
-  - `formData.applicationData.quoteData.userAge`
-  - `formData.applicationData.quoteData.userGender`
-  - `formData.applicationData.quoteData.quoteType`
-- **Google Sheet Columns**: 
-  - `QUOTE_COVERAGE` (column 36)
-  - `QUOTE_PREMIUM` (column 37)
-  - `QUOTE_AGE` (column 38)
-  - `QUOTE_GENDER` (column 39)
-  - `QUOTE_TYPE` (column 40)
-- **Buttons**: "Secure Your Rate" (custom button)
-- **Auto-Advance**: No
-- **Validation**: None
-- **Navigation**: Step 15 → Step 16 (via custom button)
+#### **Expected Google Sheet Verification:**
+- [ ] Status: `pre-qualified`
+- [ ] All pre-qualification data populated (columns 5-22)
+- [ ] Application data empty (columns 23-40)
+- [ ] Partial Email Sent: `TRUE`
+- [ ] Completed Email Sent: `FALSE`
 
-### **Step 16: ApplicationStep1**
-- **Component**: `ApplicationStep1.tsx`
-- **Questions**: 
-  - Street Address
-  - City
-  - State
-  - Zip Code
-  - Beneficiary Name
-  - Beneficiary Relationship
-- **Data Variables**: 
-  - `formData.applicationData.address.street`
-  - `formData.applicationData.address.city`
-  - `formData.applicationData.address.state`
-  - `formData.applicationData.address.zipCode`
-  - `formData.applicationData.beneficiary.name`
-  - `formData.applicationData.beneficiary.relationship`
-- **Google Sheet Columns**: 
-  - `STREET_ADDRESS` (column 23)
-  - `CITY` (column 24)
-  - `APPLICATION_STATE` (column 25)
-  - `ZIP_CODE` (column 26)
-  - `BENEFICIARY_NAME` (column 27)
-  - `BENEFICIARY_RELATIONSHIP` (column 28)
-- **Buttons**: Back, Continue
-- **Auto-Advance**: No
-- **Validation**: All fields required
-- **Navigation**: Step 16 → Step 17
+### **Test Scenario 3: Lead Partial (Medical Questions Only)**
 
-### **Step 17: ApplicationStep2**
-- **Component**: `ApplicationStep2.tsx`
-- **Questions**: 
-  - SSN
-  - Bank Name
-  - Routing Number
-  - Account Number
-  - Policy Date
-- **Data Variables**: 
-  - `formData.applicationData.ssn`
-  - `formData.applicationData.banking.bankName`
-  - `formData.applicationData.banking.routingNumber`
-  - `formData.applicationData.banking.accountNumber`
-  - `formData.applicationData.policyDate`
-- **Google Sheet Columns**: 
-  - `SSN` (column 32)
-  - `BANK_NAME` (column 33)
-  - `ROUTING_NUMBER` (column 34)
-  - `ACCOUNT_NUMBER` (column 35)
-  - `POLICY_DATE` (column 41)
-- **Buttons**: Back, Submit
-- **Auto-Advance**: No
-- **Validation**: All fields required
-- **Navigation**: Step 17 → Step 18
-- **Email Trigger**: `submitApplication()` - Sends final application data
+#### **Step-by-Step Test:**
+1. **Complete Steps 1-6 (Contact Info):**
+   - Stop after providing contact information
+   - Close browser or abandon
 
-### **Step 18: FinalSuccessModal**
-- **Component**: `FinalSuccessModal.tsx`
-- **Function**: Final success message
-- **Data Variables**: None (display only)
-- **Google Sheet Columns**: None
-- **Buttons**: None (modal close only)
-- **Auto-Advance**: No
-- **Validation**: None
-- **Navigation**: Modal closes
+#### **Expected Google Sheet Verification:**
+- [ ] Status: `active`
+- [ ] Contact data populated (columns 5-11)
+- [ ] Pre-qualification data empty (columns 12-16)
+- [ ] Medical data empty (columns 17-22)
+- [ ] Application data empty (columns 23-40)
+- [ ] Partial Email Sent: `TRUE` (if phone provided)
+- [ ] Completed Email Sent: `FALSE`
 
-## Email Triggers
+### **Test Scenario 4: Application Data Verification (Steps 16-17)**
 
-### **Partial Lead Email** (Step 12)
-- **Trigger**: After DiabetesMedication step
-- **Function**: `submitLeadPartial()`
-- **Data**: All form data up to medical questions
-- **Google Apps Script**: `handleLeadPartialSubmission()`
+#### **Test Step 16 Data Collection:**
+1. **Address Information:**
+   - Street Address: `456 Application St`
+   - City: `App City`
+   - State: `TX`
+   - ZIP Code: `75201`
+   - Verify appears in columns 23-26
 
-### **Final Application Email** (Step 17)
-- **Trigger**: After ApplicationStep2 submission
-- **Function**: `submitApplication()`
-- **Data**: Complete application data
-- **Google Apps Script**: `handleApplicationSubmission()`
+2. **Beneficiary Information:**
+   - Beneficiary Name: `John Beneficiary`
+   - Relationship: `Son`
+   - Verify appears in columns 27-28
 
-## Auto-Advance Behavior
+#### **Test Step 17 Data Collection:**
+1. **Financial Information:**
+   - SSN: `987-65-4321`
+   - Bank Name: `Application Bank`
+   - Routing: `987654321`
+   - Account: `123456789`
+   - Policy Date: `03/01/2025`
+   - Verify appears in columns 31-34 and 35
 
-### **Auto-Advance Enabled Steps**:
-- Step 1 (StateSelection): 500ms delay when state selected
-- Step 2 (MilitaryStatus): 500ms delay when selection made
-- Step 3 (BranchOfService): 500ms delay when selection made
-- Step 4 (MaritalStatus): 500ms delay when selection made
-- Step 5 (CoverageAmount): 500ms delay when selection made
-- Step 6 (ContactInfo): 500ms delay when all fields filled and valid
-- Step 7 (Birthday): 500ms delay when all fields filled
-- Step 8 (TobaccoUse): 500ms delay when selection made
-- Step 10 (HeightWeight): 500ms delay when both fields filled
-- Step 11 (HospitalCare): 500ms delay when selection made
-- Step 12 (DiabetesMedication): 500ms delay when selection made
-- Step 13 (LoadingScreen): 8 seconds
+### **Test Scenario 5: Banking Information Security Test (Step 17)**
 
-### **Manual Navigation Steps**:
-- Step 9 (MedicalConditions): Manual Continue button (checkboxes require manual selection)
-- Step 14 (PreQualifiedSuccess): Custom "Complete Application" button
-- Step 15 (IULQuoteModal): Custom "Secure Your Rate" button
-- Steps 16-17: Manual Continue/Submit buttons
-- Step 18: Modal close only
+#### **Verify Sensitive Data Handling:**
+- [ ] SSN appears in column 31 (from Step 17)
+- [ ] Banking info appears in columns 32-34 (from Step 17)
+- [ ] Policy date appears in column 35 (from Step 17)
+- [ ] Verify data is properly secured
+- [ ] Check for any data truncation
+- [ ] Verify no data leakage in logs
 
-## Configuration Management
+### **Test Scenario 6: Abandonment Trigger Testing**
 
-### **Global Configuration Files**:
-- **Primary**: `funnel-app/src/config/globalConfig.ts` - Main configuration for React app
-- **Legacy**: `js/config.js` - Configuration for legacy JavaScript code
-- **Google Apps Script**: `funnel-app/google-apps-script-react-funnel.js` - CONFIG section at top
+#### **Test A: Abandon Before Phone (No Email):**
+1. Complete steps 1-4 (before contact info)
+2. Close browser
+3. Verify NO abandonment email sent
+4. Verify session status is `active`
 
-### **Configuration Values to Update**:
-- **Google Apps Script URL**: Update in all three config files when deploying new version
-- **Email Addresses**: 
-  - Admin email (where notifications are sent)
-  - From email (sender)
-  - To email (recipient) - change to actual user email when authorized
-  - Reply-to email
-- **Google Sheet ID**: Found in the URL of the Google Sheet
-- **Company Information**: Name, phone, website
+#### **Test B: Abandon After Phone (Trigger Email):**
+1. Complete through step 6 (contact info with phone)
+2. Close browser
+3. Wait 30+ seconds
+4. Trigger abandonment detection
+5. Verify abandonment email sent
+6. Verify session status is `phone_captured`
 
-### **Configuration Update Checklist**:
-- [ ] Update `globalConfig.ts` with new values
-- [ ] Update `js/config.js` with new Google Apps Script URL
-- [ ] Update `google-apps-script-react-funnel.js` CONFIG section
-- [ ] Rebuild React app (`npm run build`)
-- [ ] Copy new files to parent directory
-- [ ] Update cache-busting version in `index.html`
-- [ ] Test email functionality
-- [ ] Verify Google Sheet integration
+#### **Test C: Abandon After Pre-Qualified (Still Send Email):**
+1. Complete through step 14 (pre-qualified)
+2. Close browser before clicking "Complete Application"
+3. Trigger abandonment detection
+4. Verify abandonment email sent (user had phone)
 
-## Button Visibility Rules
+#### **Test D: Complete Application (No Abandonment Email):**
+1. Complete full application (step 18)
+2. Trigger abandonment detection
+3. Verify NO abandonment email sent
+4. Verify only completion email sent
 
-### **Standard Back/Continue Buttons Hidden For**:
-- Step 13 (LoadingScreen): No buttons (auto-advance only)
-- Step 15 (IULQuoteModal): No buttons (custom "Secure Your Rate" button)
+## **EMAIL VERIFICATION CHECKLISTS**
 
-### **Progress Bar Hidden For**:
-- Step 13 (LoadingScreen): No progress bar
+### **Complete Email Verification Checklist:**
 
-## Data Flow Summary
+#### **Admin Application Email:**
+- [ ] Subject: `New React Funnel Application: John`
+- [ ] Contains ALL application data including:
+  - [ ] Address and beneficiary information from Step 16
+  - [ ] SSN: `123-45-6789` from Step 17
+  - [ ] Full banking information from Step 17
+  - [ ] Policy start date from Step 17
+  - [ ] Quote information from Step 15
 
-### **Phase 1: Pre-Qualification** (Steps 1-12)
-- Collects basic info, contact details, medical questions
-- Sends partial lead data after Step 12
+#### **User Confirmation Email:**
+- [ ] Subject: `Your application has been submitted successfully`
+- [ ] Contains quote summary
+- [ ] Contains next steps
+- [ ] Contains correct company phone: `(800) VET-INSURANCE`
 
-### **Phase 2: Quote & Application** (Steps 13-18)
-- Shows loading screen with logo
-- Displays personalized IUL quote
-- Collects application data
-- Sends final application data after Step 17
+#### **Admin Lead Email:**
+- [ ] Subject: `New React Funnel Lead: John`
+- [ ] Contains pre-qualification data
+- [ ] Contains contact information
+- [ ] Contains medical information
 
-## Change Management Process
+#### **Abandonment Email:**
+- [ ] Subject: `Lead Abandonment Alert: John`
+- [ ] Contains all available data
+- [ ] Only sent when phone number is captured
+- [ ] Not sent for completed applications
 
-1. **Update this QA/QC document first** with the proposed changes
-2. **Create/update the TSX component** in `funnel-app/src/components/steps/`
-3. **Update FunnelModal.tsx** with new step mapping
-4. **Update funnelStore.ts** with new validation logic
-5. **Update Google Apps Script** if new data fields are added
-6. **Test the complete flow** to ensure no functionality is broken
+## **AUTO-ADVANCE BEHAVIOR**
 
-## Notes
-- All steps use `useFunnelStore` for state management
-- Google Apps Script expects specific column mappings
-- Auto-advance can be disabled by user interaction
-- Email triggers are automatic based on step completion
-- Button visibility is controlled by FunnelModal.tsx 
+### **Steps with Auto-Advance:**
+- [ ] **ContactInfo (Step 6):** Auto-advances when all required fields filled
+- [ ] **Birthday (Step 7):** Auto-advances when all dropdowns selected
+- [ ] **HeightWeight (Step 10):** Auto-advances when both height and weight selected
+- [ ] **LoadingScreen (Step 13):** Auto-advances after processing
+- [ ] **IULQuoteModal (Step 15):** Manual advance only (user must click "Lock in This Rate")
+
+### **Steps with Manual Advance Only:**
+- [ ] **StateSelection (Step 1):** Manual advance
+- [ ] **MilitaryStatus (Step 2):** Manual advance
+- [ ] **BranchOfService (Step 3):** Manual advance
+- [ ] **MaritalStatus (Step 4):** Manual advance
+- [ ] **CoverageAmount (Step 5):** Manual advance
+- [ ] **TobaccoUse (Step 8):** Manual advance
+- [ ] **MedicalConditions (Step 9):** Manual advance
+- [ ] **HospitalCare (Step 11):** Manual advance
+- [ ] **DiabetesMedication (Step 12):** Manual advance
+- [ ] **PreQualifiedSuccess (Step 14):** Manual advance
+- [ ] **ApplicationStep1 (Step 16):** Manual advance
+- [ ] **ApplicationStep2 (Step 17):** Manual advance
+- [ ] **FinalSuccessModal (Step 18):** Manual close
+
+## **CONFIGURATION MANAGEMENT**
+
+### **Global Configuration Files:**
+- **PRIMARY SOURCE OF TRUTH**: `funnel-app/src/config/globalConfig.ts` - Main configuration for React app
+- **Legacy**: `js/config.js` - Must be updated to match globalConfig.ts values
+- **Google Apps Script**: `funnel-app/google-apps-script-react-funnel.js` - CONFIG section must match globalConfig.ts
+
+**IMPORTANT**: All configuration values should be sourced from `globalConfig.ts`. Other config files must be manually synchronized with these values.
+
+### **Configuration Validation Process:**
+1. **Verify globalConfig.ts Values**: Check all configuration values in the primary config file
+2. **Sync Legacy Config**: Update `js/config.js` to match globalConfig.ts
+3. **Sync Google Apps Script**: Update CONFIG object in Google Apps Script
+4. **Rebuild and Deploy**: Run `npm run build` and deploy updated files
+5. **Test Integration**: Verify all systems use the same configuration values
+
+## **⚠️ CRITICAL: Configuration Sync Requirements**
+
+**BEFORE RUNNING ANY TESTS:**
+
+1. **Verify globalConfig.ts is authoritative source**
+2. **Update Google Apps Script CONFIG object** to match globalConfig.ts exactly
+3. **Update legacy js/config.js** to match globalConfig.ts URL
+4. **Rebuild React app**: `npm run build`
+5. **Deploy all updated files**
+
+**Common Sync Issues:**
+- ❌ Admin emails don't match between globalConfig.ts and Google Apps Script  
+- ❌ Google Apps Script URL outdated in legacy config files
+- ❌ Sheet ID mismatch between configurations
+- ❌ Phone number format inconsistent
+
+**Verification Command:**
+```javascript
+// Run in Google Apps Script to verify CONFIG matches globalConfig.ts
+Logger.log('Admin Email (should be lindsey08092@gmail.com):', CONFIG.EMAIL.ADMIN);
+Logger.log('Sheet ID:', CONFIG.GOOGLE_SHEET.SHEET_ID);
+Logger.log('Company Phone:', CONFIG.COMPANY.PHONE);
+```
+
+### **Global Configuration Variables:**
+**NOTE: All configuration values are defined in `funnel-app/src/config/globalConfig.ts`**
+
+- [ ] **Google Apps Script URL:** Verify matches `GLOBAL_CONFIG.GOOGLE_APPS_SCRIPT_URL`
+- [ ] **Email From:** Verify matches `GLOBAL_CONFIG.EMAIL.FROM`
+- [ ] **Email To:** Verify matches `GLOBAL_CONFIG.EMAIL.TO`
+- [ ] **Google Sheet ID:** Verify matches `GLOBAL_CONFIG.GOOGLE_SHEET.SHEET_ID`
+- [ ] **Company Phone:** Verify matches `GLOBAL_CONFIG.COMPANY.PHONE`
+- [ ] **Company Phone (Dialable):** Verify matches `GLOBAL_CONFIG.COMPANY.PHONE_DIALABLE`
+
+**Current Values (from globalConfig.ts):**
+- Google Apps Script URL: `https://script.google.com/macros/s/AKfycbxcWggxWdEJzsSW_noiLBbfP6ovmTHWLRIDnWvc6jAj4-1HV_sEp9OBw4UCvXBsEu3M/exec`
+- Admin Email: `lindsey08092@gmail.com`
+- Email From: `lindsey08092@gmail.com`
+- Email To: `lindsey08092@gmail.com`
+- Email Reply-To: `lindsey08092@gmail.com`
+- Google Sheet ID: `1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms`
+- Company Phone: `(800) VET-INSURANCE`
+- Company Phone (Dialable): `180083847467`
+
+### **Configuration Update Checklist:**
+- [ ] **PRIMARY**: Update `globalConfig.ts` with new values (SINGLE SOURCE OF TRUTH)
+- [ ] **SYNC**: Update `js/config.js` to match globalConfig.ts values
+- [ ] **SYNC**: Update `google-apps-script-react-funnel.js` CONFIG section to match globalConfig.ts
+- [ ] **VERIFY**: Ensure all three config files have identical values
+- [ ] **TEST**: Test all email functionality
+- [ ] **VERIFY**: Verify Google Sheet integration
+- [ ] **UPDATE**: Update cache-busting version in `index.html`
+
+## **GOOGLE APPS SCRIPT TESTING FUNCTIONS**
+
+### **Available Test Functions:**
+- [ ] `runCompleteQATest()` - Comprehensive end-to-end test
+- [ ] `verifyTestDataInSheet(sessionId)` - Verify data in specific row
+- [ ] `testAbandonmentScenarios()` - Test all abandonment scenarios
+- [ ] `testAllEmailScenarios()` - Test all email functionality
+- [ ] `fixSheetStructureNow()` - Fix sheet structure to 50 columns
+- [ ] `cleanupTestSessions()` - Remove test data
+
+### **Testing Commands:**
+```javascript
+// Run comprehensive QA test
+runCompleteQATest()
+
+// Fix sheet structure
+fixSheetStructureNow()
+
+// Test abandonment scenarios
+testAbandonmentScenarios()
+
+// Test all email scenarios
+testAllEmailScenarios()
+
+// Clean up test data
+cleanupTestSessions()
+```
+
+## **SUCCESS CRITERIA**
+
+### **Data Integrity:**
+- [ ] **All 50 columns** populate with correct data
+- [ ] **No duplicate rows** created
+- [ ] **No data corruption** or loss
+- [ ] **All data types** correct (dates, numbers, booleans)
+
+### **Email Functionality:**
+- [ ] **Admin emails** sent for all scenarios
+- [ ] **User confirmation emails** sent for applications
+- [ ] **Abandonment emails** sent only when appropriate
+- [ ] **No email spam** or duplicate emails
+
+### **Performance:**
+- [ ] **Response time** < 10 seconds per submission
+- [ ] **No timeouts** or script errors
+- [ ] **Consistent behavior** across all scenarios
+- [ ] **Error handling** works properly
+
+### **Security:**
+- [ ] **Sensitive data** properly handled
+- [ ] **No data leakage** in logs
+- [ ] **Secure transmission** to Google Apps Script
+- [ ] **Proper validation** of all inputs
+
+## **TROUBLESHOOTING**
+
+### **Common Issues:**
+1. **Missing Data:** Check column mapping in `buildUnifiedRowData()`
+2. **Duplicate Rows:** Verify session ID handling
+3. **Email Failures:** Check CONFIG email settings
+4. **Sheet Structure:** Run `fixSheetStructureNow()`
+5. **Performance Issues:** Check Google Apps Script quotas
+
+### **Debug Commands:**
+```javascript
+// Check sheet structure
+validateSheetStructure()
+
+// Test specific function
+testDoPost()
+
+// Check email status
+checkSessionEmailStatus(sessionId, 'completed')
+
+// Verify data mapping
+buildUnifiedRowData(testData, sessionId)
+```
+
+---
+
+**Last Updated:** July 29, 2024  
+**Version:** 2.0 (Comprehensive QA/QC)  
+**Status:** Ready for Production Testing 

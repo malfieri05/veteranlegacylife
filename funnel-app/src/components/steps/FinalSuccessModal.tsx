@@ -3,122 +3,146 @@ import { useFunnelStore } from '../../store/funnelStore'
 
 export const FinalSuccessModal: React.FC = () => {
   const { formData, closeModal } = useFunnelStore()
-
-  const firstName = formData.contactInfo?.firstName || 'there'
-  const monthlyPremium = formData.applicationData?.quoteData?.monthlyPremium || 0
-  const coverageAmount = formData.applicationData?.quoteData?.coverageAmount || 0
-  const userAge = formData.applicationData?.quoteData?.userAge || 0
-  const userGender = formData.applicationData?.quoteData?.userGender || ''
-  const quoteType = formData.applicationData?.quoteData?.quoteType || 'IUL'
+  
+  const monthlyPremium = formData.quoteData?.monthlyPremium || 0
+  const coverageAmount = formData.quoteData?.coverageAmount || 0
+  const userAge = formData.quoteData?.userAge || 0
+  const userGender = formData.quoteData?.userGender || ''
+  const quoteType = formData.quoteData?.quoteType || 'IUL'
 
   return (
-    <div style={{ textAlign: 'center', padding: '2rem' }}>
+    <div style={{ textAlign: 'center', padding: '1.5rem', maxWidth: '600px', margin: '0 auto' }}>
+      {/* Success Icon and Title */}
       <div style={{ marginBottom: '2rem' }}>
         <div style={{ 
           fontSize: '3rem', 
-          color: '#10b981', 
-          marginBottom: '1rem',
-          fontWeight: 'bold'
+          marginBottom: '1rem'
         }}>
           🎉
         </div>
         <h2 style={{ 
           color: '#1e293b', 
-          fontSize: '2rem', 
+          fontSize: '1.8rem', 
           marginBottom: '1rem',
           fontWeight: '600'
         }}>
-          Let's Talk, {firstName}!
+          Let's Talk, {formData.contactInfo?.firstName || 'there'}!
         </h2>
         <p style={{ 
           color: '#64748b', 
-          fontSize: '1.1rem',
-          lineHeight: '1.6',
-          marginBottom: '2rem'
+          fontSize: '1rem',
+          lineHeight: '1.5',
+          marginBottom: '1.5rem'
         }}>
           Your application has been submitted successfully! A licensed insurance representative will contact you within 24 hours to finalize your policy.
         </p>
+      </div>
         
-        {/* Prominent Quote Display */}
+      {/* Prominent Quote Display - Fixed for better visibility */}
+      <div style={{ 
+        background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', 
+        color: 'white',
+        padding: '1.5rem',
+        borderRadius: '12px',
+        marginBottom: '1.5rem',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        border: '2px solid #2563eb'
+      }}>
         <div style={{ 
-          background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', 
-          color: 'white',
-          padding: '1.5rem',
-          borderRadius: '12px',
-          marginBottom: '2rem',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+          fontSize: '2.2rem', 
+          fontWeight: 'bold', 
+          marginBottom: '0.5rem',
+          textShadow: '0 1px 2px rgba(0,0,0,0.1)'
         }}>
-          <div style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-            ${monthlyPremium.toLocaleString()}/month
-          </div>
-          <p style={{ fontSize: '1rem', opacity: 0.9, margin: '0' }}>
-            for ${coverageAmount.toLocaleString()} in coverage
-          </p>
+          ${monthlyPremium.toLocaleString()}/month
+        </div>
+        <div style={{ 
+          fontSize: '1.1rem', 
+          fontWeight: '500',
+          opacity: 0.95,
+          margin: '0',
+          textShadow: '0 1px 2px rgba(0,0,0,0.1)'
+        }}>
+          for ${coverageAmount.toLocaleString()} in coverage
         </div>
       </div>
 
+      {/* Quote Summary - Compact and Clear */}
       <div style={{ 
-        background: '#f8fafc', 
-        padding: '1.5rem', 
+        background: '#ffffff', 
+        padding: '1.25rem', 
         borderRadius: '12px',
-        marginBottom: '2rem'
+        marginBottom: '1.5rem',
+        border: '1px solid #e2e8f0',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
       }}>
         <h3 style={{ 
           color: '#1e293b', 
-          fontSize: '1.2rem', 
+          fontSize: '1.1rem', 
           marginBottom: '1rem',
-          fontWeight: '600'
+          fontWeight: '600',
+          textAlign: 'center'
         }}>
-          Your Quote Summary:
+          Your Quote Summary
         </h3>
         <div style={{ 
           display: 'grid', 
           gridTemplateColumns: '1fr 1fr', 
-          gap: '1rem',
-          textAlign: 'left'
+          gap: '0.75rem',
+          textAlign: 'left',
+          fontSize: '0.9rem'
         }}>
-          <div>
-            <strong>Monthly Premium:</strong> ${monthlyPremium.toLocaleString()}
+          <div style={{ color: '#374151' }}>
+            <strong style={{ color: '#1e293b' }}>Monthly Premium:</strong><br />
+            <span style={{ color: '#059669', fontWeight: '600' }}>${monthlyPremium.toLocaleString()}</span>
           </div>
-          <div>
-            <strong>Coverage Amount:</strong> ${coverageAmount.toLocaleString()}
+          <div style={{ color: '#374151' }}>
+            <strong style={{ color: '#1e293b' }}>Coverage Amount:</strong><br />
+            <span style={{ color: '#059669', fontWeight: '600' }}>${coverageAmount.toLocaleString()}</span>
           </div>
-          <div>
-            <strong>Policy Type:</strong> {quoteType}
+          <div style={{ color: '#374151' }}>
+            <strong style={{ color: '#1e293b' }}>Policy Type:</strong><br />
+            <span style={{ color: '#059669', fontWeight: '600' }}>{quoteType}</span>
           </div>
-          <div>
-            <strong>Age:</strong> {userAge}
+          <div style={{ color: '#374151' }}>
+            <strong style={{ color: '#1e293b' }}>Age:</strong><br />
+            <span style={{ color: '#059669', fontWeight: '600' }}>{userAge}</span>
           </div>
-          <div>
-            <strong>Gender:</strong> {userGender === 'male' ? 'Male' : 'Female'}
+          <div style={{ color: '#374151' }}>
+            <strong style={{ color: '#1e293b' }}>Gender:</strong><br />
+            <span style={{ color: '#059669', fontWeight: '600' }}>{userGender === 'male' ? 'Male' : 'Female'}</span>
           </div>
-          <div>
-            <strong>Application Status:</strong> Submitted
+          <div style={{ color: '#374151' }}>
+            <strong style={{ color: '#1e293b' }}>Status:</strong><br />
+            <span style={{ color: '#059669', fontWeight: '600' }}>Submitted</span>
           </div>
         </div>
       </div>
 
+      {/* What Happens Next - More Compact */}
       <div style={{ 
         background: '#fef3c7', 
-        padding: '1.5rem',
+        padding: '1.25rem',
         borderRadius: '12px',
-        marginBottom: '2rem',
+        marginBottom: '1.5rem',
         border: '1px solid #f59e0b'
       }}>
         <h3 style={{ 
           color: '#92400e', 
-          fontSize: '1.1rem', 
-          marginBottom: '1rem',
-          fontWeight: '600'
+          fontSize: '1rem', 
+          marginBottom: '0.75rem',
+          fontWeight: '600',
+          textAlign: 'center'
         }}>
           What Happens Next?
         </h3>
         <ul style={{ 
           textAlign: 'left', 
           color: '#92400e',
-          lineHeight: '1.6',
+          lineHeight: '1.5',
           margin: '0',
-          paddingLeft: '1.5rem'
+          paddingLeft: '1.25rem',
+          fontSize: '0.9rem'
         }}>
           <li>You'll receive a confirmation email within 5 minutes</li>
           <li>A licensed agent will call you within 24 hours</li>
@@ -127,46 +151,59 @@ export const FinalSuccessModal: React.FC = () => {
         </ul>
       </div>
 
+      {/* Contact Information - More Compact */}
       <div style={{ 
         background: '#f0f9ff', 
-        padding: '1.5rem',
+        padding: '1.25rem',
         borderRadius: '12px',
-        marginBottom: '2rem',
+        marginBottom: '1.5rem',
         border: '1px solid #0ea5e9'
       }}>
         <h3 style={{ 
           color: '#0c4a6e', 
-          fontSize: '1.1rem', 
-          marginBottom: '1rem',
-          fontWeight: '600'
+          fontSize: '1rem', 
+          marginBottom: '0.75rem',
+          fontWeight: '600',
+          textAlign: 'center'
         }}>
           Need Immediate Assistance?
         </h3>
         <p style={{ 
           color: '#0c4a6e', 
-          fontSize: '1rem',
-          margin: '0'
+          fontSize: '0.9rem',
+          margin: '0',
+          textAlign: 'center'
         }}>
-          <strong>Call us now:</strong> (555) 123-4567<br />
+          <strong>Call us now:</strong> (800) VET-INSURANCE<br />
           <strong>Hours:</strong> Monday-Friday 8AM-6PM EST
         </p>
       </div>
 
+      {/* Close Button */}
       <button
-        onClick={closeModal}
+        onClick={() => closeModal()}
         style={{
           background: '#3b82f6',
           color: 'white',
           border: 'none',
-          padding: '1rem 2rem',
+          padding: '0.875rem 2rem',
           borderRadius: '8px',
-          fontSize: '1.1rem',
+          fontSize: '1rem',
           fontWeight: '600',
           cursor: 'pointer',
-          transition: 'background-color 0.3s ease'
+          transition: 'all 0.3s ease',
+          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
         }}
-        onMouseOver={(e) => e.currentTarget.style.background = '#2563eb'}
-        onMouseOut={(e) => e.currentTarget.style.background = '#3b82f6'}
+        onMouseOver={(e) => {
+          e.currentTarget.style.background = '#2563eb'
+          e.currentTarget.style.transform = 'translateY(-1px)'
+          e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.15)'
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.background = '#3b82f6'
+          e.currentTarget.style.transform = 'translateY(0)'
+          e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)'
+        }}
       >
         Close
       </button>

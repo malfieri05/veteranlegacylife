@@ -53,7 +53,7 @@ export const FunnelModal: React.FC = () => {
         return <ContactInfo />
       case 7:
         return <Birthday />
-            case 8:
+      case 8:
         return <TobaccoUse />
       case 9:
         return <MedicalConditions />
@@ -106,7 +106,7 @@ export const FunnelModal: React.FC = () => {
         return validation.isValid
       case 7:
         return !!formData.dateOfBirth
-            case 8:
+      case 8:
         return !!formData.medicalAnswers?.tobaccoUse
       case 9:
         return formData.medicalAnswers?.medicalConditions && formData.medicalAnswers.medicalConditions.length > 0
@@ -123,18 +123,9 @@ export const FunnelModal: React.FC = () => {
       case 15:
         return true // IUL Quote Modal - can always proceed
       case 16:
-        return !!formData.applicationData?.address?.street && 
-               !!formData.applicationData?.address?.city && 
-               !!formData.applicationData?.address?.state && 
-               !!formData.applicationData?.address?.zipCode &&
-               !!formData.applicationData?.beneficiary?.name &&
-               !!formData.applicationData?.beneficiary?.relationship
+        return isApplicationStep1Complete()
       case 17:
-        return !!formData.applicationData?.ssn &&
-               !!formData.applicationData?.banking?.bankName &&
-               !!formData.applicationData?.banking?.routingNumber &&
-               !!formData.applicationData?.banking?.accountNumber &&
-               !!formData.applicationData?.policyDate
+        return isApplicationStep2Complete()
       case 18:
         return true // Final success - can always proceed
       default:
@@ -152,6 +143,24 @@ export const FunnelModal: React.FC = () => {
 
   const handleBack = () => {
     goToPreviousStep()
+  }
+
+  const isApplicationStep1Complete = () => {
+    return !!formData.streetAddress &&
+           !!formData.city &&
+           !!formData.applicationState &&
+           !!formData.zipCode &&
+           !!formData.beneficiaryName &&
+           !!formData.beneficiaryRelationship &&
+           !!formData.driversLicense
+  }
+
+  const isApplicationStep2Complete = () => {
+    return !!formData.ssn &&
+           !!formData.bankName &&
+           !!formData.routingNumber &&
+           !!formData.accountNumber &&
+           !!formData.policyDate
   }
 
   if (!isModalOpen) return null

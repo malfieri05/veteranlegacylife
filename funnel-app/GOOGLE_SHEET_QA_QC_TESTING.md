@@ -1,335 +1,443 @@
-# Google Sheet Integration & Email Functionality QA/QC Testing Guide
+# Google Sheet QA/QC Testing Documentation
 
-## Overview
-This document provides a systematic testing approach to verify that all modal data from the funnel is properly captured in the Google Sheet and that email functionality works correctly.
+## **PRE-TEST SETUP**
 
-## Pre-Test Setup
+### **Current Configuration Verification:**
+**NOTE: All configuration values are defined in `funnel-app/src/config/globalConfig.ts`**
 
-### 1. Google Sheet Verification
-- [ ] Open the Google Sheet: `1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms`
-- [ ] Verify the sheet has exactly 50 columns with proper headers
-- [ ] Run `fixSheetStructureNow()` in Google Apps Script if needed
-- [ ] Clear any test data from previous runs
+- [ ] **Google Apps Script URL:** Verify matches `GLOBAL_CONFIG.GOOGLE_APPS_SCRIPT_URL`
+- [ ] **Email From:** Verify matches `GLOBAL_CONFIG.EMAIL.FROM`  
+- [ ] **Email To:** Verify matches `GLOBAL_CONFIG.EMAIL.TO`
+- [ ] **Google Sheet ID:** Verify matches `GLOBAL_CONFIG.GOOGLE_SHEET.SHEET_ID`
+- [ ] **Company Phone:** Verify matches `GLOBAL_CONFIG.COMPANY.PHONE`
 
-### 2. Email Configuration Check
-- [ ] Verify admin email is set to: `lindsey08092@gmail.com`
-- [ ] Verify company phone is set to: `(800) VET-INSURANCE`
-- [ ] Verify Google Apps Script URL is current: `https://script.google.com/macros/s/AKfycbxcWggxWdEJzsSW_noiLBbfP6ovmTHWLRIDnWvc6jAj4-1HV_sEp9OBw4UCvXBsEu3M/exec`
+**Current Values (from globalConfig.ts):**
+- Google Apps Script URL: `https://script.google.com/macros/s/AKfycbxcWggxWdEJzsSW_noiLBbfP6ovmTHWLRIDnWvc6jAj4-1HV_sEp9OBw4UCvXBsEu3M/exec`
+- Admin Email: `lindsey08092@gmail.com`
+- Email From: `lindsey08092@gmail.com`
+- Email To: `lindsey08092@gmail.com`
+- Email Reply-To: `lindsey08092@gmail.com`
+- Google Sheet ID: `1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms`
+- Company Phone: `(800) VET-INSURANCE`
 
-## Test Scenarios
+### **Google Apps Script Functions Available:**
+- [ ] `runCompleteQATest()` - Comprehensive end-to-end test
+- [ ] `fixSheetStructureNow()` - Fix sheet structure to 50 columns
+- [ ] `testAbandonmentScenarios()` - Test abandonment triggers
+- [ ] `testAllEmailScenarios()` - Test all email functionality
+- [ ] `cleanupTestSessions()` - Remove test data
 
-### Test Scenario 1: Complete Lead Flow (Pre-Qualification Only)
+## **CONFIGURATION VALIDATION**
 
-#### **Step-by-Step Test:**
-1. **Open the funnel application**
-2. **Complete all steps through ContactInfo (Step 6):**
-   - State: `California`
-   - Military Status: `Veteran`
-   - Branch of Service: `Army`
-   - Marital Status: `Married`
-   - Coverage Amount: `$100,000`
-   - First Name: `John`
-   - Last Name: `TestLead`
-   - Email: `john.testlead@example.com`
-   - Phone: `(555) 123-4567`
-   - Transactional Consent: ✅ Checked
-   - Marketing Consent: ✅ Checked
-3. **Complete Birthday step (Step 7):**
-   - Month: `January`
-   - Day: `15`
-   - Year: `1985`
-4. **Complete all medical questions (Steps 8-12):**
-   - Tobacco Use: `No`
-   - Medical Conditions: `None`
-   - Height: `5'10"`
-   - Weight: `180 lbs`
-   - Hospital Care: `No`
-   - Diabetes Medication: `No`
-5. **Wait for loading screen (Step 13)**
-6. **Verify Pre-Qualified Success screen (Step 14)**
-7. **Click "Complete Application"**
-8. **Complete IUL Quote Modal (Step 15):**
-   - Coverage Amount: `$100,000`
-   - Monthly Premium: `$150`
-   - Click "Secure Your Rate"
-9. **Complete Application Step 1 (Step 16):**
-   - Street Address: `123 Test Street`
-   - City: `Test City`
-   - State: `CA`
-   - ZIP Code: `90210`
-   - Beneficiary Name: `Jane TestLead`
-   - Beneficiary Relationship: `Spouse`
-10. **Complete Application Step 2 (Step 17):**
-    - SSN: `123-45-6789`
-    - Bank Name: `Test Bank`
-    - Routing Number: `123456789`
-    - Account Number: `987654321`
-    - Policy Date: `01/15/2025`
-11. **Verify Final Success Modal (Step 18)**
+### **Step 1: Verify globalConfig.ts Values**
+1. Open `funnel-app/src/config/globalConfig.ts`
+2. Verify these values match your deployment:
+   - `GOOGLE_APPS_SCRIPT_URL`: Current deployment URL
+   - `EMAIL.FROM`: Sender email address
+   - `EMAIL.TO`: Recipient email address  
+   - `GOOGLE_SHEET.SHEET_ID`: Target Google Sheet ID
+   - `COMPANY.PHONE`: Display phone number
 
-#### **Google Sheet Verification Checklist:**
-- [ ] **New row created** with Session ID
-- [ ] **Timestamp** populated correctly
-- [ ] **Status** shows `submitted`
-- [ ] **Contact Information (Columns 5-11):**
-  - [ ] First Name: `John`
-  - [ ] Last Name: `TestLead`
-  - [ ] Email: `john.testlead@example.com`
-  - [ ] Phone: `(555) 123-4567`
-  - [ ] DOB: `01/15/1985`
-  - [ ] Transactional Consent: `TRUE`
-  - [ ] Marketing Consent: `TRUE`
-- [ ] **Pre-qualification Data (Columns 12-16):**
-  - [ ] State: `California`
-  - [ ] Military Status: `Veteran`
-  - [ ] Branch: `Army`
-  - [ ] Marital Status: `Married`
-  - [ ] Coverage Amount: `$100,000`
-- [ ] **Medical Information (Columns 17-22):**
-  - [ ] Tobacco Use: `No`
-  - [ ] Medical Conditions: `None`
-  - [ ] Height: `5'10"`
-  - [ ] Weight: `180 lbs`
-  - [ ] Hospital Care: `No`
-  - [ ] Diabetes Medication: `No`
-- [ ] **Application Data (Columns 23-34):**
-  - [ ] Street Address: `123 Test Street`
-  - [ ] City: `Test City`
-  - [ ] Application State: `CA`
-  - [ ] ZIP Code: `90210`
-  - [ ] Beneficiary Name: `Jane TestLead`
-  - [ ] Beneficiary Relationship: `Spouse`
-  - [ ] VA Number: `(empty)`
-  - [ ] Service Connected: `(empty)`
-  - [ ] SSN: `123-45-6789`
-  - [ ] Bank Name: `Test Bank`
-  - [ ] Routing Number: `123456789`
-  - [ ] Account Number: `987654321`
-- [ ] **Quote Information (Columns 35-40):**
-  - [ ] Policy Date: `01/15/2025`
-  - [ ] Quote Coverage: `100000`
-  - [ ] Quote Premium: `150`
-  - [ ] Quote Age: `39`
-  - [ ] Quote Gender: `(from form)`
-  - [ ] Quote Type: `IUL`
-- [ ] **Tracking Data (Columns 41-48):**
-  - [ ] Current Step: `18`
-  - [ ] Step Name: `FinalSuccessModal`
-  - [ ] Form Type: `Application`
-  - [ ] User Agent: `(populated)`
-  - [ ] Referrer: `(populated)`
-  - [ ] UTM Source: `(populated)`
-  - [ ] UTM Medium: `(populated)`
-  - [ ] UTM Campaign: `(populated)`
-- [ ] **Email Status (Columns 49-50):**
-  - [ ] Partial Email Sent: `FALSE`
-  - [ ] Completed Email Sent: `TRUE`
+### **Step 2: Sync All Config Files**
+1. Copy values from `globalConfig.ts` to:
+   - `js/config.js` → Update `GOOGLE_APPS_SCRIPT_URL`
+   - `google-apps-script-react-funnel.js` → Update entire CONFIG object
+2. Rebuild React app: `npm run build`
+3. Deploy updated files
 
-#### **Email Verification Checklist:**
-- [ ] **Admin notification email received** at `lindsey08092@gmail.com`
-- [ ] **Subject line:** `New React Funnel Application: John`
-- [ ] **Email contains all application data**
-- [ ] **Confirmation email sent to user** at `john.testlead@example.com`
-- [ ] **Subject line:** `Your application has been submitted successfully`
-- [ ] **Email contains quote summary and next steps**
+### **Step 3: Verify Deployment**
+1. Check browser network tab shows correct API calls
+2. Verify Google Sheet receives data with correct structure
+3. Confirm emails are sent to addresses specified in globalConfig.ts
 
-### Test Scenario 2: Partial Lead Flow (Abandonment Test)
+## **⚠️ CRITICAL: Configuration Sync Requirements**
 
-#### **Step-by-Step Test:**
-1. **Open the funnel application**
-2. **Complete through ContactInfo (Step 6):**
-   - First Name: `Jane`
-   - Last Name: `TestPartial`
-   - Email: `jane.testpartial@example.com`
-   - Phone: `(555) 987-6543`
-   - Transactional Consent: ✅ Checked
-   - Marketing Consent: ✅ Checked
-3. **Complete Birthday step (Step 7):**
-   - Month: `March`
-   - Day: `20`
-   - Year: `1990`
-4. **Complete medical questions (Steps 8-12):**
-   - Tobacco Use: `No`
-   - Medical Conditions: `None`
-   - Height: `5'6"`
-   - Weight: `140 lbs`
-   - Hospital Care: `No`
-   - Diabetes Medication: `No`
-5. **Wait for loading screen (Step 13)**
-6. **On Pre-Qualified Success screen (Step 14), close the browser**
-7. **Wait 30 seconds**
-8. **Call abandonment detection manually**
+**BEFORE RUNNING ANY TESTS:**
 
-#### **Google Sheet Verification Checklist:**
-- [ ] **New row created** with Session ID
-- [ ] **Status** shows `phone_captured`
-- [ ] **Contact Information populated correctly**
-- [ ] **Medical Information populated correctly**
-- [ ] **Application Data columns empty**
-- [ ] **Quote Information columns empty**
+1. **Verify globalConfig.ts is authoritative source**
+2. **Update Google Apps Script CONFIG object** to match globalConfig.ts exactly
+3. **Update legacy js/config.js** to match globalConfig.ts URL
+4. **Rebuild React app**: `npm run build`
+5. **Deploy all updated files**
 
-#### **Email Verification Checklist:**
-- [ ] **Partial abandonment email received** at `lindsey08092@gmail.com`
-- [ ] **Subject line:** `Lead Abandonment Alert: Jane`
-- [ ] **Email contains contact and medical information**
-- [ ] **No confirmation email sent to user** (abandoned)
+**Common Sync Issues:**
+- ❌ Admin emails don't match between globalConfig.ts and Google Apps Script  
+- ❌ Google Apps Script URL outdated in legacy config files
+- ❌ Sheet ID mismatch between configurations
+- ❌ Phone number format inconsistent
 
-### Test Scenario 3: Lead Partial Flow (Medical Questions Only)
-
-#### **Step-by-Step Test:**
-1. **Open the funnel application**
-2. **Complete through ContactInfo (Step 6):**
-   - First Name: `Bob`
-   - Last Name: `TestMedical`
-   - Email: `bob.testmedical@example.com`
-   - Phone: `(555) 456-7890`
-   - Transactional Consent: ✅ Checked
-   - Marketing Consent: ✅ Checked
-3. **Complete Birthday step (Step 7):**
-   - Month: `July`
-   - Day: `10`
-   - Year: `1975`
-4. **Complete medical questions (Steps 8-12):**
-   - Tobacco Use: `Yes`
-   - Medical Conditions: `Diabetes, High Blood Pressure`
-   - Height: `6'0"`
-   - Weight: `200 lbs`
-   - Hospital Care: `Yes`
-   - Diabetes Medication: `Yes`
-5. **Wait for loading screen (Step 13)**
-6. **On Pre-Qualified Success screen (Step 14), close the browser**
-
-#### **Google Sheet Verification Checklist:**
-- [ ] **New row created** with Session ID
-- [ ] **Status** shows `active`
-- [ ] **Contact Information populated correctly**
-- [ ] **Medical Information populated correctly:**
-  - [ ] Tobacco Use: `Yes`
-  - [ ] Medical Conditions: `Diabetes, High Blood Pressure`
-  - [ ] Height: `6'0"`
-  - [ ] Weight: `200 lbs`
-  - [ ] Hospital Care: `Yes`
-  - [ ] Diabetes Medication: `Yes`
-- [ ] **Application Data columns empty**
-- [ ] **Quote Information columns empty**
-
-#### **Email Verification Checklist:**
-- [ ] **Lead notification email received** at `lindsey08092@gmail.com`
-- [ ] **Subject line:** `New React Funnel Lead: Bob`
-- [ ] **Email contains all lead data**
-- [ ] **Confirmation email sent to user** at `bob.testmedical@example.com`
-- [ ] **Subject line:** `Thank you for your interest in Veteran Life Insurance`
-
-## Data Integrity Tests
-
-### Test 4: Duplicate Session Prevention
-- [ ] **Run complete flow twice with same session ID**
-- [ ] **Verify only one row created** in Google Sheet
-- [ ] **Verify existing row updated** instead of creating duplicate
-
-### Test 5: Column Count Verification
-- [ ] **Run `validateSheetStructure()`** in Google Apps Script
-- [ ] **Verify exactly 50 columns** exist
-- [ ] **Verify all headers match** SHEET_COLUMNS constant
-
-### Test 6: Data Type Verification
-- [ ] **Verify dates are formatted correctly** (MM/DD/YYYY)
-- [ ] **Verify numbers are numeric** (not text)
-- [ ] **Verify boolean values** (TRUE/FALSE for consents)
-- [ ] **Verify arrays are joined** (medical conditions as comma-separated)
-
-## Error Handling Tests
-
-### Test 7: Missing Spreadsheet Test
-- [ ] **Temporarily rename the Google Sheet**
-- [ ] **Submit form data**
-- [ ] **Verify proper error message** returned
-- [ ] **Restore sheet name**
-
-### Test 8: Invalid Data Test
-- [ ] **Submit form with missing required fields**
-- [ ] **Verify graceful error handling**
-- [ ] **Verify no partial data saved** to sheet
-
-## Performance Tests
-
-### Test 9: Multiple Concurrent Submissions
-- [ ] **Open multiple browser tabs**
-- [ ] **Submit forms simultaneously**
-- [ ] **Verify all submissions processed** correctly
-- [ ] **Verify no data corruption**
-
-### Test 10: Large Data Set Test
-- [ ] **Submit form with very long text fields**
-- [ ] **Verify data truncated appropriately** if needed
-- [ ] **Verify no script timeouts**
-
-## Email Functionality Tests
-
-### Test 11: Email Template Verification
-- [ ] **Verify all email templates** use CONFIG variables
-- [ ] **Verify phone number** displays as `(800) VET-INSURANCE`
-- [ ] **Verify company name** displays as `Veteran Legacy Life`
-- [ ] **Verify email addresses** are correct
-
-### Test 12: Email Status Tracking
-- [ ] **Verify email status columns** updated correctly
-- [ ] **Verify no duplicate emails** sent
-- [ ] **Verify email blocking** works for completed applications
-
-## Troubleshooting Commands
-
-### Google Apps Script Functions to Run:
+**Verification Command:**
 ```javascript
+// Run in Google Apps Script to verify CONFIG matches globalConfig.ts
+Logger.log('Admin Email (should be lindsey08092@gmail.com):', CONFIG.EMAIL.ADMIN);
+Logger.log('Sheet ID:', CONFIG.GOOGLE_SHEET.SHEET_ID);
+Logger.log('Company Phone:', CONFIG.COMPANY.PHONE);
+```
+
+## **TEST SCENARIO 1: COMPLETE APPLICATION FLOW**
+
+### **Step-by-Step Test Data:**
+
+#### **Pre-Qualification Data (Steps 1-14):**
+```
+State: California
+Military Status: Veteran
+Branch of Service: Army
+Marital Status: Married
+Coverage Amount: $100,000
+First Name: John
+Last Name: TestLead
+Email: john.testlead@example.com
+Phone: (555) 123-4567
+Transactional Consent: ✅
+Marketing Consent: ✅
+Date of Birth: 01/15/1985
+Tobacco Use: No
+Medical Conditions: None
+Height: 5'10"
+Weight: 180 lbs
+Hospital Care: No
+Diabetes Medication: No
+```
+
+#### **Application Data (Steps 16-17):**
+```
+Street Address: 123 Test Street
+City: Test City
+State: CA
+ZIP Code: 90210
+Beneficiary Name: Jane TestLead
+Beneficiary Relationship: Spouse
+SSN: 123-45-6789
+Bank Name: Test Bank
+Routing Number: 123456789
+Account Number: 987654321
+Policy Start Date: 02/01/2025
+```
+
+### **Expected Google Sheet Verification (All 50 Columns):**
+
+#### **Columns 1-4 (Core):**
+- [ ] **Timestamp:** `[Current DateTime]`
+- [ ] **Session ID:** `[UUID format]`
+- [ ] **Status:** `submitted`
+- [ ] **Last Activity:** `[Current DateTime]`
+
+#### **Columns 5-11 (Contact):**
+- [ ] **First Name:** `John`
+- [ ] **Last Name:** `TestLead`
+- [ ] **Email:** `john.testlead@example.com`
+- [ ] **Phone:** `(555) 123-4567`
+- [ ] **DOB:** `01/15/1985`
+- [ ] **Transactional Consent:** `TRUE`
+- [ ] **Marketing Consent:** `TRUE`
+
+#### **Columns 12-16 (Pre-qualification):**
+- [ ] **State:** `California`
+- [ ] **Military Status:** `Veteran`
+- [ ] **Branch:** `Army`
+- [ ] **Marital Status:** `Married`
+- [ ] **Coverage Amount:** `$100,000`
+
+#### **Columns 17-22 (Medical):**
+- [ ] **Tobacco Use:** `No`
+- [ ] **Medical Conditions:** `None`
+- [ ] **Height:** `5'10"`
+- [ ] **Weight:** `180 lbs`
+- [ ] **Hospital Care:** `No`
+- [ ] **Diabetes Medication:** `No`
+
+#### **Columns 23-34 (Application):**
+- [ ] **Street Address:** `123 Test Street`
+- [ ] **City:** `Test City`
+- [ ] **Application State:** `CA`
+- [ ] **ZIP Code:** `90210`
+- [ ] **Beneficiary Name:** `Jane TestLead`
+- [ ] **Beneficiary Relationship:** `Spouse`
+- [ ] **VA Number:** `(empty - not collected)`
+- [ ] **Service Connected:** `(empty - not collected)`
+- [ ] **SSN:** `123-45-6789`
+- [ ] **Bank Name:** `Test Bank`
+- [ ] **Routing Number:** `123456789`
+- [ ] **Account Number:** `987654321`
+
+#### **Columns 35-40 (Quote):**
+- [ ] **Policy Date:** `02/01/2025`
+- [ ] **Quote Coverage:** `100000`
+- [ ] **Quote Premium:** `[Calculated Amount]`
+- [ ] **Quote Age:** `39`
+- [ ] **Quote Gender:** `[From Form]`
+- [ ] **Quote Type:** `IUL`
+
+#### **Columns 41-48 (Tracking):**
+- [ ] **Current Step:** `18`
+- [ ] **Step Name:** `FinalSuccessModal`
+- [ ] **Form Type:** `Application`
+- [ ] **User Agent:** `[Browser Info]`
+- [ ] **Referrer:** `[Page URL]`
+- [ ] **UTM Source:** `[If Present]`
+- [ ] **UTM Medium:** `[If Present]`
+- [ ] **UTM Campaign:** `[If Present]`
+
+#### **Columns 49-50 (Email Status):**
+- [ ] **Partial Email Sent:** `FALSE`
+- [ ] **Completed Email Sent:** `TRUE`
+
+### **Expected Email Verification:**
+
+#### **Admin Application Email:**
+- [ ] **Subject:** `New React Funnel Application: John`
+- [ ] **Contains:** All application data including address, beneficiary, SSN, banking info
+- [ ] **Quote Info:** Coverage amount, monthly premium, policy type
+- [ ] **Contact Info:** Name, email, phone, DOB
+
+#### **User Confirmation Email:**
+- [ ] **Subject:** `Your application has been submitted successfully`
+- [ ] **Contains:** Quote summary with premium and coverage
+- [ ] **Contains:** Next steps and timeline
+- [ ] **Contains:** Company phone: `(800) VET-INSURANCE`
+
+## **TEST SCENARIO 2: PARTIAL LEAD (PRE-QUALIFICATION ONLY)**
+
+### **Test Data:**
+```
+Use same data as Test Scenario 1, but stop at Pre-Qualified Success Modal
+Do NOT click "Complete Application"
+```
+
+### **Expected Google Sheet Verification:**
+- [ ] **Status:** `pre-qualified`
+- [ ] **Columns 5-22:** All pre-qualification data populated
+- [ ] **Columns 23-40:** Application data empty
+- [ ] **Partial Email Sent:** `TRUE`
+- [ ] **Completed Email Sent:** `FALSE`
+
+### **Expected Email Verification:**
+- [ ] **Admin Lead Email:** Sent with pre-qualification data
+- [ ] **User Email:** NOT sent (no application completed)
+
+## **TEST SCENARIO 3: LEAD PARTIAL (MEDICAL QUESTIONS ONLY)**
+
+### **Test Data:**
+```
+Complete through Contact Info (Step 6), then abandon
+```
+
+### **Expected Google Sheet Verification:**
+- [ ] **Status:** `active`
+- [ ] **Columns 5-11:** Contact data populated
+- [ ] **Columns 12-22:** Pre-qualification and medical data empty
+- [ ] **Columns 23-40:** Application data empty
+- [ ] **Partial Email Sent:** `TRUE` (if phone provided)
+- [ ] **Completed Email Sent:** `FALSE`
+
+### **Expected Email Verification:**
+- [ ] **Abandonment Email:** Sent if phone number captured
+- [ ] **Application Email:** NOT sent
+
+## **TEST SCENARIO 4: APPLICATION DATA VERIFICATION**
+
+### **Test Step 16 Data (Address & Beneficiary):**
+```
+Street Address: 456 Application St
+City: App City
+State: TX
+ZIP Code: 75201
+Beneficiary Name: John Beneficiary
+Beneficiary Relationship: Son
+```
+
+### **Expected Columns 23-28:**
+- [ ] **Street Address:** `456 Application St`
+- [ ] **City:** `App City`
+- [ ] **Application State:** `TX`
+- [ ] **ZIP Code:** `75201`
+- [ ] **Beneficiary Name:** `John Beneficiary`
+- [ ] **Beneficiary Relationship:** `Son`
+
+### **Test Step 17 Data (Financial):**
+```
+SSN: 987-65-4321
+Bank Name: Application Bank
+Routing Number: 987654321
+Account Number: 123456789
+Policy Start Date: 03/01/2025
+```
+
+### **Expected Columns 31-35:**
+- [ ] **SSN:** `987-65-4321`
+- [ ] **Bank Name:** `Application Bank`
+- [ ] **Routing Number:** `987654321`
+- [ ] **Account Number:** `123456789`
+- [ ] **Policy Date:** `03/01/2025`
+
+## **TEST SCENARIO 5: BANKING INFORMATION SECURITY**
+
+### **Security Verification:**
+- [ ] **SSN Handling:** Properly secured in column 31
+- [ ] **Banking Info:** Properly secured in columns 32-34
+- [ ] **Data Truncation:** No data loss or truncation
+- [ ] **Log Security:** No sensitive data in logs
+- [ ] **Transmission Security:** Secure transmission to Google Apps Script
+
+## **TEST SCENARIO 6: ABANDONMENT TRIGGER TESTING**
+
+### **Test A: Abandon Before Phone (No Email):**
+1. Complete steps 1-4 (before contact info)
+2. Close browser
+3. **Expected:** NO abandonment email sent
+4. **Expected:** Session status is `active`
+
+### **Test B: Abandon After Phone (Trigger Email):**
+1. Complete through step 6 (contact info with phone)
+2. Close browser
+3. Wait 30+ seconds
+4. Trigger abandonment detection
+5. **Expected:** Abandonment email sent
+6. **Expected:** Session status is `phone_captured`
+
+### **Test C: Abandon After Pre-Qualified (Still Send Email):**
+1. Complete through step 14 (pre-qualified)
+2. Close browser before clicking "Complete Application"
+3. Trigger abandonment detection
+4. **Expected:** Abandonment email sent (user had phone)
+
+### **Test D: Complete Application (No Abandonment Email):**
+1. Complete full application (step 18)
+2. Trigger abandonment detection
+3. **Expected:** NO abandonment email sent
+4. **Expected:** Only completion email sent
+
+## **PERFORMANCE TESTING**
+
+### **Response Time Verification:**
+- [ ] **Application Submission:** < 10 seconds
+- [ ] **Lead Submission:** < 5 seconds
+- [ ] **Partial Submission:** < 3 seconds
+- [ ] **Email Sending:** < 30 seconds
+
+### **Error Handling Verification:**
+- [ ] **Invalid Data:** Proper error messages
+- [ ] **Network Issues:** Graceful handling
+- [ ] **Sheet Access:** Proper error handling
+- [ ] **Email Failures:** Logged but don't break submission
+
+## **DATA INTEGRITY TESTING**
+
+### **Column Count Verification:**
+- [ ] **Total Columns:** Exactly 50
+- [ ] **Header Row:** All 50 headers present
+- [ ] **Data Rows:** All 50 columns populated
+- [ ] **No Extra Columns:** No columns beyond 50
+
+### **Data Type Verification:**
+- [ ] **Timestamps:** Proper date/time format
+- [ ] **Numbers:** Proper numeric format
+- [ ] **Booleans:** TRUE/FALSE format
+- [ ] **Text:** Proper string format
+
+### **Duplicate Prevention:**
+- [ ] **Session IDs:** Unique for each submission
+- [ ] **No Duplicate Rows:** Same session ID doesn't create multiple rows
+- [ ] **Status Updates:** Proper status progression
+
+## **EMAIL FUNCTIONALITY TESTING**
+
+### **Email Trigger Verification:**
+- [ ] **Lead Email:** Sent for pre-qualification
+- [ ] **Application Email:** Sent for completed applications
+- [ ] **Abandonment Email:** Sent only when phone captured
+- [ ] **No Duplicate Emails:** Each scenario sends exactly one email
+
+### **Email Content Verification:**
+- [ ] **Admin Emails:** Contain all relevant data
+- [ ] **User Emails:** Contain appropriate information
+- [ ] **Subject Lines:** Correct and descriptive
+- [ ] **Company Info:** Correct phone and contact details
+
+## **TROUBLESHOOTING COMMANDS**
+
+### **Google Apps Script Functions:**
+```javascript
+// Run comprehensive test
+runCompleteQATest()
+
 // Fix sheet structure
 fixSheetStructureNow()
 
-// Validate current structure
-validateSheetStructure()
+// Test abandonment scenarios
+testAbandonmentScenarios()
 
-// Test email functionality
-testEmailTriggers()
+// Test all email scenarios
+testAllEmailScenarios()
 
 // Clean up test data
 cleanupTestSessions()
 
-// Test application completion
-testApplicationCompletion()
+// Verify specific session
+verifyTestDataInSheet('SESSION_ID_HERE')
 ```
 
-## Success Criteria
+### **Manual Verification Commands:**
+```javascript
+// Check sheet structure
+validateSheetStructure()
 
-### ✅ **Test Passes When:**
-- [ ] **All 50 columns** populated correctly
+// Test specific function
+testDoPost()
+
+// Check email status
+checkSessionEmailStatus(sessionId, 'completed')
+
+// Verify data mapping
+buildUnifiedRowData(testData, sessionId)
+```
+
+## **SUCCESS CRITERIA**
+
+### **✅ Test PASSES when:**
+- [ ] **All 50 columns** populated with correct data
 - [ ] **No duplicate rows** created
-- [ ] **All email notifications** sent properly
-- [ ] **Data types** are correct
-- [ ] **Error handling** works gracefully
-- [ ] **Performance** is acceptable (< 10 seconds per submission)
+- [ ] **Email notifications** sent correctly
+- [ ] **No script errors** or timeouts
+- [ ] **No data corruption** or loss
+- [ ] **Performance acceptable** (< 10 seconds per submission)
+- [ ] **Security maintained** (no sensitive data leakage)
 
-### ❌ **Test Fails When:**
+### **❌ Test FAILS when:**
 - [ ] **Missing or incorrect data** in any column
 - [ ] **Duplicate rows** created
 - [ ] **Email notifications** not sent
 - [ ] **Script errors** or timeouts
 - [ ] **Data corruption** or loss
 
-## Maintenance Notes
+## **EXECUTION INSTRUCTIONS**
 
-### **When to Update This Document:**
-- [ ] **New fields added** to any modal
-- [ ] **Email templates changed**
-- [ ] **Google Sheet structure modified**
-- [ ] **Configuration values updated**
+### **Step 1: Pre-Test Setup**
+1. Run `fixSheetStructureNow()` in Google Apps Script
+2. Verify sheet has exactly 50 columns
+3. Set `TESTING_MODE: false` in CONFIG for email testing
 
-### **Regular Testing Schedule:**
-- [ ] **Weekly:** Run Test Scenarios 1-3
-- [ ] **Monthly:** Run all tests including performance
-- [ ] **After deployments:** Run complete test suite
-- [ ] **Before production:** Run all tests with real data
+### **Step 2: Execute Test Scenarios**
+1. Run through Test Scenario 1 manually
+2. Verify all 50 columns in Google Sheet
+3. Check email inbox for admin and user emails
+4. Repeat for Test Scenarios 2-6
+
+### **Step 3: Automated Testing**
+1. Run `runCompleteQATest()` in Google Apps Script
+2. Check logs for any errors
+3. Verify test data appears in sheet
+4. Run `cleanupTestSessions()` when done
+
+### **Step 4: Performance Verification**
+1. Monitor response times
+2. Check for any timeouts
+3. Verify error handling works
+4. Test with various data scenarios
 
 ---
 
-**Last Updated:** [Current Date]
-**Tested By:** [Tester Name]
-**Next Review:** [Date + 1 month] 
+**Last Updated:** July 29, 2024  
+**Version:** 2.0 (Comprehensive Testing)  
+**Status:** Ready for Production Testing 

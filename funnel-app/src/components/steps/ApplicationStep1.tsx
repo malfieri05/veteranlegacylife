@@ -2,53 +2,46 @@ import React from 'react'
 import { useFunnelStore } from '../../store/funnelStore'
 
 export const ApplicationStep1: React.FC = () => {
-  const { formData, updateFormData } = useFunnelStore()
-
-
+  const { formData, updateFormData, submitPartial } = useFunnelStore()
 
   const handleAddressChange = (field: string, value: string) => {
     updateFormData({
-      applicationData: {
-        ...formData.applicationData,
-        address: {
-          ...formData.applicationData?.address,
-          [field]: value
-        }
-      }
+      [field]: value
     })
+    // Trigger partial save after each field change
+    setTimeout(() => {
+      submitPartial(16, 'Application Step 1')
+    }, 500) // Small delay to avoid too many requests
   }
 
   const handleBeneficiaryChange = (field: string, value: string) => {
     updateFormData({
-      applicationData: {
-        ...formData.applicationData,
-        beneficiary: {
-          ...formData.applicationData?.beneficiary,
-          [field]: value
-        }
-      }
+      [field]: value
     })
+    // Trigger partial save after each field change
+    setTimeout(() => {
+      submitPartial(16, 'Application Step 1')
+    }, 500) // Small delay to avoid too many requests
   }
 
   const handleVAInfoChange = (field: string, value: string) => {
     updateFormData({
-      applicationData: {
-        ...formData.applicationData,
-        vaInfo: {
-          ...formData.applicationData?.vaInfo,
-          [field]: value
-        }
-      }
+      [field]: value
     })
+    // Trigger partial save after each field change
+    setTimeout(() => {
+      submitPartial(16, 'Application Step 1')
+    }, 500) // Small delay to avoid too many requests
   }
 
   const handleDriversLicenseChange = (value: string) => {
     updateFormData({
-      applicationData: {
-        ...formData.applicationData,
-        driversLicense: value
-      }
+      driversLicense: value
     })
+    // Trigger partial save after each field change
+    setTimeout(() => {
+      submitPartial(16, 'Application Step 1')
+    }, 500) // Small delay to avoid too many requests
   }
 
   return (
@@ -60,13 +53,13 @@ export const ApplicationStep1: React.FC = () => {
         <h3>Address Information</h3>
         <div className="form-grid">
           <div>
-            <label htmlFor="street">Street Address *</label>
+            <label htmlFor="streetAddress">Street Address *</label>
             <input
               type="text"
-              id="street"
-              name="street"
-              value={formData.applicationData?.address?.street || ''}
-              onChange={(e) => handleAddressChange('street', e.target.value)}
+              id="streetAddress"
+              name="streetAddress"
+              value={formData.streetAddress || ''}
+              onChange={(e) => handleAddressChange('streetAddress', e.target.value)}
               required
             />
           </div>
@@ -76,19 +69,19 @@ export const ApplicationStep1: React.FC = () => {
               type="text"
               id="city"
               name="city"
-              value={formData.applicationData?.address?.city || ''}
+              value={formData.city || ''}
               onChange={(e) => handleAddressChange('city', e.target.value)}
               required
             />
           </div>
           <div>
-            <label htmlFor="state">State *</label>
+            <label htmlFor="applicationState">State *</label>
             <input
               type="text"
-              id="state"
-              name="state"
-              value={formData.applicationData?.address?.state || ''}
-              onChange={(e) => handleAddressChange('state', e.target.value)}
+              id="applicationState"
+              name="applicationState"
+              value={formData.applicationState || ''}
+              onChange={(e) => handleAddressChange('applicationState', e.target.value)}
               required
             />
           </div>
@@ -98,7 +91,7 @@ export const ApplicationStep1: React.FC = () => {
               type="text"
               id="zipCode"
               name="zipCode"
-              value={formData.applicationData?.address?.zipCode || ''}
+              value={formData.zipCode || ''}
               onChange={(e) => handleAddressChange('zipCode', e.target.value)}
               required
             />
@@ -115,8 +108,8 @@ export const ApplicationStep1: React.FC = () => {
               type="text"
               id="beneficiaryName"
               name="beneficiaryName"
-              value={formData.applicationData?.beneficiary?.name || ''}
-              onChange={(e) => handleBeneficiaryChange('name', e.target.value)}
+              value={formData.beneficiaryName || ''}
+              onChange={(e) => handleBeneficiaryChange('beneficiaryName', e.target.value)}
               required
             />
           </div>
@@ -125,8 +118,8 @@ export const ApplicationStep1: React.FC = () => {
             <select
               id="beneficiaryRelationship"
               name="beneficiaryRelationship"
-              value={formData.applicationData?.beneficiary?.relationship || ''}
-              onChange={(e) => handleBeneficiaryChange('relationship', e.target.value)}
+              value={formData.beneficiaryRelationship || ''}
+              onChange={(e) => handleBeneficiaryChange('beneficiaryRelationship', e.target.value)}
               required
             >
               <option value="">Select Relationship</option>
@@ -149,7 +142,7 @@ export const ApplicationStep1: React.FC = () => {
               type="text"
               id="vaNumber"
               name="vaNumber"
-              value={formData.applicationData?.vaInfo?.vaNumber || ''}
+              value={formData.vaNumber || ''}
               onChange={(e) => handleVAInfoChange('vaNumber', e.target.value)}
               placeholder="Enter your VA number if applicable"
             />
@@ -159,7 +152,7 @@ export const ApplicationStep1: React.FC = () => {
             <select
               id="serviceConnected"
               name="serviceConnected"
-              value={formData.applicationData?.vaInfo?.serviceConnected || ''}
+              value={formData.serviceConnected || ''}
               onChange={(e) => handleVAInfoChange('serviceConnected', e.target.value)}
             >
               <option value="">Select Option</option>
@@ -179,7 +172,7 @@ export const ApplicationStep1: React.FC = () => {
             type="text"
             id="driversLicense"
             name="driversLicense"
-            value={formData.applicationData?.driversLicense || ''}
+            value={formData.driversLicense || ''}
             onChange={(e) => handleDriversLicenseChange(e.target.value)}
             placeholder="Enter your drivers license number"
             required

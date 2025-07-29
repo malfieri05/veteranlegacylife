@@ -79,7 +79,7 @@ export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = (
       {/* Logo */}
       <div style={{ marginBottom: '2rem' }}>
         <img 
-          src="assets/logo.png" 
+                        src="funnel-app/public/logo.png" 
           alt="Veteran Legacy Life Logo" 
           style={{ height: '4rem', width: 'auto', objectFit: 'contain', margin: '0 auto' }}
           onError={(e) => {

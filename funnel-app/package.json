@@ -7,6 +7,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:emails": "node scripts/buildEmailTemplates.js",
+    "build:all": "npm run build && npm run build:emails",
     "preview": "vite preview",
     "type-check": "tsc --noEmit"
   },

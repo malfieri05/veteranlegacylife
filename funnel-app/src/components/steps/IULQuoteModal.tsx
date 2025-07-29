@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useFunnelStore } from '../../store/funnelStore'
-import { calculateIULQuote } from '../../utils/calculations'
+import { calculateQuote, getInsuranceType } from '../../utils/calculations'
 
 export const IULQuoteModal: React.FC = () => {
   const { formData, updateFormData, goToNextStep } = useFunnelStore()
@@ -10,9 +10,10 @@ export const IULQuoteModal: React.FC = () => {
   const [userGender, setUserGender] = useState('male')
   const [sliderValue, setSliderValue] = useState(0)
   const [isInitialized, setIsInitialized] = useState(false)
+  const [insuranceType, setInsuranceType] = useState<'IUL' | 'Final Expense'>('IUL')
   const isMountedRef = useRef(true)
 
-  // Calculate cash value growth potential
+  // Calculate cash value growth potential (only for IUL)
   const calculateCashValueGrowth = (coverage: number, premium: number) => {
     const annualPremium = premium * 12
     const growthRate = 0.06 // 6% average annual growth rate for IUL
@@ -33,7 +34,6 @@ export const IULQuoteModal: React.FC = () => {
       return {
         year,
         projectedValue: Math.round(projectedValue),
-        totalPremiums: annualPremium * year,
         growth: Math.round(projectedValue - (annualPremium * year))
       }
     })
@@ -55,6 +55,10 @@ export const IULQuoteModal: React.FC = () => {
       const monthDiff = today.getMonth() - birthDate.getMonth()
       const calculatedAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) ? age - 1 : age
       setUserAge(calculatedAge)
+      
+      // Determine insurance type based on age
+      const type = getInsuranceType(calculatedAge)
+      setInsuranceType(type)
     }
 
     // Set initial coverage based on previous selection
@@ -80,11 +84,10 @@ export const IULQuoteModal: React.FC = () => {
     if (!isMountedRef.current) return
     
     console.log(`Calculating quote - Age: ${userAge}, Gender: ${userGender}, Coverage: ${coverageAmount}`)
-    // The calculateIULQuote function now uses interpolation to provide more granular pricing
-    // instead of fixed bracket prices, giving users more accurate quotes based on their exact coverage amount
-    const premium = calculateIULQuote(coverageAmount, userAge, userGender)
-    console.log(`Quote calculated - Premium: ${premium}`)
-    setMonthlyPremium(premium)
+    const quoteResult = calculateQuote(coverageAmount, userAge, userGender)
+    console.log(`Quote calculated - Premium: ${quoteResult.premium}, Type: ${quoteResult.type}`)
+    setMonthlyPremium(quoteResult.premium)
+    setInsuranceType(quoteResult.type)
   }
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,35 +107,38 @@ export const IULQuoteModal: React.FC = () => {
   const handleSecureRate = () => {
     // Save quote data and move to next step
     updateFormData({
-      applicationData: {
-        ...formData.applicationData,
-        quoteData: {
-          coverageAmount,
-          monthlyPremium,
-          userAge,
-          userGender,
-          quoteType: 'IUL'
-        }
+      quoteData: {
+        coverageAmount,
+        monthlyPremium,
+        userAge,
+        userGender,
+        quoteType: insuranceType
       }
     })
     goToNextStep()
   }
 
-  // Get coverage range based on current coverage amount
+  // Get coverage range based on insurance type and current coverage amount
   const getCoverageRange = () => {
-    const currentAmount = coverageAmount || 50000
-    if (currentAmount <= 50000) {
-      return { min: 25000, max: 100000 }
-    } else if (currentAmount <= 100000) {
-      return { min: 50000, max: 250000 }
+    if (insuranceType === 'Final Expense') {
+      // Final Expense typically has lower coverage amounts
+      return { min: 5000, max: 20000 }
     } else {
-      return { min: 100000, max: 1000000 }
+      // IUL coverage ranges
+      const currentAmount = coverageAmount || 50000
+      if (currentAmount <= 50000) {
+        return { min: 25000, max: 100000 }
+      } else if (currentAmount <= 100000) {
+        return { min: 50000, max: 250000 }
+      } else {
+        return { min: 100000, max: 1000000 }
+      }
     }
   }
 
   const coverageRange = getCoverageRange()
-  const isDefaultCoverage = formData.coverageAmount && 
-    parseInt(formData.coverageAmount.replace(/[$,]/g, '')) === coverageAmount
+
+  const cashValueGrowth = insuranceType === 'IUL' ? calculateCashValueGrowth(coverageAmount, monthlyPremium) : null
 
   return (
     <div style={{ 
@@ -141,8 +147,12 @@ export const IULQuoteModal: React.FC = () => {
       maxHeight: '70vh', 
       overflowY: 'auto'
     }}>
-      <h2 style={{ fontSize: '1.25rem', marginBottom: '0.25rem' }}>Your Personalized IUL Quote</h2>
-      <p style={{ fontSize: '0.8rem', color: '#6b7280', marginBottom: '0.75rem' }}>Based on your information, here's your personalized Indexed Universal Life quote:</p>
+      <h2 style={{ fontSize: '1.25rem', marginBottom: '0.25rem' }}>
+        Your Personalized {insuranceType} Quote
+      </h2>
+      <p style={{ fontSize: '0.8rem', color: '#6b7280', marginBottom: '0.75rem' }}>
+        Based on your information, here's your personalized {insuranceType} quote:
+      </p>
       
       {/* Premium Display - Much More Compact */}
       <div style={{ 
@@ -155,8 +165,115 @@ export const IULQuoteModal: React.FC = () => {
         <div style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.25rem', lineHeight: '1' }}>
           ${monthlyPremium.toLocaleString()}/month
         </div>
-        <p style={{ fontSize: '0.9rem', color: 'white', margin: 0, fontWeight: '600', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>Secure this rate</p>
+        <p style={{ fontSize: '0.9rem', color: 'white', margin: 0, fontWeight: '600', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
+          Secure this rate
+        </p>
       </div>
+
+      {/* Insurance Type Info */}
+      <div style={{ 
+        background: '#f8fafc', 
+        padding: '0.75rem', 
+        borderRadius: '6px', 
+        margin: '0.75rem 0',
+        border: '1px solid #e2e8f0'
+      }}>
+        <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0 }}>
+          <strong>Insurance Type:</strong> {insuranceType}
+          {insuranceType === 'Final Expense' && ' - Covers final expenses and burial costs'}
+          {insuranceType === 'IUL' && ' - Indexed Universal Life with cash value growth potential'}
+        </p>
+      </div>
+
+      {/* Coverage Slider */}
+      <div style={{ margin: '1rem 0' }}>
+        <label style={{ 
+          display: 'block', 
+          fontSize: '0.9rem', 
+          fontWeight: '600', 
+          color: '#374151', 
+          marginBottom: '0.5rem' 
+        }}>
+          Coverage Amount: ${sliderValue.toLocaleString()}
+        </label>
+        <input
+          type="range"
+          min={coverageRange.min}
+          max={coverageRange.max}
+          value={sliderValue}
+          onChange={handleSliderChange}
+          style={{
+            width: '100%',
+            height: '8px',
+            borderRadius: '4px',
+            background: '#e5e7eb',
+            outline: 'none',
+            WebkitAppearance: 'none',
+            cursor: 'pointer'
+          }}
+        />
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          fontSize: '0.7rem', 
+          color: '#6b7280', 
+          marginTop: '0.25rem' 
+        }}>
+          <span>${coverageRange.min.toLocaleString()}</span>
+          <span>${coverageRange.max.toLocaleString()}</span>
+        </div>
+      </div>
+
+      {/* Gender Selection */}
+      <div style={{ margin: '1rem 0' }}>
+        <label style={{ 
+          display: 'block', 
+          fontSize: '0.9rem', 
+          fontWeight: '600', 
+          color: '#374151', 
+          marginBottom: '0.5rem' 
+        }}>
+          Gender:
+        </label>
+        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+          {['male', 'female'].map(gender => (
+            <label key={gender} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+              <input
+                type="radio"
+                name="gender"
+                value={gender}
+                checked={userGender === gender}
+                onChange={(e) => handleGenderChange(e.target.value)}
+                style={{ margin: 0 }}
+              />
+              <span style={{ fontSize: '0.8rem', textTransform: 'capitalize' }}>{gender}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Cash Value Growth (IUL only) */}
+      {insuranceType === 'IUL' && cashValueGrowth && (
+        <div style={{ 
+          background: '#f0f9ff', 
+          padding: '0.75rem', 
+          borderRadius: '6px', 
+          margin: '0.75rem 0',
+          border: '1px solid #bae6fd'
+        }}>
+          <h4 style={{ fontSize: '0.9rem', margin: '0 0 0.5rem 0', color: '#0369a1' }}>
+            💰 Cash Value Growth Potential
+          </h4>
+          <div style={{ fontSize: '0.75rem', color: '#0c4a6e' }}>
+            {cashValueGrowth.map(({ year, projectedValue, growth }) => (
+              <div key={year} style={{ marginBottom: '0.25rem' }}>
+                <strong>{year} years:</strong> ${projectedValue.toLocaleString()} projected value 
+                (${growth.toLocaleString()} growth)
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Secure Rate Button - Clear and Prominent */}
       <button
@@ -165,203 +282,36 @@ export const IULQuoteModal: React.FC = () => {
           background: 'linear-gradient(135deg, #10b981, #059669)',
           color: 'white',
           border: 'none',
-          padding: '1rem 2rem',
+          padding: '0.75rem 1.5rem',
           borderRadius: '8px',
-          fontSize: '1.1rem',
-          fontWeight: '700',
+          fontSize: '1rem',
+          fontWeight: '600',
           cursor: 'pointer',
           transition: 'all 0.3s ease',
+          marginTop: '1rem',
           width: '100%',
-          maxWidth: '300px',
-          margin: '1rem 0',
-          boxShadow: '0 4px 6px -1px rgba(16, 185, 129, 0.3)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px'
+          maxWidth: '300px'
         }}
-        onMouseOver={(e) => {
-          e.currentTarget.style.background = 'linear-gradient(135deg, #059669, #047857)'
+        onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'translateY(-2px)'
-          e.currentTarget.style.boxShadow = '0 8px 15px -3px rgba(16, 185, 129, 0.4)'
+          e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.4)'
         }}
-        onMouseOut={(e) => {
-          e.currentTarget.style.background = 'linear-gradient(135deg, #10b981, #059669)'
+        onMouseLeave={(e) => {
           e.currentTarget.style.transform = 'translateY(0)'
-          e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(16, 185, 129, 0.3)'
+          e.currentTarget.style.boxShadow = 'none'
         }}
       >
-        🔒 Secure Your Rate
+        Secure Your Rate
       </button>
 
-      {/* Quote Details - Much More Compact */}
-      <div style={{ marginBottom: '1rem' }}>
-        <h3 style={{ fontSize: '1rem', marginBottom: '0.25rem' }}>Quote Details</h3>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: '1fr 1fr', 
-          gap: '0.5rem', 
-          fontSize: '0.8rem',
-          background: '#f8fafc',
-          padding: '0.75rem',
-          borderRadius: '6px'
-        }}>
-          <div>
-            <strong>Age:</strong> {userAge}
-          </div>
-          <div>
-            <strong>Gender:</strong> {userGender === 'male' ? 'Male' : 'Female'}
-          </div>
-          <div>
-            <strong>Coverage:</strong> ${coverageAmount.toLocaleString()}
-            {isDefaultCoverage && (
-              <span style={{ 
-                fontSize: '0.7rem', 
-                color: '#059669', 
-                marginLeft: '0.25rem',
-                fontWeight: 'normal'
-              }}>
-                (your selection)
-              </span>
-            )}
-          </div>
-          <div>
-            <strong>Policy Type:</strong> IUL
-          </div>
-        </div>
-      </div>
-
-      {/* Adjust Coverage Section - Much More Compact */}
-      <div style={{ marginBottom: '1rem' }}>
-        <h3 style={{ fontSize: '1rem', marginBottom: '0.25rem' }}>Adjust Your Coverage</h3>
-        
-        {isDefaultCoverage && (
-          <div style={{
-            background: '#f0f9ff',
-            border: '1px solid #0ea5e9',
-            borderRadius: '4px',
-            padding: '0.5rem',
-            marginBottom: '0.75rem',
-            fontSize: '0.75rem',
-            color: '#0369a1'
-          }}>
-            ✓ Coverage amount set to your previous selection of ${coverageAmount.toLocaleString()}
-          </div>
-        )}
-        
-        {/* Coverage Slider */}
-        <div style={{ marginBottom: '0.75rem' }}>
-          <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 'bold', fontSize: '0.8rem' }}>
-            Coverage Amount: ${sliderValue.toLocaleString()}
-          </label>
-          <input
-            type="range"
-            min={coverageRange.min}
-            max={coverageRange.max}
-            step={5000}
-            value={sliderValue}
-            onChange={handleSliderChange}
-            style={{
-              width: '100%',
-              height: '4px',
-              borderRadius: '2px',
-              background: '#e5e7eb',
-              outline: 'none',
-              cursor: 'pointer'
-            }}
-          />
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.25rem', fontSize: '0.7rem', color: '#6b7280' }}>
-            <span>${coverageRange.min.toLocaleString()}</span>
-            <span>${coverageRange.max.toLocaleString()}</span>
-          </div>
-        </div>
-        
-        {/* Gender Selection */}
-        <div>
-          <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 'bold', fontSize: '0.8rem' }}>Gender:</label>
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.8rem' }}>
-              <input
-                type="radio"
-                name="gender"
-                value="male"
-                checked={userGender === 'male'}
-                onChange={(e) => handleGenderChange(e.target.value)}
-              />
-              Male
-            </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.8rem' }}>
-              <input
-                type="radio"
-                name="gender"
-                value="female"
-                checked={userGender === 'female'}
-                onChange={(e) => handleGenderChange(e.target.value)}
-              />
-              Female
-            </label>
-          </div>
-        </div>
-      </div>
-
-      {/* IUL Benefits - Much More Compact */}
+      {/* Age Display */}
       <div style={{ 
-        background: '#f8fafc', 
-        padding: '0.75rem', 
-        borderRadius: '6px',
-        marginBottom: '1rem'
+        marginTop: '1rem', 
+        fontSize: '0.8rem', 
+        color: '#6b7280',
+        fontStyle: 'italic'
       }}>
-        <h3 style={{ fontSize: '1rem', marginBottom: '0.25rem' }}>IUL Benefits</h3>
-        <ul style={{ textAlign: 'left', listStyle: 'none', padding: 0, fontSize: '0.75rem', margin: 0 }}>
-          <li style={{ marginBottom: '0.125rem' }}>✓ Cash value growth potential</li>
-          <li style={{ marginBottom: '0.125rem' }}>✓ Flexible premium payments</li>
-          <li style={{ marginBottom: '0.125rem' }}>✓ Death benefit protection</li>
-          <li style={{ marginBottom: '0.125rem' }}>✓ Living benefits available</li>
-        </ul>
-      </div>
-
-      {/* Cash Value Growth Calculator */}
-      <div style={{ 
-        background: 'linear-gradient(135deg, #f0f9ff, #e0f2fe)', 
-        padding: '0.75rem', 
-        borderRadius: '6px',
-        marginBottom: '1rem',
-        border: '1px solid #0ea5e9'
-      }}>
-        <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: '#0369a1' }}>
-          💰 Cash Value Growth Potential
-        </h3>
-        <p style={{ fontSize: '0.7rem', color: '#0369a1', marginBottom: '0.5rem', fontStyle: 'italic' }}>
-          Projected growth based on 6% annual rate (conservative estimate)
-        </p>
-        
-        <div style={{ display: 'grid', gap: '0.5rem' }}>
-          {calculateCashValueGrowth(coverageAmount, monthlyPremium).map((projection) => (
-            <div key={projection.year} style={{
-              background: 'white',
-              padding: '0.5rem',
-              borderRadius: '4px',
-              border: '1px solid #e0f2fe',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              fontSize: '0.75rem'
-            }}>
-              <div>
-                <strong style={{ color: '#0369a1' }}>{projection.year} Years</strong>
-                <div style={{ fontSize: '0.65rem', color: '#6b7280' }}>
-                  Premiums: ${projection.totalPremiums.toLocaleString()}
-                </div>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontWeight: 'bold', color: '#059669', fontSize: '0.8rem' }}>
-                  ${projection.projectedValue.toLocaleString()}
-                </div>
-                <div style={{ fontSize: '0.65rem', color: '#059669' }}>
-                  +${projection.growth.toLocaleString()} growth
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        Age: {userAge} years old
       </div>
     </div>
   )
