@@ -3,24 +3,8 @@
  * Matches FunnelStore.ts structure exactly
  */
 
-const CONFIG = {
-  EMAIL: {
-    ADMIN: 'lindsey08092@gmail.com',
-    FROM: 'lindsey08092@gmail.com',
-    TO: 'lindsey08092@gmail.com',
-    REPLY_TO: 'lindsey08092@gmail.com'
-  },
-  GOOGLE_SHEET: {
-    SHEET_ID: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
-    SHEET_NAME: 'Veteran Legacy Life Funnel Data'
-  },
-  COMPANY: {
-    NAME: 'Veteran Legacy Life',
-    PHONE: '(800) VET-INSURANCE',
-    PHONE_DIALABLE: '180083847467',
-    WEBSITE: 'https://veteranlegacylife.com'
-  }
-};
+// Configuration is now managed in env.gs
+// CONFIG object is available from env.gs file
 
 // Column mapping for 51 columns
 const SHEET_COLUMNS = {
@@ -42,6 +26,14 @@ const SHEET_COLUMNS = {
 
 function doPost(e) {
   try {
+    // Initialize configuration
+    if (!initializeConfig()) {
+      return ContentService.createTextOutput(JSON.stringify({
+        success: false,
+        error: 'Configuration initialization failed'
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+    
     Logger.log(`Processing request`);
     Logger.log(`e.postData: ${JSON.stringify(e.postData)}`);
     Logger.log(`e.parameter: ${JSON.stringify(e.parameter)}`);
@@ -250,6 +242,20 @@ function handleApplicationSubmission(data, sessionId) {
     }
     Logger.log(`[${sessionId}] Row written successfully`);
     
+    // Send application completion email
+    try {
+      Logger.log(`[${sessionId}] Sending application completion email`);
+      sendApplicationCompleteEmail(data);
+      rowData[SHEET_COLUMNS.COMPLETED_EMAIL_SENT - 1] = 'Yes';
+      // Update the email flag in the sheet
+      if (existingRow) {
+        sheet.getRange(existingRow, SHEET_COLUMNS.COMPLETED_EMAIL_SENT, 1, 1).setValue('Yes');
+      }
+      Logger.log(`[${sessionId}] Application completion email sent successfully`);
+    } catch (emailError) {
+      Logger.log(`[${sessionId}] Error sending application completion email: ${emailError.toString()}`);
+    }
+    
     return {
       success: true,
       sessionId: sessionId,
@@ -440,6 +446,20 @@ function handleLeadSubmission(data, sessionId) {
       sheet.appendRow(rowData);
     }
     
+    // Send lead notification email
+    try {
+      Logger.log(`[${sessionId}] Sending lead notification email`);
+      sendLeadNotification(data);
+      rowData[SHEET_COLUMNS.COMPLETED_EMAIL_SENT - 1] = 'Yes';
+      // Update the email flag in the sheet
+      if (existingRow) {
+        sheet.getRange(existingRow, SHEET_COLUMNS.COMPLETED_EMAIL_SENT, 1, 1).setValue('Yes');
+      }
+      Logger.log(`[${sessionId}] Lead notification email sent successfully`);
+    } catch (emailError) {
+      Logger.log(`[${sessionId}] Error sending lead notification email: ${emailError.toString()}`);
+    }
+    
     return {
       success: true,
       sessionId: sessionId,
@@ -522,6 +542,20 @@ function handleLeadPartialSubmission(data, sessionId) {
     } else {
       Logger.log(`[${sessionId}] Creating new row`);
       sheet.appendRow(rowData);
+    }
+    
+    // Send partial lead abandonment email
+    try {
+      Logger.log(`[${sessionId}] Sending partial lead abandonment email`);
+      sendPartialLeadEmail(data, sessionId);
+      rowData[SHEET_COLUMNS.PARTIAL_EMAIL_SENT - 1] = 'Yes';
+      // Update the email flag in the sheet
+      if (existingRow) {
+        sheet.getRange(existingRow, SHEET_COLUMNS.PARTIAL_EMAIL_SENT, 1, 1).setValue('Yes');
+      }
+      Logger.log(`[${sessionId}] Partial lead abandonment email sent successfully`);
+    } catch (emailError) {
+      Logger.log(`[${sessionId}] Error sending partial lead abandonment email: ${emailError.toString()}`);
     }
     
     return {

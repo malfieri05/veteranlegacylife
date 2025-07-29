@@ -8,6 +8,9 @@
  * 3. COMPLETE APPLICATION - Application confirmation + Admin notification
  */
 
+// Configuration is managed in env.gs
+// CONFIG object is available from env.gs file
+
 // =============== NEW LEAD NOTIFICATIONS ===============
 
 function sendLeadNotification(data) {
@@ -41,10 +44,11 @@ function sendLeadNotification(data) {
     const html = generateLeadNotificationHTML(emailData);
     
     // Send admin notification
+    const emailConfig = getEmailConfig();
     MailApp.sendEmail({
-      to: CONFIG.EMAIL.ADMIN,
-      from: CONFIG.EMAIL.FROM,
-      replyTo: CONFIG.EMAIL.REPLY_TO,
+      to: emailConfig.ADMIN,
+      from: emailConfig.FROM,
+      replyTo: emailConfig.REPLY_TO,
       subject: `🚨 NEW LEAD: ${emailData.firstName} ${emailData.lastName} (${emailData.branchOfService})`,
       htmlBody: html
     });
@@ -86,10 +90,11 @@ function sendLeadConfirmation(data) {
     const html = generateLeadConfirmationHTML(emailData);
     
     // Send email to customer
+    const emailConfig = getEmailConfig();
     MailApp.sendEmail({
       to: emailData.email,
-      from: CONFIG.EMAIL.FROM,
-      replyTo: CONFIG.EMAIL.REPLY_TO,
+      from: emailConfig.FROM,
+      replyTo: emailConfig.REPLY_TO,
       subject: `Thank you for your interest in Veteran Legacy Life Insurance`,
       htmlBody: html
     });
@@ -153,10 +158,11 @@ function sendPartialLeadEmail(data, sessionId) {
     const html = generateAbandonmentAlertHTML(emailData);
     
     // Send admin alert
+    const emailConfig = getEmailConfig();
     MailApp.sendEmail({
-      to: CONFIG.EMAIL.ADMIN,
-      from: CONFIG.EMAIL.FROM,
-      replyTo: CONFIG.EMAIL.REPLY_TO,
+      to: emailConfig.ADMIN,
+      from: emailConfig.FROM,
+      replyTo: emailConfig.REPLY_TO,
       subject: `⚠️ ABANDONED LEAD: ${emailData.firstName} ${emailData.lastName} - Follow up needed`,
       htmlBody: html
     });
@@ -193,10 +199,11 @@ function sendAbandonmentRecoveryEmail(data) {
     
     const html = generateAbandonmentRecoveryHTML(emailData);
     
+    const emailConfig = getEmailConfig();
     MailApp.sendEmail({
       to: emailData.email,
-      from: CONFIG.EMAIL.FROM,
-      replyTo: CONFIG.EMAIL.REPLY_TO,
+      from: emailConfig.FROM,
+      replyTo: emailConfig.REPLY_TO,
       subject: `Complete Your Veteran Legacy Life Insurance Application`,
       htmlBody: html
     });
@@ -233,6 +240,75 @@ function sendAbandonmentAlertSMS(data) {
 }
 
 // =============== COMPLETE APPLICATION NOTIFICATIONS ===============
+
+function sendApplicationCompleteEmail(data) {
+  Logger.log('Sending COMPLETE APPLICATION notification');
+  
+  try {
+    // Parse form data
+    const parsedFormData = {
+      contactInfo: data.contactInfo || {},
+      preQualification: data.preQualification || {},
+      medicalAnswers: data.medicalAnswers || {},
+      applicationData: data.applicationData || {},
+      quoteData: data.quoteData || {}
+    };
+    
+    // Build email data
+    const emailData = {
+      firstName: parsedFormData.contactInfo?.firstName || '',
+      lastName: parsedFormData.contactInfo?.lastName || '',
+      email: parsedFormData.contactInfo?.email || '',
+      phone: parsedFormData.contactInfo?.phone || '',
+      militaryStatus: parsedFormData.preQualification?.militaryStatus || '',
+      branchOfService: parsedFormData.preQualification?.branchOfService || '',
+      coverageAmount: parsedFormData.preQualification?.coverageAmount || '',
+      state: parsedFormData.preQualification?.state || '',
+      streetAddress: parsedFormData.applicationData?.streetAddress || '',
+      city: parsedFormData.applicationData?.city || '',
+      applicationState: parsedFormData.applicationData?.state || '',
+      zipCode: parsedFormData.applicationData?.zipCode || '',
+      beneficiaryName: parsedFormData.applicationData?.beneficiaryName || '',
+      beneficiaryRelationship: parsedFormData.applicationData?.beneficiaryRelationship || '',
+      vaNumber: parsedFormData.applicationData?.vaNumber || '',
+      serviceConnected: parsedFormData.applicationData?.serviceConnected || '',
+      ssn: encryptSensitiveData(parsedFormData.applicationData?.ssn || ''),
+      driversLicense: encryptSensitiveData(parsedFormData.applicationData?.driversLicense || ''),
+      bankName: parsedFormData.applicationData?.bankName || '',
+      routingNumber: encryptSensitiveData(parsedFormData.applicationData?.routingNumber || ''),
+      accountNumber: encryptSensitiveData(parsedFormData.applicationData?.accountNumber || ''),
+      policyDate: parsedFormData.quoteData?.policyDate || '',
+      quoteCoverage: parsedFormData.quoteData?.coverage || '',
+      quotePremium: parsedFormData.quoteData?.premium || '',
+      quoteAge: parsedFormData.quoteData?.age || '',
+      quoteGender: parsedFormData.quoteData?.gender || '',
+      quoteType: parsedFormData.quoteData?.type || ''
+    };
+    
+    // Generate HTML email
+    const html = generateApplicationCompleteHTML(emailData);
+    
+    // Send admin notification
+    const emailConfig = getEmailConfig();
+    MailApp.sendEmail({
+      to: emailConfig.ADMIN,
+      from: emailConfig.FROM,
+      replyTo: emailConfig.REPLY_TO,
+      subject: `✅ APPLICATION COMPLETE: ${emailData.firstName} ${emailData.lastName} - ${emailData.quoteCoverage} Coverage`,
+      htmlBody: html
+    });
+    
+    // Send customer confirmation
+    sendApplicationConfirmation(data);
+    
+    Logger.log('COMPLETE APPLICATION notifications sent successfully');
+    return true;
+    
+  } catch (error) {
+    Logger.log('Error sending COMPLETE APPLICATION notifications:', error.toString());
+    return false;
+  }
+}
 
 function sendApplicationNotification(data, sessionId) {
   Logger.log('Sending COMPLETE APPLICATION notification');
@@ -282,10 +358,11 @@ function sendApplicationNotification(data, sessionId) {
     const html = generateApplicationCompleteHTML(emailData);
     
     // Send admin notification
+    const emailConfig = getEmailConfig();
     MailApp.sendEmail({
-      to: CONFIG.EMAIL.ADMIN,
-      from: CONFIG.EMAIL.FROM,
-      replyTo: CONFIG.EMAIL.REPLY_TO,
+      to: emailConfig.ADMIN,
+      from: emailConfig.FROM,
+      replyTo: emailConfig.REPLY_TO,
       subject: `✅ APPLICATION COMPLETE: ${emailData.firstName} ${emailData.lastName} - ${emailData.quoteCoverage} Coverage`,
       htmlBody: html
     });
@@ -330,10 +407,11 @@ function sendApplicationConfirmation(data) {
     const html = generateApplicationConfirmationHTML(emailData);
     
     // Send email to customer
+    const emailConfig = getEmailConfig();
     MailApp.sendEmail({
       to: emailData.email,
-      from: CONFIG.EMAIL.FROM,
-      replyTo: CONFIG.EMAIL.REPLY_TO,
+      from: emailConfig.FROM,
+      replyTo: emailConfig.REPLY_TO,
       subject: `Your Veteran Legacy Life Insurance Application is Complete`,
       htmlBody: html
     });
@@ -399,6 +477,7 @@ function generateSubject(type, data) {
 // =============== HTML TEMPLATE GENERATORS ===============
 
 function generateLeadNotificationHTML(data) {
+  const companyConfig = getCompanyConfig();
   return `
     <!DOCTYPE html>
     <html>
@@ -454,8 +533,8 @@ function generateLeadNotificationHTML(data) {
         
         <div class="footer">
           <p><strong>Veteran Legacy Life</strong></p>
-          <p>Phone: <a href="tel:${CONFIG.COMPANY.PHONE_DIALABLE}">${CONFIG.COMPANY.PHONE}</a></p>
-          <p>Website: <a href="${CONFIG.COMPANY.WEBSITE}">${CONFIG.COMPANY.WEBSITE}</a></p>
+          <p>Phone: <a href="tel:${companyConfig.PHONE_DIALABLE}">${companyConfig.PHONE}</a></p>
+          <p>Website: <a href="${companyConfig.WEBSITE}">${companyConfig.WEBSITE}</a></p>
         </div>
       </div>
     </body>
@@ -464,6 +543,7 @@ function generateLeadNotificationHTML(data) {
 }
 
 function generateLeadConfirmationHTML(data) {
+  const companyConfig = getCompanyConfig();
   return `
     <!DOCTYPE html>
     <html>
@@ -505,13 +585,13 @@ function generateLeadConfirmationHTML(data) {
             <p>We understand the unique needs of veterans and their families, and we're committed to finding you the best insurance options available.</p>
           </div>
           
-          <p>If you have any questions, please don't hesitate to contact us at ${CONFIG.COMPANY.PHONE}.</p>
+          <p>If you have any questions, please don't hesitate to contact us at ${companyConfig.PHONE}.</p>
         </div>
         
         <div class="footer">
           <p><strong>Veteran Legacy Life</strong></p>
-          <p>Phone: <a href="tel:${CONFIG.COMPANY.PHONE_DIALABLE}">${CONFIG.COMPANY.PHONE}</a></p>
-          <p>Website: <a href="${CONFIG.COMPANY.WEBSITE}">${CONFIG.COMPANY.WEBSITE}</a></p>
+          <p>Phone: <a href="tel:${companyConfig.PHONE_DIALABLE}">${companyConfig.PHONE}</a></p>
+          <p>Website: <a href="${companyConfig.WEBSITE}">${companyConfig.WEBSITE}</a></p>
         </div>
       </div>
     </body>
@@ -520,6 +600,7 @@ function generateLeadConfirmationHTML(data) {
 }
 
 function generateApplicationCompleteHTML(data) {
+  const companyConfig = getCompanyConfig();
   return `
     <!DOCTYPE html>
     <html>
@@ -591,8 +672,8 @@ function generateApplicationCompleteHTML(data) {
         
         <div class="footer">
           <p><strong>Veteran Legacy Life</strong></p>
-          <p>Phone: <a href="tel:${CONFIG.COMPANY.PHONE_DIALABLE}">${CONFIG.COMPANY.PHONE}</a></p>
-          <p>Website: <a href="${CONFIG.COMPANY.WEBSITE}">${CONFIG.COMPANY.WEBSITE}</a></p>
+          <p>Phone: <a href="tel:${companyConfig.PHONE_DIALABLE}">${companyConfig.PHONE}</a></p>
+          <p>Website: <a href="${companyConfig.WEBSITE}">${companyConfig.WEBSITE}</a></p>
         </div>
       </div>
     </body>
@@ -601,6 +682,7 @@ function generateApplicationCompleteHTML(data) {
 }
 
 function generateApplicationConfirmationHTML(data) {
+  const companyConfig = getCompanyConfig();
   return `
     <!DOCTYPE html>
     <html>
@@ -644,13 +726,13 @@ function generateApplicationConfirmationHTML(data) {
             <p>Our team will review your application and contact you within 1-2 business days to discuss next steps and answer any questions you may have.</p>
           </div>
           
-          <p>If you have any questions or need to make changes to your application, please contact us at ${CONFIG.COMPANY.PHONE}.</p>
+          <p>If you have any questions or need to make changes to your application, please contact us at ${companyConfig.PHONE}.</p>
         </div>
         
         <div class="footer">
           <p><strong>Veteran Legacy Life</strong></p>
-          <p>Phone: <a href="tel:${CONFIG.COMPANY.PHONE_DIALABLE}">${CONFIG.COMPANY.PHONE}</a></p>
-          <p>Website: <a href="${CONFIG.COMPANY.WEBSITE}">${CONFIG.COMPANY.WEBSITE}</a></p>
+          <p>Phone: <a href="tel:${companyConfig.PHONE_DIALABLE}">${companyConfig.PHONE}</a></p>
+          <p>Website: <a href="${companyConfig.WEBSITE}">${companyConfig.WEBSITE}</a></p>
         </div>
       </div>
     </body>
@@ -659,6 +741,7 @@ function generateApplicationConfirmationHTML(data) {
 }
 
 function generateAbandonmentAlertHTML(data) {
+  const companyConfig = getCompanyConfig();
   return `
     <!DOCTYPE html>
     <html>
@@ -700,8 +783,8 @@ function generateAbandonmentAlertHTML(data) {
         
         <div class="footer">
           <p><strong>Veteran Legacy Life</strong></p>
-          <p>Phone: <a href="tel:${CONFIG.COMPANY.PHONE_DIALABLE}">${CONFIG.COMPANY.PHONE}</a></p>
-          <p>Website: <a href="${CONFIG.COMPANY.WEBSITE}">${CONFIG.COMPANY.WEBSITE}</a></p>
+          <p>Phone: <a href="tel:${companyConfig.PHONE_DIALABLE}">${companyConfig.PHONE}</a></p>
+          <p>Website: <a href="${companyConfig.WEBSITE}">${companyConfig.WEBSITE}</a></p>
         </div>
       </div>
     </body>
@@ -710,6 +793,7 @@ function generateAbandonmentAlertHTML(data) {
 }
 
 function generateAbandonmentRecoveryHTML(data) {
+  const companyConfig = getCompanyConfig();
   return `
     <!DOCTYPE html>
     <html>
@@ -758,13 +842,13 @@ function generateAbandonmentRecoveryHTML(data) {
             </ul>
           </div>
           
-          <p>If you have any questions or need assistance, please contact us at ${CONFIG.COMPANY.PHONE}.</p>
+          <p>If you have any questions or need assistance, please contact us at ${companyConfig.PHONE}.</p>
         </div>
         
         <div class="footer">
           <p><strong>Veteran Legacy Life</strong></p>
-          <p>Phone: <a href="tel:${CONFIG.COMPANY.PHONE_DIALABLE}">${CONFIG.COMPANY.PHONE}</a></p>
-          <p>Website: <a href="${CONFIG.COMPANY.WEBSITE}">${CONFIG.COMPANY.WEBSITE}</a></p>
+          <p>Phone: <a href="tel:${companyConfig.PHONE_DIALABLE}">${companyConfig.PHONE}</a></p>
+          <p>Website: <a href="${companyConfig.WEBSITE}">${companyConfig.WEBSITE}</a></p>
         </div>
       </div>
     </body>

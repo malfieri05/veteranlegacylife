@@ -114,9 +114,8 @@ export const ContactInfo: React.FC = () => {
               required
             />
             <div style={{ fontSize: '0.875rem', lineHeight: '1.4' }}>
-              <strong>Transactional Communications Consent</strong>
               <div style={{ color: '#6b7280', fontSize: '0.8rem', marginTop: '0.25rem' }}>
-                I consent to receive transactional communications related to my insurance quote and application, including policy updates, billing information, and customer service communications.
+                By checking this box, I consent to receive transactional messages related to my account, orders, or services I have requested. These messages may include appointment reminders, order confirmations, and account notifications among others. Message frequency may vary. Message & Data rates may apply. Reply HELP for help or STOP to opt-out.
               </div>
             </div>
           </label>
@@ -132,9 +131,8 @@ export const ContactInfo: React.FC = () => {
               required
             />
             <div style={{ fontSize: '0.875rem', lineHeight: '1.4' }}>
-              <strong>Marketing Communications Consent</strong>
               <div style={{ color: '#6b7280', fontSize: '0.8rem', marginTop: '0.25rem' }}>
-                I consent to receive marketing communications about insurance products, special offers, and educational content. You can unsubscribe at any time.
+                By checking this box, I consent to receive marketing and promotional messages, including special offers, discounts, new product updates among others. Message frequency may vary. Message & Data rates may apply. Reply HELP for help or STOP to opt-out.
               </div>
             </div>
           </label>
