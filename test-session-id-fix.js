@@ -1,4 +1,4 @@
-const API_URL = 'https://script.google.com/macros/s/AKfycbyFqNQ287iDflUlQSzykwqcCRQvHmCYyzW_MoSzXx75xSVEAyeTy0MPVJ8xEC8TVSLa/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwrKTAqdDQ1RvUsxY7FZ01oQrI0wIpAwo-FxMnUydR6yM0CgkKkRoQb64TB5JdRComq/exec';
 
 async function testSessionIdFix() {
   console.log('🧪 Testing Session ID Fix...');
