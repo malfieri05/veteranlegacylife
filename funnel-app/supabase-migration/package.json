@@ -1,0 +1,39 @@
+{
+  "name": "veteran-legacy-life-supabase-migration",
+  "version": "1.0.0",
+  "description": "Supabase migration for Veteran Legacy Life funnel system",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "migrate": "supabase db push",
+    "reset": "supabase db reset",
+    "studio": "supabase studio"
+  },
+  "dependencies": {
+    "@sendgrid/mail": "^8.0.0",
+    "@supabase/supabase-js": "^2.39.0",
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "twilio": "^4.19.0",
+    "typescript": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "^14.0.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0",
+    "supabase": "^1.100.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+} 
