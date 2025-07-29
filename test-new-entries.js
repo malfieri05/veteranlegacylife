@@ -8,7 +8,7 @@ async function testNewEntries() {
   try {
     console.log('🧪 Running testNewEntriesAndEmails...');
     
-    const response = await fetch('https://script.google.com/macros/s/AKfycbzazjteF5Fe23WPW3iOYkR6y4RadAV_63pP84tNBiufkSLxaG3e7pv9Kd6LSMfL7mzI/exec', {
+    const response = await fetch('https://script.google.com/macros/s/AKfycbwwx8DFd4EihzRrWAGWKKBVNityjCSaQoJGAmbAzRRIFFRgSDDPZdyATZl-GTZApA6I/exec', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
