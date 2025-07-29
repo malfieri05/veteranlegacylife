@@ -638,8 +638,21 @@ function testNewEntriesAndEmails() {
 
 function setupHeaders() {
   try {
+    Logger.log('Opening spreadsheet with ID: ' + CONFIG.GOOGLE_SHEET.SHEET_ID);
     const spreadsheet = SpreadsheetApp.openById(CONFIG.GOOGLE_SHEET.SHEET_ID);
-    const sheet = spreadsheet.getSheetByName(CONFIG.GOOGLE_SHEET.SHEET_NAME);
+    
+    if (!spreadsheet) {
+      throw new Error('Could not open spreadsheet with ID: ' + CONFIG.GOOGLE_SHEET.SHEET_ID);
+    }
+    
+    Logger.log('Looking for sheet: ' + CONFIG.GOOGLE_SHEET.SHEET_NAME);
+    let sheet = spreadsheet.getSheetByName(CONFIG.GOOGLE_SHEET.SHEET_NAME);
+    
+    // If sheet doesn't exist, create it
+    if (!sheet) {
+      Logger.log('Sheet not found, creating new sheet: ' + CONFIG.GOOGLE_SHEET.SHEET_NAME);
+      sheet = spreadsheet.insertSheet(CONFIG.GOOGLE_SHEET.SHEET_NAME);
+    }
     
     // Define headers for 51 columns
     const headers = [
@@ -697,8 +710,10 @@ function setupHeaders() {
     ];
     
     // Clear existing headers and set new ones
+    Logger.log('Clearing existing data and setting headers...');
     sheet.clear();
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    Logger.log('Headers set successfully');
     
     // Format header row
     const headerRange = sheet.getRange(1, 1, 1, headers.length);
