@@ -96,7 +96,8 @@ function handleApplicationSubmission(data, sessionId) {
   Logger.log(`[${sessionId}] Processing Application submission`);
   
   try {
-    const sheet = SpreadsheetApp.getActiveSheet();
+    const spreadsheet = SpreadsheetApp.openById(CONFIG.GOOGLE_SHEET.SHEET_ID);
+    const sheet = spreadsheet.getSheetByName(CONFIG.GOOGLE_SHEET.SHEET_NAME);
     const rowData = new Array(51).fill('');
     
     // Contact Info (columns 5-11)
@@ -195,7 +196,8 @@ function handlePartialSubmission(data, sessionId) {
   Logger.log(`[${sessionId}] Quote data received: ${JSON.stringify(data.quoteData)}`);
   
   try {
-    const sheet = SpreadsheetApp.getActiveSheet();
+    const spreadsheet = SpreadsheetApp.openById(CONFIG.GOOGLE_SHEET.SHEET_ID);
+    const sheet = spreadsheet.getSheetByName(CONFIG.GOOGLE_SHEET.SHEET_NAME);
     const rowData = new Array(51).fill('');
     
     // Same mapping as Application but with Partial status
@@ -282,7 +284,8 @@ function handleLeadSubmission(data, sessionId) {
   Logger.log(`[${sessionId}] Processing Lead submission`);
   
   try {
-    const sheet = SpreadsheetApp.getActiveSheet();
+    const spreadsheet = SpreadsheetApp.openById(CONFIG.GOOGLE_SHEET.SHEET_ID);
+    const sheet = spreadsheet.getSheetByName(CONFIG.GOOGLE_SHEET.SHEET_NAME);
     const rowData = new Array(51).fill('');
     
     // Same mapping as Application but with Lead status
@@ -358,7 +361,8 @@ function handleLeadPartialSubmission(data, sessionId) {
   Logger.log(`[${sessionId}] Processing LeadPartial submission`);
   
   try {
-    const sheet = SpreadsheetApp.getActiveSheet();
+    const spreadsheet = SpreadsheetApp.openById(CONFIG.GOOGLE_SHEET.SHEET_ID);
+    const sheet = spreadsheet.getSheetByName(CONFIG.GOOGLE_SHEET.SHEET_NAME);
     const rowData = new Array(51).fill('');
     
     // Same mapping as Application but with LeadPartial status
