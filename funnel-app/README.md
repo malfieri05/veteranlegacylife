@@ -2,22 +2,14 @@
 
 A drop-in React funnel component for the Veteran Life Insurance website that provides a smooth, modern user experience while maintaining all existing business logic.
 
-## Features
+## 🚀 Quick Start
 
-- ✅ **Drop-in Integration**: No changes needed to existing pages/structure
-- ✅ **Easy Testing**: Can be tested alongside current funnel
-- ✅ **Instant Revert**: Can be removed instantly if issues arise
-- ✅ **All Functionality Preserved**: Maintains existing business logic
-- ✅ **Smooth UX**: Professional, modern user experience
-- ✅ **Mobile Responsive**: Works perfectly on all devices
-- ✅ **Google Sheets Integration**: Maintains existing data flow
+### Prerequisites
+- Node.js 18+
+- npm or yarn
 
-## Quick Start
-
-### 1. Build the Component
-
+### Installation & Build
 ```bash
-cd funnel-app
 npm install
 npm run build
 ```
@@ -26,44 +18,96 @@ This creates:
 - `dist/veteran-funnel.js` - The main component bundle
 - `dist/veteran-funnel.css` - The styles
 
-### 2. Integrate into Existing Site
-
+### Integration
 Copy the built files to your website directory:
-
 ```bash
 cp dist/veteran-funnel.js /path/to/your/website/
 cp dist/veteran-funnel.css /path/to/your/website/
 ```
 
-### 3. Update HTML
+## 📁 Project Structure
 
-Add these lines to your `index.html` (or any page where you want the funnel):
-
-```html
-<!-- Add in <head> section -->
-<link rel="stylesheet" href="veteran-funnel.css">
-
-<!-- Add before closing </body> tag -->
-<script src="veteran-funnel.js"></script>
+```
+funnel-app/
+├── src/                          # React application source
+│   ├── components/               # React components
+│   │   ├── steps/               # Funnel step components (18 steps)
+│   │   └── shared/              # Shared UI components
+│   ├── store/                   # Zustand state management
+│   ├── config/                  # Configuration files
+│   ├── services/                # API services
+│   ├── utils/                   # Utility functions
+│   └── styles/                  # Global styles
+├── google_scripts/              # Google Apps Script (modular)
+│   ├── Main.gs                  # Main entry point
+│   ├── Templates.gs             # Email templates
+│   ├── README.md                # Script documentation
+│   ├── DEPLOYMENT_GUIDE.md      # Deployment guide
+│   └── FUNCTIONALITY_COMPARISON.md
+├── archive/                     # Archived files (organized)
+│   ├── debugging/               # Debug and test files
+│   ├── legacy/                  # Legacy monolithic files
+│   └── documentation/           # Original documentation
+├── dist/                        # Build output
+├── public/                      # Static assets
+├── README.md                    # This file
+├── package.json                 # Dependencies
+├── vite.config.ts              # Vite configuration
+└── tsconfig.json               # TypeScript config
 ```
 
-### 4. Replace Funnel Triggers
+## 🎯 Features
 
-Replace existing funnel trigger code:
+- ✅ **Drop-in Integration**: No changes needed to existing pages/structure
+- ✅ **Easy Testing**: Can be tested alongside current funnel
+- ✅ **Instant Revert**: Can be removed instantly if issues arise
+- ✅ **All Functionality Preserved**: Maintains existing business logic
+- ✅ **Smooth UX**: Professional, modern user experience
+- ✅ **Mobile Responsive**: Works perfectly on all devices
+- ✅ **Google Sheets Integration**: Maintains existing data flow
+- ✅ **Clean Architecture**: Modular, maintainable code structure
 
-```javascript
-// OLD CODE (replace this):
-// document.querySelector('.qualify-button').addEventListener('click', openFunnelModal);
+## 🔧 Development
 
-// NEW CODE (use this):
-document.querySelector('.qualify-button').addEventListener('click', () => {
-  window.VeteranFunnel.open();
-});
+### Available Scripts
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run type-check   # TypeScript type checking
 ```
 
-## API Reference
+### Environment Variables
+Create `.env.local` for local development:
+```env
+VITE_API_URL=https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec
+```
 
-The component exposes a global `window.VeteranFunnel` object with these methods:
+## 📊 Funnel Flow
+
+### Phase 1: Pre-Qualification (Steps 1-11)
+1. **State Selection** - Choose your state
+2. **Military Status** - Veteran, Active Duty, etc.
+3. **Branch of Service** - Army, Navy, Air Force, etc.
+4. **Marital Status** - Single, Married, etc.
+5. **Coverage Amount** - $10K to $1M options
+6. **Contact Information** → **FIRST SUBMISSION** (Google Sheets)
+7. **Tobacco Use** - Yes/No/Former
+8. **Medical Conditions** - Multi-select
+9. **Height & Weight** - BMI calculation
+10. **Hospital Care** - Recent hospital visits
+11. **Diabetes Medication** → Loading → "Pre-Qualified!"
+
+### Phase 2: Quote & Application (Steps 12-18)
+12. **IUL Quote Modal** - Age-based calculations
+13. **"Lock in Quote"** → Application Step 1 (Address, Beneficiary, VA Info)
+14. **Application Step 2** (SSN, Banking, Policy Date)
+15. **Final Success Modal** - Personalized confirmation
+16. **SECOND SUBMISSION** (Complete application data to Google Sheets)
+
+## 🔌 API Reference
+
+The component exposes a global `window.VeteranFunnel` object:
 
 ```javascript
 // Open the funnel modal
@@ -79,120 +123,163 @@ window.VeteranFunnel.isOpen()
 window.VeteranFunnel.reset()
 ```
 
-## Funnel Flow
+## 🛠️ Integration
 
-### Phase 1: Pre-Qualification (Steps 1-11)
-1. **State Selection** - Choose your state
-2. **Military Status** - Veteran, Active Duty, etc.
-3. **Branch of Service** - Army, Navy, Air Force, etc.
-4. **Marital Status** - Single, Married, etc.
-5. **Coverage Amount** - $10K to $1M options
-6. **Contact Information** → **FIRST SUBMISSION** (Google Sheets)
-7. **Tobacco Use** - Yes/No/Former
-8. **Medical Conditions** - Multi-select
-9. **Height & Weight** - BMI calculation
-10. **Hospital Care** - Recent hospital visits
-11. **Diabetes Medication** → Loading → "Pre-Qualified!"
+### HTML Integration
+Add these lines to your `index.html`:
 
-### Phase 2: Quote & Application (Steps 12-16)
-12. **IUL Quote Modal** - Age-based calculations
-13. **"Lock in Quote"** → Application Step 1 (Address, Beneficiary, VA Info)
-14. **Application Step 2** (SSN, Banking, Policy Date)
-15. **Final Success Modal** - Personalized confirmation
-16. **SECOND SUBMISSION** (Complete application data to Google Sheets)
+```html
+<!-- Add in <head> section -->
+<link rel="stylesheet" href="veteran-funnel.css">
 
-## Development
-
-### Local Development
-
-```bash
-npm run dev
+<!-- Add before closing </body> tag -->
+<script src="veteran-funnel.js"></script>
 ```
 
-### Build for Production
+### JavaScript Integration
+Replace existing funnel trigger code:
 
+```javascript
+// OLD CODE (replace this):
+// document.querySelector('.qualify-button').addEventListener('click', openFunnelModal);
+
+// NEW CODE (use this):
+document.querySelector('.qualify-button').addEventListener('click', () => {
+  window.VeteranFunnel.open();
+});
+```
+
+## 📋 Data Collection
+
+### Contact Information
+- First name, last name, email, phone
+- Date of birth, consent preferences
+- Marketing and transactional consent
+
+### Military Service
+- Military status (Veteran, Active Duty, etc.)
+- Branch of service
+- VA number and service-connected status
+
+### Medical Information
+- Tobacco use history
+- Medical conditions
+- Height, weight, BMI calculation
+- Hospital care history
+- Diabetes medication
+
+### Financial Information
+- Street address, city, state, zip code
+- Beneficiary information
+- SSN (encrypted)
+- Banking information (encrypted)
+
+### Insurance Preferences
+- Coverage amount selection
+- Quote calculations
+- Policy date preferences
+
+## 🔒 Security & Privacy
+
+### Data Protection
+- SSN encryption in Google Sheets
+- Banking information encryption
+- Secure data transmission
+- Privacy-compliant data handling
+
+### Consent Management
+- Transactional consent tracking
+- Marketing consent preferences
+- Clear privacy policy integration
+
+## 🧪 Testing
+
+### Development Testing
+```bash
+npm run dev
+# Open http://localhost:5173
+# Test all funnel steps
+```
+
+### Production Testing
+```bash
+npm run build
+# Deploy dist/ files
+# Test in production environment
+```
+
+### Google Apps Script Testing
+- Test data submission to Google Sheets
+- Verify email notifications
+- Check SMS alerts
+- Validate data encryption
+
+## 📚 Documentation
+
+- [Archive Documentation](./archive/README.md) - Archived files and legacy code
+- [Google Apps Script Guide](./google_scripts/README.md) - Script documentation
+- [Deployment Guide](./google_scripts/DEPLOYMENT_GUIDE.md) - Deployment instructions
+
+## 🚀 Deployment
+
+### Production Build
 ```bash
 npm run build
 ```
 
-### Type Checking
+### File Deployment
+Copy these files to your website:
+- `dist/veteran-funnel.js`
+- `dist/veteran-funnel.css`
 
-```bash
-npm run type-check
+### Google Apps Script Deployment
+1. Copy code from `google_scripts/Main.gs`
+2. Deploy to Google Apps Script
+3. Update API URL in configuration
+4. Test data submission
+
+## 🔧 Troubleshooting
+
+### Common Issues
+- **Component not loading**: Check file paths and script loading order
+- **Styles not applied**: Verify CSS file is loaded correctly
+- **Form not submitting**: Check Google Apps Script URL and permissions
+- **Mobile issues**: Test on actual mobile devices
+
+### Debug Mode
+Enable debug logging in development:
+```javascript
+// Add to your page
+window.VETERAN_FUNNEL_DEBUG = true;
 ```
 
-## File Structure
+## 📈 Performance
 
-```
-funnel-app/
-├── src/
-│   ├── main.tsx              # Entry point & global API
-│   ├── components/
-│   │   ├── FunnelModal.tsx   # Main modal component
-│   │   ├── steps/            # Individual step components
-│   │   └── shared/           # Reusable components
-│   ├── store/
-│   │   └── funnelStore.ts    # Zustand state management
-│   ├── utils/
-│   │   ├── calculations.ts   # Quote calculations
-│   │   └── validation.ts     # Form validation
-│   └── styles/
-│       └── globals.css       # Component styles
-├── dist/                     # Built files
-├── vite.config.ts           # Vite configuration
-└── package.json
-```
+### Optimizations
+- ✅ **Code Splitting**: Lazy-loaded components
+- ✅ **Tree Shaking**: Unused code elimination
+- ✅ **Minification**: Compressed production builds
+- ✅ **Caching**: Optimized asset delivery
 
-## Integration Checklist
+### Bundle Size
+- **Development**: ~2MB (with source maps)
+- **Production**: ~300KB (minified)
+- **CSS**: ~6KB (optimized)
 
-- [ ] Build the component (`npm run build`)
-- [ ] Copy `veteran-funnel.js` and `veteran-funnel.css` to website
-- [ ] Add CSS link to `<head>` section
-- [ ] Add JS script before `</body>` tag
-- [ ] Replace funnel trigger code with `window.VeteranFunnel.open()`
-- [ ] Test on desktop and mobile
-- [ ] Verify Google Sheets integration
-- [ ] Test form validation and error handling
-- [ ] Verify all business logic preserved
+## 🤝 Contributing
 
-## Troubleshooting
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
-### Component Not Loading
-- Check browser console for errors
-- Verify file paths are correct
-- Ensure scripts are loaded in correct order
+## 📄 License
 
-### Styles Not Applied
-- Check CSS file is loaded
-- Verify CSS variables are available
-- Check for CSS conflicts
+ISC License - See package.json for details.
 
-### Form Not Submitting
-- Check network tab for failed requests
-- Verify Google Apps Script endpoint is correct
-- Check form validation errors
+---
 
-### Mobile Issues
-- Test on actual mobile devices
-- Check viewport meta tag
-- Verify touch targets are 44px minimum
-
-## Rollback Plan
-
-If issues arise, you can instantly revert:
-
-1. Remove the script and CSS links
-2. Restore original funnel trigger code
-3. The React component will be completely removed
-
-## Support
-
-For integration issues or questions, check:
-1. Browser console for errors
-2. Network tab for failed requests
-3. Component state in React DevTools
-4. Google Apps Script logs
-
-## License
-
-ISC License - See package.json for details. 
+**Version:** 2.0.0 (Clean Architecture)
+**Last Updated:** January 2025
+**Status:** Production Ready 
