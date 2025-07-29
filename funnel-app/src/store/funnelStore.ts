@@ -156,11 +156,14 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
   isModalOpen: false,
   isLoading: false,
   autoAdvanceEnabled: true,
-  sessionId: generateSessionId(),
+  sessionId: '',
   formData: initialState,
 
   setCurrentStep: (step) => set({ currentStep: step }),
-  openModal: () => set({ isModalOpen: true }),
+  openModal: () => set({ 
+    isModalOpen: true,
+    sessionId: generateSessionId() // Generate session ID when funnel starts
+  }),
   closeModal: () => set({ isModalOpen: false }),
   setLoading: (loading) => set({ isLoading: loading }),
   setAutoAdvanceEnabled: (enabled) => set({ autoAdvanceEnabled: enabled }),
@@ -530,7 +533,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
     currentStep: 1,
     isModalOpen: false,
     isLoading: false,
-    sessionId: generateSessionId(),
+    sessionId: '', // Clear session ID on reset
     formData: initialState
   })
 })) 
