@@ -80,11 +80,11 @@ export const StateSelection: React.FC = () => {
         name="state"
         type="select"
         value={formData.preQualification?.state || ''}
-        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+        onChange={(value: string) => {
           updateFormData({
             preQualification: {
               ...formData.preQualification,
-              state: e.target.value
+              state: value
             }
           })
           setAutoAdvanceEnabled(true)
