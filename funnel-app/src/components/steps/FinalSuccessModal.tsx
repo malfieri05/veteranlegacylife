@@ -4,11 +4,11 @@ import { useFunnelStore } from '../../store/funnelStore'
 export const FinalSuccessModal: React.FC = () => {
   const { formData, closeModal } = useFunnelStore()
   
-  const monthlyPremium = formData.quoteData?.monthlyPremium || 0
-  const coverageAmount = formData.quoteData?.coverageAmount || 0
-  const userAge = formData.quoteData?.userAge || 0
-  const userGender = formData.quoteData?.userGender || ''
-  const quoteType = formData.quoteData?.quoteType || 'IUL'
+  const monthlyPremium = parseFloat(formData.quoteData?.premium?.replace('$', '').replace(',', '') || '0')
+  const coverageAmount = parseFloat(formData.quoteData?.coverage?.replace('$', '').replace(',', '') || '0')
+  const userAge = parseInt(formData.quoteData?.age || '0')
+  const userGender = formData.quoteData?.gender || ''
+  const quoteType = formData.quoteData?.type || 'IUL'
 
   return (
     <div style={{ textAlign: 'center', padding: '1.5rem', maxWidth: '600px', margin: '0 auto' }}>

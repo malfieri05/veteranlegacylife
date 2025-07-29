@@ -105,6 +105,9 @@ export const IULQuoteModal: React.FC = () => {
   }
 
   const handleSecureRate = () => {
+    console.log('🔍 IULQuoteModal - handleSecureRate called!')
+    console.log('🔍 IULQuoteModal - Current values:', { coverageAmount, monthlyPremium, userAge, userGender, insuranceType })
+    
     // Save quote data and move to next step
     const quoteData = {
       policyDate: new Date().toISOString().split('T')[0], // Today's date

@@ -19,7 +19,10 @@ export const ApplicationStep2: React.FC = () => {
     }
     
     updateFormData({
-      ssn: formatted
+      applicationData: {
+        ...formData.applicationData,
+        ssn: formatted
+      }
     })
     // Trigger partial save after each field change
     setTimeout(() => {
@@ -29,7 +32,10 @@ export const ApplicationStep2: React.FC = () => {
 
   const handleBankingChange = (field: string, value: string) => {
     updateFormData({
-      [field]: value
+      applicationData: {
+        ...formData.applicationData,
+        [field]: value
+      }
     })
     // Trigger partial save after each field change
     setTimeout(() => {
@@ -39,7 +45,10 @@ export const ApplicationStep2: React.FC = () => {
 
   const handlePolicyDateChange = (value: string) => {
     updateFormData({
-      policyDate: value
+      quoteData: {
+        ...formData.quoteData,
+        policyDate: value
+      }
     })
     // Trigger partial save after each field change
     setTimeout(() => {
@@ -60,7 +69,7 @@ export const ApplicationStep2: React.FC = () => {
             type="text"
             id="ssn"
             name="ssn"
-            value={formData.ssn || ''}
+            value={formData.applicationData?.ssn || ''}
             onChange={(e) => handleSSNChange(e.target.value)}
             placeholder="XXX-XX-XXXX"
             maxLength={11}
@@ -78,7 +87,7 @@ export const ApplicationStep2: React.FC = () => {
               type="text"
               id="bankName"
               name="bankName"
-              value={formData.bankName || ''}
+              value={formData.applicationData?.bankName || ''}
               onChange={(e) => handleBankingChange('bankName', e.target.value)}
               required
             />
@@ -89,7 +98,7 @@ export const ApplicationStep2: React.FC = () => {
               type="text"
               id="routingNumber"
               name="routingNumber"
-              value={formData.routingNumber || ''}
+              value={formData.applicationData?.routingNumber || ''}
               onChange={(e) => handleBankingChange('routingNumber', e.target.value)}
               placeholder="9 digits"
               maxLength={9}
@@ -102,7 +111,7 @@ export const ApplicationStep2: React.FC = () => {
               type="text"
               id="accountNumber"
               name="accountNumber"
-              value={formData.accountNumber || ''}
+              value={formData.applicationData?.accountNumber || ''}
               onChange={(e) => handleBankingChange('accountNumber', e.target.value)}
               placeholder="Account number"
               required
@@ -119,7 +128,7 @@ export const ApplicationStep2: React.FC = () => {
             type="date"
             id="policyDate"
             name="policyDate"
-            value={formData.policyDate || ''}
+            value={formData.quoteData?.policyDate || ''}
             onChange={(e) => handlePolicyDateChange(e.target.value)}
             required
           />

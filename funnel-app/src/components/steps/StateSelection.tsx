@@ -58,10 +58,7 @@ const states = [
 export const StateSelection: React.FC = () => {
   const { formData, updateFormData, goToNextStep, autoAdvanceEnabled, setAutoAdvanceEnabled } = useFunnelStore()
   
-  const handleStateChange = (value: string) => {
-    updateFormData({ state: value })
-    setAutoAdvanceEnabled(true)
-  }
+
 
   // Auto-continue when state is selected and auto-advance is enabled
   useEffect(() => {
@@ -83,7 +80,7 @@ export const StateSelection: React.FC = () => {
         name="state"
         type="select"
         value={formData.preQualification?.state || ''}
-        onChange={(e) => {
+        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
           updateFormData({
             preQualification: {
               ...formData.preQualification,
