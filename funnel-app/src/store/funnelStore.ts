@@ -160,10 +160,14 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
   formData: initialState,
 
   setCurrentStep: (step) => set({ currentStep: step }),
-  openModal: () => set({ 
-    isModalOpen: true,
-    sessionId: generateSessionId() // Generate session ID when funnel starts
-  }),
+  openModal: () => {
+    const newSessionId = generateSessionId();
+    console.log('🎯 OPENING MODAL - Generated new session ID:', newSessionId);
+    set({ 
+      isModalOpen: true,
+      sessionId: newSessionId
+    });
+  },
   closeModal: () => set({ isModalOpen: false }),
   setLoading: (loading) => set({ isLoading: loading }),
   setAutoAdvanceEnabled: (enabled) => set({ autoAdvanceEnabled: enabled }),
@@ -174,6 +178,17 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
 
   submitPartial: async (currentStep: number, stepName: string) => {
     const { formData, sessionId } = get()
+    
+    console.log(`🎯 SUBMIT PARTIAL - Step ${currentStep} (${stepName}) - Session ID: ${sessionId}`)
+    console.log(`🎯 Current store state:`, { currentStep: get().currentStep, sessionId: get().sessionId, isModalOpen: get().isModalOpen })
+    
+    // Check if session ID is empty and regenerate if needed
+    if (!sessionId) {
+      console.log('⚠️ WARNING: Session ID is empty! Regenerating...');
+      const newSessionId = generateSessionId();
+      set({ sessionId: newSessionId });
+      console.log('🎯 Generated new session ID:', newSessionId);
+    }
     
     try {
       const payload = {
@@ -457,8 +472,10 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
   },
 
   goToNextStep: () => {
-    const { currentStep } = get()
+    const { currentStep, sessionId } = get()
     const nextStep = currentStep + 1
+    
+    console.log(`🎯 GO TO NEXT STEP - From step ${currentStep} to ${nextStep} - Session ID: ${sessionId}`)
     
     // Submit partial data after every step (except the last step)
     if (currentStep < 18) {
@@ -529,11 +546,14 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
     }
   },
   
-  reset: () => set({
-    currentStep: 1,
-    isModalOpen: false,
-    isLoading: false,
-    sessionId: '', // Clear session ID on reset
-    formData: initialState
-  })
+  reset: () => {
+    console.log('🎯 RESET CALLED - Clearing session ID');
+    set({
+      currentStep: 1,
+      isModalOpen: false,
+      isLoading: false,
+      sessionId: '', // Clear session ID on reset
+      formData: initialState
+    });
+  }
 })) 

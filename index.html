@@ -1123,7 +1123,8 @@
     <script src="js/modules/api.js"></script>
     <script src="js/modules/forms.js"></script>
     <script src="js/modules/modals.js"></script>
-    <script src="js/modules/funnel.js"></script>
+    <!-- OLD FUNNEL DISABLED - Using React funnel instead -->
+    <!-- <script src="js/modules/funnel.js"></script> -->
     <script src="js/modules/quotes.js"></script>
     <script src="js/modules/tracking.js"></script>
     
@@ -1844,11 +1845,11 @@
                     
                     // Check if React funnel is available
                     if (window.VeteranFunnel && typeof window.VeteranFunnel.open === 'function') {
+                        console.log('✅ React funnel available, opening...');
                         window.VeteranFunnel.open();
                     } else {
                         console.error('❌ React funnel not loaded');
-                        // Fallback to original funnel
-                        openFunnelModal();
+                        alert('React funnel not loaded. Please refresh the page.');
                     }
                 });
             });
