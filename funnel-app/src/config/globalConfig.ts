@@ -4,7 +4,7 @@
 export const GLOBAL_CONFIG = {
   // Google Apps Script Deployment URL
   GOOGLE_APPS_SCRIPT: {
-    URL: 'https://script.google.com/macros/s/AKfycbwwx8DFd4EihzRrWAGWKKBVNityjCSaQoJGAmbAzRRIFFRgSDDPZdyATZl-GTZApA6I/exec'
+    URL: 'https://script.google.com/macros/s/AKfycbyFqNQ287iDflUlQSzykwqcCRQvHmCYyzW_MoSzXx75xSVEAyeTy0MPVJ8xEC8TVSLa/exec'
   },
   
   // Email Configuration

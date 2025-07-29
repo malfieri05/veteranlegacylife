@@ -44,22 +44,72 @@ function doPost(e) {
   try {
     const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     Logger.log(`[${sessionId}] Processing request`);
+    Logger.log(`[${sessionId}] e.postData: ${JSON.stringify(e.postData)}`);
+    Logger.log(`[${sessionId}] e.parameter: ${JSON.stringify(e.parameter)}`);
     
     // Check for test function call first
     if (e.postData && e.postData.contents) {
-      const data = JSON.parse(e.postData.contents);
-      if (data.action === 'testNewEntriesAndEmails') {
-        Logger.log(`[${sessionId}] Running testNewEntriesAndEmails`);
-        return testNewEntriesAndEmails();
-      }
-      if (data.action === 'setupHeaders') {
-        Logger.log(`[${sessionId}] Running setupHeaders`);
-        return setupHeaders();
+      // Try to parse as JSON first for test functions
+      try {
+        const data = JSON.parse(e.postData.contents);
+        if (data.action === 'testNewEntriesAndEmails') {
+          Logger.log(`[${sessionId}] Running testNewEntriesAndEmails`);
+          return testNewEntriesAndEmails();
+        }
+        if (data.action === 'setupHeaders') {
+          Logger.log(`[${sessionId}] Running setupHeaders`);
+          return setupHeaders();
+        }
+      } catch (e) {
+        // Not JSON, continue with URL-encoded parsing
       }
     }
     
-    // Parse the incoming data
-    const parsedData = JSON.parse(e.postData.contents);
+    // Parse the incoming data - handle both JSON and URL-encoded
+    let parsedData;
+    
+    // For URL-encoded data, Google Apps Script provides it in e.parameter
+    if (e.parameter && Object.keys(e.parameter).length > 0) {
+      parsedData = {};
+      for (const [key, value] of Object.entries(e.parameter)) {
+        try {
+          // Try to parse as JSON for complex objects
+          parsedData[key] = JSON.parse(value);
+        } catch (e) {
+          // Keep as string if not valid JSON
+          parsedData[key] = value;
+        }
+      }
+    } else if (e.postData && e.postData.contents) {
+      // Try JSON parsing for JSON data
+      try {
+        parsedData = JSON.parse(e.postData.contents);
+      } catch (e) {
+        // Fall back to URL-encoded parsing
+        const content = e.postData.contents;
+        parsedData = {};
+        
+        // Parse URL-encoded parameters manually
+        const pairs = content.split('&');
+        for (const pair of pairs) {
+          const [key, value] = pair.split('=');
+          if (key && value) {
+            const decodedKey = decodeURIComponent(key);
+            const decodedValue = decodeURIComponent(value);
+            
+            try {
+              // Try to parse as JSON for complex objects
+              parsedData[decodedKey] = JSON.parse(decodedValue);
+            } catch (e) {
+              // Keep as string if not valid JSON
+              parsedData[decodedKey] = decodedValue;
+            }
+          }
+        }
+      }
+    } else {
+      throw new Error('No data received');
+    }
     Logger.log(`[${sessionId}] Parsed data: ${JSON.stringify(parsedData)}`);
     
     // Determine form type and route accordingly
@@ -92,8 +142,15 @@ function doPost(e) {
     return ContentService.createTextOutput(JSON.stringify({
       success: false,
       error: error.toString()
-    })).setMimeType(ContentService.MimeType.JSON);
+    }))
+    .setMimeType(ContentService.MimeType.JSON);
   }
+}
+
+function doGet(e) {
+  // Simple response for GET requests
+  return ContentService.createTextOutput('OK')
+    .setMimeType(ContentService.MimeType.TEXT);
 }
 
 function handleApplicationSubmission(data, sessionId) {

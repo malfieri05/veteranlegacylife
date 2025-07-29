@@ -190,19 +190,51 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
       console.log(`🔍 submitPartial - Step ${currentStep} (${stepName})`)
       console.log(`🔍 submitPartial - Quote data:`, formData.quoteData)
       
+      const params = new URLSearchParams();
+      for (const [key, value] of Object.entries(payload)) {
+        if (typeof value === 'object') {
+          params.append(key, JSON.stringify(value));
+        } else {
+          params.append(key, String(value));
+        }
+      }
+      
       const response = await fetch(getApiUrl(), {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: JSON.stringify(payload)
+        body: params.toString()
       })
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const result = await response.json()
+      // Parse response - Google Apps Script might return different formats
+      const responseText = await response.text();
+      console.log('🔍 Raw response:', responseText);
+      
+      let result;
+      if (responseText.startsWith('{') || responseText.startsWith('[')) {
+        // JSON response
+        try {
+          result = JSON.parse(responseText);
+        } catch (e) {
+          result = { success: false, error: 'Invalid JSON response' };
+        }
+      } else if (responseText.includes('=')) {
+        // URL-encoded response
+        const params = new URLSearchParams(responseText);
+        result = {
+          success: params.get('success') === 'true',
+          error: params.get('error') || null,
+          message: params.get('message') || null
+        };
+      } else {
+        // Plain text response
+        result = { success: true, message: responseText };
+      }
       console.log('Partial save successful:', result)
     } catch (error) {
       console.error('Error submitting partial data:', error)
@@ -227,19 +259,53 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
         }
       }
       
+      const params = new URLSearchParams();
+      for (const [key, value] of Object.entries(payload)) {
+        if (typeof value === 'object') {
+          params.append(key, JSON.stringify(value));
+        } else {
+          params.append(key, String(value));
+        }
+      }
+      
       const response = await fetch(getApiUrl(), {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: JSON.stringify(payload)
+        body: params.toString()
       })
       
       if (!response.ok) {
         throw new Error('Failed to submit lead partial data')
       }
       
-      console.log('Lead partial data submitted successfully')
+      // Parse response - Google Apps Script might return different formats
+      const responseText = await response.text();
+      console.log('🔍 Raw response:', responseText);
+      
+      let result;
+      if (responseText.startsWith('{') || responseText.startsWith('[')) {
+        // JSON response
+        try {
+          result = JSON.parse(responseText);
+        } catch (e) {
+          result = { success: false, error: 'Invalid JSON response' };
+        }
+      } else if (responseText.includes('=')) {
+        // URL-encoded response
+        const params = new URLSearchParams(responseText);
+        result = {
+          success: params.get('success') === 'true',
+          error: params.get('error') || null,
+          message: params.get('message') || null
+        };
+      } else {
+        // Plain text response
+        result = { success: true, message: responseText };
+      }
+      
+      console.log('Lead partial data submitted successfully:', result)
     } catch (error) {
       console.error('Error submitting lead partial data:', error)
     }
@@ -263,19 +329,53 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
         }
       }
       
+      const params = new URLSearchParams();
+      for (const [key, value] of Object.entries(payload)) {
+        if (typeof value === 'object') {
+          params.append(key, JSON.stringify(value));
+        } else {
+          params.append(key, String(value));
+        }
+      }
+      
       const response = await fetch(getApiUrl(), {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: JSON.stringify(payload)
+        body: params.toString()
       })
       
       if (!response.ok) {
         throw new Error('Failed to submit lead data')
       }
       
-      console.log('Lead data submitted successfully')
+      // Parse response - Google Apps Script might return different formats
+      const responseText = await response.text();
+      console.log('🔍 Raw response:', responseText);
+      
+      let result;
+      if (responseText.startsWith('{') || responseText.startsWith('[')) {
+        // JSON response
+        try {
+          result = JSON.parse(responseText);
+        } catch (e) {
+          result = { success: false, error: 'Invalid JSON response' };
+        }
+      } else if (responseText.includes('=')) {
+        // URL-encoded response
+        const params = new URLSearchParams(responseText);
+        result = {
+          success: params.get('success') === 'true',
+          error: params.get('error') || null,
+          message: params.get('message') || null
+        };
+      } else {
+        // Plain text response
+        result = { success: true, message: responseText };
+      }
+      
+      console.log('Lead data submitted successfully:', result)
     } catch (error) {
       console.error('Error submitting lead data:', error)
       alert('There was an issue submitting your information. Please try again.')
@@ -300,19 +400,53 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
         }
       }
       
+      const params = new URLSearchParams();
+      for (const [key, value] of Object.entries(payload)) {
+        if (typeof value === 'object') {
+          params.append(key, JSON.stringify(value));
+        } else {
+          params.append(key, String(value));
+        }
+      }
+      
       const response = await fetch(getApiUrl(), {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: JSON.stringify(payload)
+        body: params.toString()
       })
       
       if (!response.ok) {
         throw new Error('Failed to submit application data')
       }
       
-      console.log('Application data submitted successfully')
+      // Parse response - Google Apps Script might return different formats
+      const responseText = await response.text();
+      console.log('🔍 Raw response:', responseText);
+      
+      let result;
+      if (responseText.startsWith('{') || responseText.startsWith('[')) {
+        // JSON response
+        try {
+          result = JSON.parse(responseText);
+        } catch (e) {
+          result = { success: false, error: 'Invalid JSON response' };
+        }
+      } else if (responseText.includes('=')) {
+        // URL-encoded response
+        const params = new URLSearchParams(responseText);
+        result = {
+          success: params.get('success') === 'true',
+          error: params.get('error') || null,
+          message: params.get('message') || null
+        };
+      } else {
+        // Plain text response
+        result = { success: true, message: responseText };
+      }
+      
+      console.log('Application data submitted successfully:', result)
     } catch (error) {
       console.error('Error submitting application data:', error)
       alert('There was an issue submitting your application. Please try again.')

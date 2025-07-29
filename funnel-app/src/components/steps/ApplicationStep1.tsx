@@ -3,7 +3,7 @@ import { useFunnelStore } from '../../store/funnelStore'
 
 export const ApplicationStep1: React.FC = () => {
   const { formData, updateFormData, submitPartial } = useFunnelStore()
-
+  
   const handleAddressChange = (field: string, value: string) => {
     updateFormData({
       applicationData: {
@@ -11,6 +11,7 @@ export const ApplicationStep1: React.FC = () => {
         [field]: value
       }
     })
+    
     // Trigger partial save after each field change
     setTimeout(() => {
       submitPartial(16, 'Application Step 1')
@@ -61,6 +62,8 @@ export const ApplicationStep1: React.FC = () => {
       <h2>Application Step 1</h2>
       <p>Please provide your address, beneficiary, and VA information.</p>
       
+
+      
       <div className="form-field">
         <h3>Address Information</h3>
         <div className="form-grid">
@@ -87,13 +90,14 @@ export const ApplicationStep1: React.FC = () => {
             />
           </div>
           <div>
-            <label htmlFor="applicationState">State *</label>
+            <label htmlFor="state">State *</label>
             <input
               type="text"
-              id="applicationState"
-              name="applicationState"
+              id="state"
+              name="state"
               value={formData.applicationData?.state || ''}
-              onChange={(e) => handleAddressChange('applicationState', e.target.value)}
+              onChange={(e) => handleAddressChange('state', e.target.value)}
+              placeholder="Enter your state"
               required
             />
           </div>
