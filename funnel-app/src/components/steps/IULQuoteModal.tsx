@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useFunnelStore } from '../../store/funnelStore'
-import { calculateQuote, getInsuranceType } from '../../utils/calculations'
+import { calculateQuote, calculateAge, getInsuranceType, getCoverageRange, calculateHealthTier } from '../../utils/calculations'
 
 export const IULQuoteModal: React.FC = () => {
   const { formData, updateFormData, goToNextStep } = useFunnelStore()
@@ -47,31 +47,42 @@ export const IULQuoteModal: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    // Calculate age from date of birth
+    // Calculate age from birthday question
     if (formData.contactInfo?.dateOfBirth) {
-      const today = new Date()
-      const birthDate = new Date(formData.contactInfo.dateOfBirth)
-      const age = today.getFullYear() - birthDate.getFullYear()
-      const monthDiff = today.getMonth() - birthDate.getMonth()
-      const calculatedAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) ? age - 1 : age
-      setUserAge(calculatedAge)
+      const calculatedAge = calculateAge(formData.contactInfo.dateOfBirth);
+      setUserAge(calculatedAge);
       
-      // Determine insurance type based on age
-      const type = getInsuranceType(calculatedAge)
-      setInsuranceType(type)
+      // Determine insurance type based on calculated age
+      const type = getInsuranceType(calculatedAge);
+      setInsuranceType(type);
+      
+      console.log(`User age calculated: ${calculatedAge}, Insurance type: ${type}`);
     }
 
-    // Set initial coverage based on previous selection
-    let initialCoverage = 50000 // Default fallback
+    // Set initial coverage from previous coverage amount question
+    let initialCoverage = 25000; // Default fallback
+    
     if (formData.preQualification?.coverageAmount) {
-      const amount = parseInt(formData.preQualification.coverageAmount.replace(/[$,]/g, ''))
-      initialCoverage = amount
+      // Parse the coverage amount from the previous question
+      const previousAmount = formData.preQualification.coverageAmount;
+      const numericAmount = parseInt(previousAmount.replace(/[$,]/g, ''));
+      
+      // Use their previous selection but ensure it meets minimum requirements
+      if (userAge >= 61) {
+        // Final Expense: 5K-20K range
+        initialCoverage = Math.max(5000, Math.min(numericAmount, 20000));
+      } else {
+        // IUL: 25K+ range  
+        initialCoverage = Math.max(25000, numericAmount);
+      }
+      
+      console.log(`Previous coverage selection: ${previousAmount}, Adjusted to: ${initialCoverage}`);
     }
 
-    setCoverageAmount(initialCoverage)
-    setSliderValue(initialCoverage)
-    setIsInitialized(true)
-  }, [formData.contactInfo?.dateOfBirth, formData.preQualification?.coverageAmount])
+    setCoverageAmount(initialCoverage);
+    setSliderValue(initialCoverage);
+    setIsInitialized(true);
+  }, [formData.contactInfo?.dateOfBirth, formData.preQualification?.coverageAmount, userAge]);
 
   // Update quote when coverage, age, or gender changes
   useEffect(() => {
@@ -106,47 +117,27 @@ export const IULQuoteModal: React.FC = () => {
 
   const handleSecureRate = () => {
     console.log('🔍 IULQuoteModal - handleSecureRate called!')
-    console.log('🔍 IULQuoteModal - Current values:', { coverageAmount, monthlyPremium, userAge, userGender, insuranceType })
     
-    // Save quote data and move to next step
+    // Calculate health tier from medical answers
+    const healthTier = calculateHealthTier(formData.medicalAnswers || {});
+    
     const quoteData = {
-      policyDate: new Date().toISOString().split('T')[0], // Today's date
+      policyDate: new Date().toISOString().split('T')[0],
       coverage: `$${coverageAmount.toLocaleString()}`,
       premium: `$${monthlyPremium.toFixed(2)}`,
       age: userAge.toString(),
       gender: userGender === 'male' ? 'Male' : 'Female',
-      type: insuranceType
+      type: insuranceType,
+      healthTier: healthTier
     }
     
-    console.log('🔍 IULQuoteModal - Saving quote data:', quoteData)
+    console.log('🔍 IULQuoteModal - Saving quote data with health tier:', quoteData)
     
-    updateFormData({
-      quoteData: quoteData
-    })
-    
-    console.log('🔍 IULQuoteModal - Quote data saved, calling goToNextStep')
-    goToNextStep()
+    updateFormData({ quoteData });
+    goToNextStep();
   }
 
-  // Get coverage range based on insurance type and current coverage amount
-  const getCoverageRange = () => {
-    if (insuranceType === 'Final Expense') {
-      // Final Expense typically has lower coverage amounts
-      return { min: 5000, max: 20000 }
-    } else {
-      // IUL coverage ranges
-      const currentAmount = coverageAmount || 50000
-      if (currentAmount <= 50000) {
-        return { min: 25000, max: 100000 }
-      } else if (currentAmount <= 100000) {
-        return { min: 50000, max: 250000 }
-      } else {
-        return { min: 100000, max: 1000000 }
-      }
-    }
-  }
-
-  const coverageRange = getCoverageRange()
+  const coverageRange = getCoverageRange(insuranceType, userAge)
 
   const cashValueGrowth = insuranceType === 'IUL' ? calculateCashValueGrowth(coverageAmount, monthlyPremium) : null
 

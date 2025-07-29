@@ -16,6 +16,8 @@ export const calculateAge = (birthDate: string): number => {
 const iulData = {
   male: {
     "18-25": {
+      "25000-50000": 55,
+      "51000-100000": 75,
       "100000-250000": 85,
       "251000-500000": 165,
       "501000-1000000": 325,
@@ -23,6 +25,8 @@ const iulData = {
       "2001000-5000000": 1625
     },
     "26-30": {
+      "25000-50000": 65,
+      "51000-100000": 85,
       "100000-250000": 95,
       "251000-500000": 185,
       "501000-1000000": 365,
@@ -74,6 +78,8 @@ const iulData = {
   },
   female: {
     "18-25": {
+      "25000-50000": 45,
+      "51000-100000": 65,
       "100000-250000": 75,
       "251000-500000": 145,
       "501000-1000000": 285,
@@ -81,6 +87,8 @@ const iulData = {
       "2001000-5000000": 1425
     },
     "26-30": {
+      "25000-50000": 55,
+      "51000-100000": 75,
       "100000-250000": 85,
       "251000-500000": 165,
       "501000-1000000": 325,
@@ -427,38 +435,78 @@ export const calculateQuote = (coverageAmount: number, age: number, gender: stri
 
 // Determine insurance type based on age
 export const getInsuranceType = (age: number): 'IUL' | 'Final Expense' => {
-  return age <= 60 ? 'IUL' : 'Final Expense'
+  return age < 61 ? 'IUL' : 'Final Expense'
+}
+
+// Get coverage range based on insurance type and age
+export const getCoverageRange = (insuranceType: string, age?: number): { min: number, max: number } => {
+  if (insuranceType === 'Final Expense') {
+    return { min: 5000, max: 20000 };
+  } else {
+    // IUL coverage ranges based on age
+    if (age && age <= 30) {
+      return { min: 25000, max: 250000 };
+    } else if (age && age <= 45) {
+      return { min: 50000, max: 500000 };
+    } else {
+      return { min: 100000, max: 1000000 };
+    }
+  }
 }
 
 // Calculate health tier based on medical answers
-export const calculateHealthTier = (medicalAnswers: {
-  tobaccoUse: string
-  medicalConditions: string[]
-  hospitalCare: string
-  diabetesMedication: string
-}): 'Preferred Plus' | 'Preferred' | 'Standard' | 'Substandard' => {
-  let score = 0
+interface MedicalAnswers {
+  tobaccoUse?: string;           // 'never', 'former', 'current'
+  medicalConditions?: string;    // comma-separated string of conditions
+  hospitalCare?: string;         // 'yes', 'no'
+  diabetesMedication?: string;   // 'yes', 'no'
+}
+
+type HealthTier = 'Preferred Plus' | 'Preferred' | 'Standard' | 'Substandard';
+
+export const calculateHealthTier = (medicalAnswers: MedicalAnswers): HealthTier => {
+  // Build this using real underwriting criteria:
   
-  // Tobacco use
-  if (medicalAnswers.tobaccoUse === 'No') score += 2
-  else if (medicalAnswers.tobaccoUse === 'Former') score += 1
+  // Start with best tier and downgrade based on risk factors
+  let tier: HealthTier = 'Preferred Plus';
   
-  // Medical conditions
-  if (medicalAnswers.medicalConditions.length === 0) score += 2
-  else if (medicalAnswers.medicalConditions.length <= 2) score += 1
+  // Tobacco use impact
+  if (medicalAnswers.tobaccoUse === 'current') {
+    tier = 'Substandard';
+  } else if (medicalAnswers.tobaccoUse === 'former') {
+    tier = tier === 'Preferred Plus' ? 'Preferred' : tier;
+  }
   
-  // Hospital care
-  if (medicalAnswers.hospitalCare === 'No') score += 2
-  else if (medicalAnswers.hospitalCare === 'Over 5 years ago') score += 1
+  // Medical conditions impact
+  const conditionsString = medicalAnswers.medicalConditions || '';
+  const conditions = conditionsString ? conditionsString.split(',').map(c => c.trim()) : [];
+  const majorConditions = ['heart-disease', 'cancer', 'stroke', 'kidney-disease'];
+  const minorConditions = ['high-blood-pressure', 'diabetes', 'depression'];
   
-  // Diabetes medication
-  if (medicalAnswers.diabetesMedication === 'No') score += 2
+  const hasMajorCondition = conditions.some(c => majorConditions.includes(c));
+  const minorConditionCount = conditions.filter(c => minorConditions.includes(c)).length;
   
-  // Determine tier based on score
-  if (score >= 7) return 'Preferred Plus'
-  if (score >= 5) return 'Preferred'
-  if (score >= 3) return 'Standard'
-  return 'Substandard'
+  if (hasMajorCondition) {
+    tier = 'Substandard';
+  } else if (minorConditionCount >= 2) {
+    tier = tier === 'Preferred Plus' ? 'Standard' : tier;
+  } else if (minorConditionCount === 1) {
+    tier = tier === 'Preferred Plus' ? 'Preferred' : tier;
+  }
+  
+  // Hospital care impact
+  if (medicalAnswers.hospitalCare === 'yes') {
+    tier = tier === 'Preferred Plus' ? 'Preferred' : 
+          tier === 'Preferred' ? 'Standard' : tier;
+  }
+  
+  // Diabetes medication impact
+  if (medicalAnswers.diabetesMedication === 'yes') {
+    tier = tier === 'Preferred Plus' ? 'Standard' : 
+          tier === 'Preferred' ? 'Standard' : tier;
+  }
+  
+  return tier;
 }
 
 // Format currency
