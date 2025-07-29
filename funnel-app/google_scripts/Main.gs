@@ -139,12 +139,23 @@ function handleApplicationSubmission(data, sessionId) {
     rowData[SHEET_COLUMNS.ACCOUNT_NUMBER - 1] = data.applicationData?.accountNumber || '';
     
     // Quote Data (columns 36-41) - CRITICAL FIX
-    rowData[SHEET_COLUMNS.POLICY_DATE - 1] = data.quoteData?.policyDate || '';
-    rowData[SHEET_COLUMNS.QUOTE_COVERAGE - 1] = data.quoteData?.coverage || '';
-    rowData[SHEET_COLUMNS.QUOTE_PREMIUM - 1] = data.quoteData?.premium || '';
-    rowData[SHEET_COLUMNS.QUOTE_AGE - 1] = data.quoteData?.age || '';
-    rowData[SHEET_COLUMNS.QUOTE_GENDER - 1] = data.quoteData?.gender || '';
-    rowData[SHEET_COLUMNS.QUOTE_TYPE - 1] = data.quoteData?.type || '';
+    const policyDate = data.quoteData?.policyDate || '';
+    const quoteCoverage = data.quoteData?.coverage || '';
+    const quotePremium = data.quoteData?.premium || '';
+    const quoteAge = data.quoteData?.age || '';
+    const quoteGender = data.quoteData?.gender || '';
+    const quoteType = data.quoteData?.type || '';
+    
+    Logger.log(`[${sessionId}] Quote data values: policyDate=${policyDate}, coverage=${quoteCoverage}, premium=${quotePremium}, age=${quoteAge}, gender=${quoteGender}, type=${quoteType}`);
+    
+    rowData[SHEET_COLUMNS.POLICY_DATE - 1] = policyDate;
+    rowData[SHEET_COLUMNS.QUOTE_COVERAGE - 1] = quoteCoverage;
+    rowData[SHEET_COLUMNS.QUOTE_PREMIUM - 1] = quotePremium;
+    rowData[SHEET_COLUMNS.QUOTE_AGE - 1] = quoteAge;
+    rowData[SHEET_COLUMNS.QUOTE_GENDER - 1] = quoteGender;
+    rowData[SHEET_COLUMNS.QUOTE_TYPE - 1] = quoteType;
+    
+    Logger.log(`[${sessionId}] Quote data array positions: [35]=${rowData[35]}, [36]=${rowData[36]}, [37]=${rowData[37]}, [38]=${rowData[38]}, [39]=${rowData[39]}, [40]=${rowData[40]}`);
     
     // Tracking (columns 42-49)
     rowData[SHEET_COLUMNS.CURRENT_STEP - 1] = data.trackingData?.currentStep || '';
@@ -181,6 +192,7 @@ function handleApplicationSubmission(data, sessionId) {
 
 function handlePartialSubmission(data, sessionId) {
   Logger.log(`[${sessionId}] Processing Partial submission`);
+  Logger.log(`[${sessionId}] Quote data received: ${JSON.stringify(data.quoteData)}`);
   
   try {
     const sheet = SpreadsheetApp.getActiveSheet();
@@ -222,12 +234,23 @@ function handlePartialSubmission(data, sessionId) {
     rowData[SHEET_COLUMNS.ROUTING_NUMBER - 1] = data.applicationData?.routingNumber || '';
     rowData[SHEET_COLUMNS.ACCOUNT_NUMBER - 1] = data.applicationData?.accountNumber || '';
     
-    rowData[SHEET_COLUMNS.POLICY_DATE - 1] = data.quoteData?.policyDate || '';
-    rowData[SHEET_COLUMNS.QUOTE_COVERAGE - 1] = data.quoteData?.coverage || '';
-    rowData[SHEET_COLUMNS.QUOTE_PREMIUM - 1] = data.quoteData?.premium || '';
-    rowData[SHEET_COLUMNS.QUOTE_AGE - 1] = data.quoteData?.age || '';
-    rowData[SHEET_COLUMNS.QUOTE_GENDER - 1] = data.quoteData?.gender || '';
-    rowData[SHEET_COLUMNS.QUOTE_TYPE - 1] = data.quoteData?.type || '';
+    const policyDate = data.quoteData?.policyDate || '';
+    const quoteCoverage = data.quoteData?.coverage || '';
+    const quotePremium = data.quoteData?.premium || '';
+    const quoteAge = data.quoteData?.age || '';
+    const quoteGender = data.quoteData?.gender || '';
+    const quoteType = data.quoteData?.type || '';
+    
+    Logger.log(`[${sessionId}] Partial - Quote data values: policyDate=${policyDate}, coverage=${quoteCoverage}, premium=${quotePremium}, age=${quoteAge}, gender=${quoteGender}, type=${quoteType}`);
+    
+    rowData[SHEET_COLUMNS.POLICY_DATE - 1] = policyDate;
+    rowData[SHEET_COLUMNS.QUOTE_COVERAGE - 1] = quoteCoverage;
+    rowData[SHEET_COLUMNS.QUOTE_PREMIUM - 1] = quotePremium;
+    rowData[SHEET_COLUMNS.QUOTE_AGE - 1] = quoteAge;
+    rowData[SHEET_COLUMNS.QUOTE_GENDER - 1] = quoteGender;
+    rowData[SHEET_COLUMNS.QUOTE_TYPE - 1] = quoteType;
+    
+    Logger.log(`[${sessionId}] Partial - Quote data array positions: [35]=${rowData[35]}, [36]=${rowData[36]}, [37]=${rowData[37]}, [38]=${rowData[38]}, [39]=${rowData[39]}, [40]=${rowData[40]}`);
     
     rowData[SHEET_COLUMNS.CURRENT_STEP - 1] = data.trackingData?.currentStep || '';
     rowData[SHEET_COLUMNS.STEP_NAME - 1] = data.trackingData?.stepName || '';

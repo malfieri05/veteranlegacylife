@@ -106,16 +106,22 @@ export const IULQuoteModal: React.FC = () => {
 
   const handleSecureRate = () => {
     // Save quote data and move to next step
+    const quoteData = {
+      policyDate: new Date().toISOString().split('T')[0], // Today's date
+      coverage: `$${coverageAmount.toLocaleString()}`,
+      premium: `$${monthlyPremium.toFixed(2)}`,
+      age: userAge.toString(),
+      gender: userGender === 'male' ? 'Male' : 'Female',
+      type: insuranceType
+    }
+    
+    console.log('🔍 IULQuoteModal - Saving quote data:', quoteData)
+    
     updateFormData({
-      quoteData: {
-        policyDate: new Date().toISOString().split('T')[0], // Today's date
-        coverage: `$${coverageAmount.toLocaleString()}`,
-        premium: `$${monthlyPremium.toFixed(2)}`,
-        age: userAge.toString(),
-        gender: userGender === 'male' ? 'Male' : 'Female',
-        type: insuranceType
-      }
+      quoteData: quoteData
     })
+    
+    console.log('🔍 IULQuoteModal - Quote data saved, calling goToNextStep')
     goToNextStep()
   }
 

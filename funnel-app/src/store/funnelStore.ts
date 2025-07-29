@@ -187,6 +187,9 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
         }
       }
       
+      console.log(`🔍 submitPartial - Step ${currentStep} (${stepName})`)
+      console.log(`🔍 submitPartial - Quote data:`, formData.quoteData)
+      
       const response = await fetch(getApiUrl(), {
         method: 'POST',
         headers: {
@@ -320,8 +323,8 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
     const { currentStep } = get()
     const nextStep = currentStep + 1
     
-    // Submit partial data after every step (except the last step and application steps)
-    if (currentStep < 18 && currentStep !== 16 && currentStep !== 17) {
+    // Submit partial data after every step (except the last step)
+    if (currentStep < 18) {
       const stepNames = [
         'State Selection',
         'Military Status',
