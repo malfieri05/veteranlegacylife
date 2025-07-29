@@ -6,6 +6,7 @@ import { validateContactInfo } from '../../utils/validation'
 export const ContactInfo: React.FC = () => {
   const { formData, updateFormData, goToNextStep, autoAdvanceEnabled, setAutoAdvanceEnabled } = useFunnelStore()
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false)
   
   const handleContactInfoChange = (field: keyof typeof formData.contactInfo, value: string | boolean) => {
     updateFormData({
@@ -26,24 +27,34 @@ export const ContactInfo: React.FC = () => {
   
   const validateForm = () => {
     const validation = validateContactInfo(formData.contactInfo)
-    setErrors(validation.errors)
+    // Only show errors if user has attempted to submit
+    if (hasAttemptedSubmit) {
+      setErrors(validation.errors)
+    }
     return validation.isValid
   }
   
-  // Validate form when component mounts and when form data changes
+  // Only validate and show errors when user has attempted to submit
   React.useEffect(() => {
-    if (formData.contactInfo.firstName || formData.contactInfo.lastName || formData.contactInfo.email || formData.contactInfo.phone) {
+    if (hasAttemptedSubmit && (formData.contactInfo.firstName || formData.contactInfo.lastName || formData.contactInfo.email || formData.contactInfo.phone)) {
       validateForm()
     }
-  }, [formData.contactInfo])
+  }, [formData.contactInfo, hasAttemptedSubmit])
   
   // Auto-advance when all required fields are filled and form is valid
   useEffect(() => {
-    if (autoAdvanceEnabled && validateForm()) {
-      const timer = setTimeout(() => {
-        goToNextStep()
-      }, 500) // Small delay for better UX
-      return () => clearTimeout(timer)
+    if (autoAdvanceEnabled) {
+      const validation = validateContactInfo(formData.contactInfo)
+      if (validation.isValid) {
+        const timer = setTimeout(() => {
+          goToNextStep()
+        }, 500) // Small delay for better UX
+        return () => clearTimeout(timer)
+      } else {
+        // If form is invalid and auto-advance is enabled, user has attempted to submit
+        setHasAttemptedSubmit(true)
+        setErrors(validation.errors)
+      }
     }
   }, [formData.contactInfo, autoAdvanceEnabled, goToNextStep])
   
