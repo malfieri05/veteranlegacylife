@@ -10,22 +10,25 @@ export const Birthday: React.FC = () => {
 
   // Initialize from existing dateOfBirth if available
   useEffect(() => {
-    if (formData.dateOfBirth) {
-      const parts = formData.dateOfBirth.split('/')
+    if (formData.contactInfo?.dateOfBirth) {
+      const parts = formData.contactInfo.dateOfBirth.split('/')
       if (parts.length === 3) {
         setMonth(parts[0])
         setDay(parts[1])
         setYear(parts[2])
       }
     }
-  }, [formData.dateOfBirth])
+  }, [formData.contactInfo?.dateOfBirth])
 
   // Update dateOfBirth when month, day, or year changes
   useEffect(() => {
     if (month && day && year) {
       const dateString = `${month}/${day}/${year}`
       updateFormData({
-        dateOfBirth: dateString
+        contactInfo: {
+          ...formData.contactInfo,
+          dateOfBirth: dateString
+        }
       })
     }
   }, [month, day, year])

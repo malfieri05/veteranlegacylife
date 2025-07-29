@@ -4,15 +4,15 @@ import { useFunnelStore } from '../../store/funnelStore'
 export const MaritalStatus: React.FC = () => {
   const { formData, updateFormData, goToNextStep, autoAdvanceEnabled, setAutoAdvanceEnabled } = useFunnelStore()
 
-  // Auto-continue when a selection is made (only if auto-advance is enabled)
+  // Auto-continue when marital status is selected and auto-advance is enabled
   useEffect(() => {
-    if (formData.maritalStatus && autoAdvanceEnabled) {
+    if (formData.preQualification?.maritalStatus && autoAdvanceEnabled) {
       const timer = setTimeout(() => {
         goToNextStep()
       }, 500) // Small delay for better UX
       return () => clearTimeout(timer)
     }
-  }, [formData.maritalStatus, autoAdvanceEnabled, goToNextStep])
+  }, [formData.preQualification?.maritalStatus, autoAdvanceEnabled, goToNextStep])
 
   return (
     <div>
@@ -26,10 +26,14 @@ export const MaritalStatus: React.FC = () => {
                 type="radio"
                 name="maritalStatus"
                 value={status}
-                checked={formData.maritalStatus === status}
-                onChange={(e) => {
-                  updateFormData({ maritalStatus: e.target.value })
-                  // Re-enable auto-advance when user makes a selection
+                checked={formData.preQualification?.maritalStatus === status}
+                onChange={() => {
+                  updateFormData({
+                    preQualification: {
+                      ...formData.preQualification,
+                      maritalStatus: status
+                    }
+                  })
                   setAutoAdvanceEnabled(true)
                 }}
               />

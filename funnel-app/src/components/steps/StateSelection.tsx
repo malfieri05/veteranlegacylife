@@ -63,15 +63,15 @@ export const StateSelection: React.FC = () => {
     setAutoAdvanceEnabled(true)
   }
 
-  // Auto-advance when state is selected
+  // Auto-continue when state is selected and auto-advance is enabled
   useEffect(() => {
-    if (formData.state && autoAdvanceEnabled) {
+    if (formData.preQualification?.state && autoAdvanceEnabled) {
       const timer = setTimeout(() => {
         goToNextStep()
-      }, 500)
+      }, 500) // Small delay for better UX
       return () => clearTimeout(timer)
     }
-  }, [formData.state, autoAdvanceEnabled, goToNextStep])
+  }, [formData.preQualification?.state, autoAdvanceEnabled, goToNextStep])
   
   return (
     <div>
@@ -82,8 +82,16 @@ export const StateSelection: React.FC = () => {
         label="State"
         name="state"
         type="select"
-        value={formData.state}
-        onChange={handleStateChange}
+        value={formData.preQualification?.state || ''}
+        onChange={(e) => {
+          updateFormData({
+            preQualification: {
+              ...formData.preQualification,
+              state: e.target.value
+            }
+          })
+          setAutoAdvanceEnabled(true)
+        }}
         options={states}
         required
         placeholder="Select your state"

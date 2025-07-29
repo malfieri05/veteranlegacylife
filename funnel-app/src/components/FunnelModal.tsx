@@ -66,7 +66,7 @@ export const FunnelModal: React.FC = () => {
       case 13:
         return (
           <StreamingLoadingSpinner
-            branchOfService={formData.branchOfService || 'Military'}
+            branchOfService={formData.preQualification?.branchOfService || 'Military'}
             isVisible={true}
             onComplete={() => goToNextStep()}
           />
@@ -92,20 +92,20 @@ export const FunnelModal: React.FC = () => {
   const canGoNext = () => {
     switch (currentStep) {
       case 1:
-        return !!formData.state
+        return !!formData.preQualification?.state
       case 2:
-        return !!formData.militaryStatus
+        return !!formData.preQualification?.militaryStatus
       case 3:
-        return !!formData.branchOfService
+        return !!formData.preQualification?.branchOfService
       case 4:
-        return !!formData.maritalStatus
+        return !!formData.preQualification?.maritalStatus
       case 5:
-        return !!formData.coverageAmount
+        return !!formData.preQualification?.coverageAmount
       case 6:
         const validation = validateContactInfo(formData.contactInfo)
         return validation.isValid
       case 7:
-        return !!formData.dateOfBirth
+        return !!formData.contactInfo?.dateOfBirth
       case 8:
         return !!formData.medicalAnswers?.tobaccoUse
       case 9:
@@ -146,21 +146,21 @@ export const FunnelModal: React.FC = () => {
   }
 
   const isApplicationStep1Complete = () => {
-    return !!formData.streetAddress &&
-           !!formData.city &&
-           !!formData.applicationState &&
-           !!formData.zipCode &&
-           !!formData.beneficiaryName &&
-           !!formData.beneficiaryRelationship &&
-           !!formData.driversLicense
+    return !!formData.applicationData?.streetAddress &&
+           !!formData.applicationData?.city &&
+           !!formData.applicationData?.state &&
+           !!formData.applicationData?.zipCode &&
+           !!formData.applicationData?.beneficiaryName &&
+           !!formData.applicationData?.beneficiaryRelationship &&
+           !!formData.applicationData?.driversLicense
   }
 
   const isApplicationStep2Complete = () => {
-    return !!formData.ssn &&
-           !!formData.bankName &&
-           !!formData.routingNumber &&
-           !!formData.accountNumber &&
-           !!formData.policyDate
+    return !!formData.applicationData?.ssn &&
+           !!formData.applicationData?.bankName &&
+           !!formData.applicationData?.routingNumber &&
+           !!formData.applicationData?.accountNumber &&
+           !!formData.quoteData?.policyDate
   }
 
   if (!isModalOpen) return null

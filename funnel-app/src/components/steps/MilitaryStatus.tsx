@@ -13,15 +13,15 @@ const militaryOptions = [
 export const MilitaryStatus: React.FC = () => {
   const { formData, updateFormData, goToNextStep, autoAdvanceEnabled, setAutoAdvanceEnabled } = useFunnelStore()
 
-  // Auto-continue when a selection is made (only if auto-advance is enabled)
+  // Auto-continue when military status is selected and auto-advance is enabled
   useEffect(() => {
-    if (formData.militaryStatus && autoAdvanceEnabled) {
+    if (formData.preQualification?.militaryStatus && autoAdvanceEnabled) {
       const timer = setTimeout(() => {
         goToNextStep()
       }, 500) // Small delay for better UX
       return () => clearTimeout(timer)
     }
-  }, [formData.militaryStatus, autoAdvanceEnabled, goToNextStep])
+  }, [formData.preQualification?.militaryStatus, autoAdvanceEnabled, goToNextStep])
   
   const handleMilitaryStatusChange = (value: string) => {
     updateFormData({ militaryStatus: value })
@@ -43,8 +43,16 @@ export const MilitaryStatus: React.FC = () => {
                 type="radio"
                 name="militaryStatus"
                 value={option.value}
-                checked={formData.militaryStatus === option.value}
-                onChange={(e) => handleMilitaryStatusChange(e.target.value)}
+                checked={formData.preQualification?.militaryStatus === option.value}
+                onChange={() => {
+                  updateFormData({
+                    preQualification: {
+                      ...formData.preQualification,
+                      militaryStatus: option.value
+                    }
+                  })
+                  setAutoAdvanceEnabled(true)
+                }}
               />
               <span>{option.label}</span>
             </label>

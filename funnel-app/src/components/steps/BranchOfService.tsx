@@ -14,15 +14,15 @@ const branchOptions = [
 export const BranchOfService: React.FC = () => {
   const { formData, updateFormData, goToNextStep, autoAdvanceEnabled, setAutoAdvanceEnabled } = useFunnelStore()
 
-  // Auto-continue when a selection is made (only if auto-advance is enabled)
+  // Auto-continue when branch of service is selected and auto-advance is enabled
   useEffect(() => {
-    if (formData.branchOfService && autoAdvanceEnabled) {
+    if (formData.preQualification?.branchOfService && autoAdvanceEnabled) {
       const timer = setTimeout(() => {
         goToNextStep()
       }, 500) // Small delay for better UX
       return () => clearTimeout(timer)
     }
-  }, [formData.branchOfService, autoAdvanceEnabled, goToNextStep])
+  }, [formData.preQualification?.branchOfService, autoAdvanceEnabled, goToNextStep])
 
   const handleBranchChange = (value: string) => {
     updateFormData({ branchOfService: value })
@@ -44,8 +44,16 @@ export const BranchOfService: React.FC = () => {
                 type="radio"
                 name="branchOfService"
                 value={option.value}
-                checked={formData.branchOfService === option.value}
-                onChange={(e) => handleBranchChange(e.target.value)}
+                checked={formData.preQualification?.branchOfService === option.value}
+                onChange={() => {
+                  updateFormData({
+                    preQualification: {
+                      ...formData.preQualification,
+                      branchOfService: option.value
+                    }
+                  })
+                  setAutoAdvanceEnabled(true)
+                }}
               />
               <span>{option.label}</span>
             </label>

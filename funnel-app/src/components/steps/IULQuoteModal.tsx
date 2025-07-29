@@ -48,9 +48,9 @@ export const IULQuoteModal: React.FC = () => {
 
   useEffect(() => {
     // Calculate age from date of birth
-    if (formData.dateOfBirth) {
+    if (formData.contactInfo?.dateOfBirth) {
       const today = new Date()
-      const birthDate = new Date(formData.dateOfBirth)
+      const birthDate = new Date(formData.contactInfo.dateOfBirth)
       const age = today.getFullYear() - birthDate.getFullYear()
       const monthDiff = today.getMonth() - birthDate.getMonth()
       const calculatedAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) ? age - 1 : age
@@ -63,15 +63,15 @@ export const IULQuoteModal: React.FC = () => {
 
     // Set initial coverage based on previous selection
     let initialCoverage = 50000 // Default fallback
-    if (formData.coverageAmount) {
-      const amount = parseInt(formData.coverageAmount.replace(/[$,]/g, ''))
+    if (formData.preQualification?.coverageAmount) {
+      const amount = parseInt(formData.preQualification.coverageAmount.replace(/[$,]/g, ''))
       initialCoverage = amount
     }
 
     setCoverageAmount(initialCoverage)
     setSliderValue(initialCoverage)
     setIsInitialized(true)
-  }, [formData.dateOfBirth, formData.coverageAmount])
+  }, [formData.contactInfo?.dateOfBirth, formData.preQualification?.coverageAmount])
 
   // Update quote when coverage, age, or gender changes
   useEffect(() => {
@@ -108,11 +108,12 @@ export const IULQuoteModal: React.FC = () => {
     // Save quote data and move to next step
     updateFormData({
       quoteData: {
-        coverageAmount,
-        monthlyPremium,
-        userAge,
-        userGender,
-        quoteType: insuranceType
+        policyDate: new Date().toISOString().split('T')[0], // Today's date
+        coverage: `$${coverageAmount.toLocaleString()}`,
+        premium: `$${monthlyPremium.toFixed(2)}`,
+        age: userAge.toString(),
+        gender: userGender === 'male' ? 'Male' : 'Female',
+        type: insuranceType
       }
     })
     goToNextStep()
