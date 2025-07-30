@@ -4,8 +4,9 @@
 const Config = (function() {
     'use strict';
     
-    // Google Apps Script URL - Uses global variable with fallback
-    const GOOGLE_APPS_SCRIPT_URL = window.GOOGLE_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwnU-KpI1d0yuFeB1dIqBbpwlvpkakdXu1rN8IiRKFalHwiESYF7gs14w58Dkk_ObHWwg/exec';
+    // Google Apps Script URL - Use global config if available, fallback to local config
+    const GOOGLE_APPS_SCRIPT_URL = (window.VeteranFunnelConfig && window.VeteranFunnelConfig.GOOGLE_APPS_SCRIPT.URL) || 
+        'https://script.google.com/macros/s/AKfycbwnU-KpI1d0yuFeB1dIqBbpwlvpkakdXu1rN8IiRKFalHwiESYF7gs14w58Dkk_ObHWwg/exec';
     
     // Helper function to get API URL
     function getApiUrl() {

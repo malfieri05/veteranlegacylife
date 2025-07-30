@@ -1,10 +1,38 @@
 // Global Configuration File
 // Update these values when deploying to production or changing environments
 
+// Type declaration for global config
+declare global {
+  interface Window {
+    VeteranFunnelConfig?: {
+      GOOGLE_APPS_SCRIPT: {
+        URL: string;
+      };
+      GOOGLE_SHEET: {
+        SHEET_ID: string;
+        SHEET_NAME: string;
+      };
+      EMAIL: {
+        ADMIN: string;
+        FROM: string;
+        TO: string;
+        REPLY_TO: string;
+      };
+      COMPANY: {
+        NAME: string;
+        PHONE: string;
+        PHONE_DIALABLE: string;
+        WEBSITE: string;
+      };
+    };
+  }
+}
+
 export const GLOBAL_CONFIG = {
-  // Google Apps Script Deployment URL
+  // Google Apps Script Deployment URL - Use global config if available
   GOOGLE_APPS_SCRIPT: {
-    URL: 'https://script.google.com/macros/s/AKfycbwnU-KpI1d0yuFeB1dIqBbpwlvpkakdXu1rN8IiRKFalHwiESYF7gs14w58Dkk_ObHWwg/exec'
+    URL: (typeof window !== 'undefined' && window.VeteranFunnelConfig?.GOOGLE_APPS_SCRIPT?.URL) || 
+         'https://script.google.com/macros/s/AKfycbwnU-KpI1d0yuFeB1dIqBbpwlvpkakdXu1rN8IiRKFalHwiESYF7gs14w58Dkk_ObHWwg/exec'
   },
   
   // Email Configuration
