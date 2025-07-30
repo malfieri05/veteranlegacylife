@@ -51,7 +51,7 @@ export const DiabetesMedication: React.FC = () => {
               checked={formData.medicalAnswers?.diabetesMedication === 'Pills'}
               onChange={(e) => handleDiabetesChange(e.target.value)}
             />
-            <span>Yes, I take pills</span>
+            <span>Yes</span>
           </label>
           <label>
             <input
