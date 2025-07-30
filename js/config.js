@@ -4,8 +4,8 @@
 const Config = (function() {
     'use strict';
     
-    // Google Apps Script URL - Updated from globalConfig.ts
-const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxcWggxWdEJzsSW_noiLBbfP6ovmTHWLRIDnWvc6jAj4-1HV_sEp9OBw4UCvXBsEu3M/exec';
+    // Google Apps Script URL - Uses global variable with fallback
+    const GOOGLE_APPS_SCRIPT_URL = window.GOOGLE_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwnU-KpI1d0yuFeB1dIqBbpwlvpkakdXu1rN8IiRKFalHwiESYF7gs14w58Dkk_ObHWwg/exec';
     
     // Helper function to get API URL
     function getApiUrl() {

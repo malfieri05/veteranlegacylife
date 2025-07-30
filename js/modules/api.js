@@ -28,12 +28,49 @@ const APIModule = (function() {
     }
     
     /**
+     * Debug sheet ID and deployment configuration
+     */
+    async function debugSheetConfiguration() {
+        try {
+            Config.log('info', '🔧 === SHEET CONFIGURATION DEBUG ===');
+            Config.log('info', 'Current Google Apps Script URL:', Config.GOOGLE_APPS_SCRIPT_URL);
+            
+            // Test with a simple payload to see what sheet it writes to
+            const testData = {
+                sessionId: 'debug_sheet_' + Date.now(),
+                formType: 'DebugTest',
+                debugInfo: 'Testing sheet configuration',
+                timestamp: new Date().toISOString(),
+                testField: 'This should appear in the correct sheet'
+            };
+            
+            Config.log('info', 'Sending debug test data:', testData);
+            
+            const result = await submitFormData(testData);
+            
+            Config.log('info', 'Debug test result:', result);
+            Config.log('info', '🔧 === END SHEET CONFIGURATION DEBUG ===');
+            
+            return result;
+        } catch (error) {
+            Config.log('error', `Debug sheet configuration failed: ${error.message}`);
+            return { success: false, error: error.message };
+        }
+    }
+    
+    /**
      * Submit form data to Google Apps Script
      */
     async function submitFormData(data) {
         try {
             Config.log('info', '=== START: submitFormData ===');
             Config.log('info', 'Input data:', data);
+            
+            // Log the current configuration
+            Config.log('info', '🔧 CONFIGURATION DEBUG:');
+            Config.log('info', '- Google Apps Script URL:', Config.GOOGLE_APPS_SCRIPT_URL);
+            Config.log('info', '- URL contains correct deployment ID:', Config.GOOGLE_APPS_SCRIPT_URL.includes('AKfycbwnU-KpI1d0yuFeB1dIqBbpwlvpkakdXu1rN8IiRKFalHwiESYF7gs14w58Dkk_ObHWwg'));
+            Config.log('info', '- Expected deployment ID: AKfycbwnU-KpI1d0yuFeB1dIqBbpwlvpkakdXu1rN8IiRKFalHwiESYF7gs14w58Dkk_ObHWwg');
             
             // Validate data
             if (!data || typeof data !== 'object') {
@@ -76,13 +113,28 @@ const APIModule = (function() {
             // Parse response
             const responseText = await response.text();
             Config.log('info', 'Response headers:', Object.fromEntries(response.headers.entries()));
+            Config.log('info', '🔧 RESPONSE DEBUG:');
+            Config.log('info', '- Raw response text:', responseText);
+            Config.log('info', '- Response text length:', responseText.length);
+            Config.log('info', '- Response contains "success":', responseText.includes('success'));
+            Config.log('info', '- Response contains "error":', responseText.includes('error'));
+            Config.log('info', '- Response contains "sheet":', responseText.toLowerCase().includes('sheet'));
             
             let result;
             try {
                 result = JSON.parse(responseText);
                 Config.log('info', 'Response is OK, parsing JSON...');
+                Config.log('info', '🔧 PARSED RESPONSE DEBUG:');
+                Config.log('info', '- Result keys:', Object.keys(result));
+                Config.log('info', '- Result type:', typeof result);
+                Config.log('info', '- Has success property:', 'success' in result);
+                Config.log('info', '- Has error property:', 'error' in result);
+                Config.log('info', '- Has message property:', 'message' in result);
             } catch (parseError) {
                 Config.log('warn', 'Failed to parse JSON response:', parseError.message);
+                Config.log('warn', '🔧 PARSE ERROR DEBUG:');
+                Config.log('warn', '- Parse error:', parseError.message);
+                Config.log('warn', '- Response text that failed to parse:', responseText);
                 result = { result: 'success', message: responseText };
             }
             
@@ -271,6 +323,7 @@ const APIModule = (function() {
     return {
         init,
         testConnection,
+        debugSheetConfiguration,
         submitFormData,
         sendSessionStartEmail,
         sendAbandonmentEmail,

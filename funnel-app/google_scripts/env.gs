@@ -22,7 +22,7 @@ const CONFIG = {
   // Google Sheet Configuration
   GOOGLE_SHEET: {
     // Google Sheet ID (found in the URL of the sheet)
-    SHEET_ID: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
+    SHEET_ID: '1-X3qkXd6xh2Y9dG6AmIP_ljd2o0UUZfYUcR1RoreMXM',
     // Sheet name (tab name)
     SHEET_NAME: 'Veteran Legacy Life Funnel Data'
   },

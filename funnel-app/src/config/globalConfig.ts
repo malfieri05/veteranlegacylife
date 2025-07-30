@@ -4,7 +4,7 @@
 export const GLOBAL_CONFIG = {
   // Google Apps Script Deployment URL
   GOOGLE_APPS_SCRIPT: {
-    URL: 'https://script.google.com/macros/s/AKfycbw6Zhe-fxPcGlIkvUURsr8OuvcoxtK2bzNT35cLvgCCmxKmheUwEB5F3bfucfBruxQz/exec'
+    URL: 'https://script.google.com/macros/s/AKfycbwnU-KpI1d0yuFeB1dIqBbpwlvpkakdXu1rN8IiRKFalHwiESYF7gs14w58Dkk_ObHWwg/exec'
   },
   
   // Email Configuration
@@ -22,7 +22,7 @@ export const GLOBAL_CONFIG = {
   // Google Sheet Configuration
   GOOGLE_SHEET: {
     // Google Sheet ID (found in the URL of the sheet)
-    SHEET_ID: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
+    SHEET_ID: '1-X3qkXd6xh2Y9dG6AmIP_ljd2o0UUZfYUcR1RoreMXM',
     // Sheet name (tab name)
     SHEET_NAME: 'Veteran Legacy Life Funnel Data'
   },
