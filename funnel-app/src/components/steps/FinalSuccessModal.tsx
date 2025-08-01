@@ -54,7 +54,7 @@ export const FinalSuccessModal: React.FC = () => {
           marginBottom: '0.5rem',
           textShadow: '0 1px 2px rgba(0,0,0,0.1)'
         }}>
-          ${monthlyPremium.toLocaleString()}/month
+          ${coverageAmount.toLocaleString()}
         </div>
         <div style={{ 
           fontSize: '1.1rem', 
@@ -63,7 +63,7 @@ export const FinalSuccessModal: React.FC = () => {
           margin: '0',
           textShadow: '0 1px 2px rgba(0,0,0,0.1)'
         }}>
-          for ${coverageAmount.toLocaleString()} in coverage
+          ${monthlyPremium.toLocaleString()}/month
         </div>
       </div>
 
@@ -174,8 +174,8 @@ export const FinalSuccessModal: React.FC = () => {
           margin: '0',
           textAlign: 'center'
         }}>
-          <strong>Call us now:</strong> (800) VET-INSURANCE<br />
-          <strong>Hours:</strong> Monday-Friday 8AM-6PM EST
+          <strong>Call us now:</strong> 503-764-5097<br />
+          <strong>Hours:</strong> Monday-Friday 8AM-6PM Pacific Time
         </p>
       </div>
 
@@ -205,7 +205,7 @@ export const FinalSuccessModal: React.FC = () => {
           e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)'
         }}
       >
-        Close
+        Finished!
       </button>
     </div>
   )

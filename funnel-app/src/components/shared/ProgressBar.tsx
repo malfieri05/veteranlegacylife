@@ -11,7 +11,31 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   totalSteps,
   className = ''
 }) => {
-  const progressPercentage = (currentStep / totalSteps) * 100
+  // Define the sections and their step ranges
+  const sections = [
+    { name: 'Basic Info', start: 1, end: 7, total: 7 },
+    { name: 'Medical Questions', start: 8, end: 12, total: 5 },
+    { name: 'Application', start: 16, end: 17, total: 2 }
+  ]
+  
+  // Find which section the current step belongs to
+  const currentSection = sections.find(section => 
+    currentStep >= section.start && currentStep <= section.end
+  )
+  
+  let progressPercentage = 0
+  let displayText = ''
+  
+  if (currentSection) {
+    // Calculate progress within the current section
+    const stepsInSection = currentStep - currentSection.start + 1
+    progressPercentage = (stepsInSection / currentSection.total) * 100
+    displayText = `Step ${stepsInSection} of ${currentSection.total}`
+  } else {
+    // For steps outside defined sections (like loading, success screens)
+    progressPercentage = 100
+    displayText = 'Done.'
+  }
   
   return (
     <div className={`progress-container ${className}`}>
@@ -22,7 +46,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
         ></div>
       </div>
       <div className="progress-text">
-        Step {currentStep} of {totalSteps}
+        {displayText}
       </div>
     </div>
   )

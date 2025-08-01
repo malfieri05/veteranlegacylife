@@ -58,8 +58,8 @@ export const GLOBAL_CONFIG = {
   // Company Information
   COMPANY: {
     NAME: 'Veteran Legacy Life',
-    PHONE: '(800) VET-INSURANCE',
-    PHONE_DIALABLE: '180083847467', // Actual number to dial (800-VET-INSURANCE)
+    PHONE: '503-764-5097',
+    PHONE_DIALABLE: '5037645097', // Actual number to dial
     WEBSITE: 'https://veteranlegacylife.com'
   }
 } as const;

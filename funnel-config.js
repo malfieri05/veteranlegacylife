@@ -27,8 +27,8 @@ window.VeteranFunnelConfig = {
   // Company Information
   COMPANY: {
     NAME: 'Veteran Legacy Life',
-    PHONE: '(800) VET-INSURANCE',
-    PHONE_DIALABLE: '180083847467',
+    PHONE: '503-764-5097',
+    PHONE_DIALABLE: '5037645097',
     WEBSITE: 'https://veteranlegacylife.com'
   }
 };

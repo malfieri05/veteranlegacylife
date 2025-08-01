@@ -118,9 +118,9 @@ export const HeightWeight: React.FC = () => {
       <h2>Medical Questions</h2>
       <p>Let's get some basic health information to find your best options.</p>
       
-      <div className="space-y-6">
+      <div style={{ display: 'flex', gap: '1rem' }}>
         {/* Height Dropdown */}
-        <div className="form-field">
+        <div className="form-field" style={{ flex: '1' }}>
           <label htmlFor="height">
             Height (ft/in)
             <span style={{ color: 'var(--secondary-color)' }}> *</span>
@@ -198,7 +198,7 @@ export const HeightWeight: React.FC = () => {
         </div>
         
         {/* Weight Dropdown */}
-        <div className="form-field">
+        <div className="form-field" style={{ flex: '1' }}>
           <label htmlFor="weight">
             Weight (lbs)
             <span style={{ color: 'var(--secondary-color)' }}> *</span>

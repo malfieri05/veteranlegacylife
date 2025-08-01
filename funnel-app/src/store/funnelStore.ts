@@ -30,6 +30,12 @@ export interface MedicalAnswers {
   age: string
 }
 
+export interface Beneficiary {
+  name: string
+  relationship: string
+  percentage: number
+}
+
 export interface ApplicationData {
   streetAddress: string
   city: string
@@ -37,10 +43,12 @@ export interface ApplicationData {
   zipCode: string
   beneficiaryName: string
   beneficiaryRelationship: string
-  vaNumber: string
-  serviceConnected: string
+  beneficiaries: Beneficiary[]
+  vaClinicName: string
+  primaryDoctor: string
   ssn: string
   driversLicense: string
+  licenseState: string
   bankName: string
   routingNumber: string
   accountNumber: string
@@ -125,10 +133,12 @@ const initialState: FormData = {
     zipCode: '',
     beneficiaryName: '',
     beneficiaryRelationship: '',
-    vaNumber: '',
-    serviceConnected: '',
+    beneficiaries: [{ name: '', relationship: '', percentage: 100 }],
+    vaClinicName: '',
+    primaryDoctor: '',
     ssn: '',
     driversLicense: '',
+    licenseState: '',
     bankName: '',
     routingNumber: '',
     accountNumber: ''
@@ -342,7 +352,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
         applicationData: formData.applicationData,
         quoteData: formData.quoteData,
         trackingData: {
-          currentStep: '6',
+          currentStep: '7',
           stepName: 'Contact Information'
         }
       }
@@ -485,8 +495,8 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
         'Branch of Service', 
         'Marital Status',
         'Coverage Amount',
-        'Contact Information',
         'Birthday',
+        'Contact Information',
         'Tobacco Use',
         'Medical Conditions',
         'Height & Weight',
@@ -503,8 +513,8 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
       get().submitPartial(currentStep, stepNames[currentStep - 1])
     }
     
-    // Submit lead data after step 6 (contact info)
-    if (currentStep === 6) {
+    // Submit lead data after step 7 (contact info)
+    if (currentStep === 7) {
       get().submitLead()
     }
     

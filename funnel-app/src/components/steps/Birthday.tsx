@@ -79,7 +79,7 @@ export const Birthday: React.FC = () => {
 
     if (!month || !day || !year) {
       newErrors.dateOfBirth = 'Please complete all date fields'
-      // Only set errors if user has attempted to submit
+      // Only set errors if user has attempted to submit or auto-advance is triggered
       if (hasAttemptedSubmit) {
         setErrors(newErrors)
       }
@@ -124,16 +124,18 @@ export const Birthday: React.FC = () => {
   // Auto-continue when all fields are filled and valid (only if auto-advance is enabled)
   useEffect(() => {
     if (autoAdvanceEnabled) {
-      const validation = validateForm()
-      if (validation) {
-        const timer = setTimeout(() => {
-          goToNextStep()
-        }, 500) // Small delay for better UX
-        return () => clearTimeout(timer)
-      } else {
-        // If form is invalid and auto-advance is enabled, user has attempted to submit
-        setHasAttemptedSubmit(true)
-        validateForm() // This will now show errors since hasAttemptedSubmit is true
+      // Only validate and show errors if all fields have been touched
+      const allFieldsTouched = month && day && year
+      
+      if (allFieldsTouched) {
+        const validation = validateForm()
+        if (validation) {
+          goToNextStep() // Instant progression
+        } else {
+          // If form is invalid and auto-advance is enabled, user has attempted to submit
+          setHasAttemptedSubmit(true)
+          validateForm() // This will now show errors since hasAttemptedSubmit is true
+        }
       }
     }
   }, [month, day, year, autoAdvanceEnabled, goToNextStep])

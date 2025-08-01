@@ -50,9 +50,9 @@ export const FunnelModal: React.FC = () => {
       case 5:
         return <CoverageAmount />
       case 6:
-        return <ContactInfo />
-      case 7:
         return <Birthday />
+      case 7:
+        return <ContactInfo />
       case 8:
         return <TobaccoUse />
       case 9:
@@ -102,10 +102,10 @@ export const FunnelModal: React.FC = () => {
       case 5:
         return !!formData.preQualification?.coverageAmount
       case 6:
+        return !!formData.contactInfo?.dateOfBirth
+      case 7:
         const validation = validateContactInfo(formData.contactInfo)
         return validation.isValid
-      case 7:
-        return !!formData.contactInfo?.dateOfBirth
       case 8:
         return !!formData.medicalAnswers?.tobaccoUse
       case 9:
@@ -146,13 +146,26 @@ export const FunnelModal: React.FC = () => {
   }
 
   const isApplicationStep1Complete = () => {
+    const beneficiaries = formData.applicationData?.beneficiaries || []
+    
+    // Check if at least one beneficiary is complete
+    const hasValidBeneficiary = beneficiaries.length > 0 && 
+      beneficiaries.some(beneficiary => 
+        beneficiary.name && beneficiary.relationship
+      )
+    
+    // Check if multiple beneficiaries have valid percentages
+    const hasValidPercentages = beneficiaries.length <= 1 || 
+      beneficiaries.reduce((sum, b) => sum + b.percentage, 0) === 100
+    
     return !!formData.applicationData?.streetAddress &&
            !!formData.applicationData?.city &&
            !!formData.applicationData?.state &&
            !!formData.applicationData?.zipCode &&
-           !!formData.applicationData?.beneficiaryName &&
-           !!formData.applicationData?.beneficiaryRelationship &&
-           !!formData.applicationData?.driversLicense
+           hasValidBeneficiary &&
+           hasValidPercentages &&
+           !!formData.applicationData?.driversLicense &&
+           !!formData.applicationData?.licenseState
   }
 
   const isApplicationStep2Complete = () => {

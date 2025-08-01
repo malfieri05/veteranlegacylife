@@ -11,7 +11,38 @@ export const IULQuoteModal: React.FC = () => {
   const [sliderValue, setSliderValue] = useState(0)
   const [isInitialized, setIsInitialized] = useState(false)
   const [insuranceType, setInsuranceType] = useState<'IUL' | 'Final Expense'>('IUL')
+  const [showInteractiveProjection, setShowInteractiveProjection] = useState(false)
   const isMountedRef = useRef(true)
+
+  // IUL Cash Value Projection Function
+  const projectIULCashValue = ({
+    monthlyPremium,
+    years = 40,
+    annualReturn = 0.1025,
+    insuranceDrag = 0.01,
+    stopPremiumAfterYears = 20,
+  }: {
+    monthlyPremium: number
+    years?: number
+    annualReturn?: number
+    insuranceDrag?: number
+    stopPremiumAfterYears?: number
+  }) => {
+    const annualPremium = monthlyPremium * 12
+    const netReturn = annualReturn - insuranceDrag
+    let cashValue = 0
+    const projection = []
+
+    for (let year = 1; year <= years; year++) {
+      if (year <= stopPremiumAfterYears) {
+        cashValue += annualPremium
+      }
+      cashValue *= 1 + netReturn
+      projection.push({ year, cashValue: Math.round(cashValue) })
+    }
+
+    return projection
+  }
 
   // Calculate cash value growth potential (only for IUL)
   const calculateCashValueGrowth = (coverage: number, premium: number) => {
@@ -117,9 +148,12 @@ export const IULQuoteModal: React.FC = () => {
 
   const handleSecureRate = () => {
     console.log('🔍 IULQuoteModal - handleSecureRate called!')
+    console.log('🔍 Current step before:', useFunnelStore.getState().currentStep)
     
+    try {
     // Calculate health tier from medical answers
     const healthTier = calculateHealthTier(formData.medicalAnswers || {});
+      console.log('🔍 Health tier calculated:', healthTier)
     
     const quoteData = {
       policyDate: new Date().toISOString().split('T')[0],
@@ -134,12 +168,33 @@ export const IULQuoteModal: React.FC = () => {
     console.log('🔍 IULQuoteModal - Saving quote data with health tier:', quoteData)
     
     updateFormData({ quoteData });
+      console.log('🔍 Form data updated successfully')
+      
+      console.log('🔍 About to call goToNextStep')
     goToNextStep();
+      console.log('🔍 After goToNextStep call')
+      
+    } catch (error: unknown) {
+      console.error('🔍 Error in handleSecureRate:', error)
+      if (error instanceof Error) {
+        console.error('🔍 Error stack:', error.stack)
+      }
+      alert('There was an error processing your request. Please try again.')
+    }
   }
 
   const coverageRange = getCoverageRange(insuranceType, userAge)
 
   const cashValueGrowth = insuranceType === 'IUL' ? calculateCashValueGrowth(coverageAmount, monthlyPremium) : null
+  
+  // Calculate interactive IUL projection
+  const iulProjection = insuranceType === 'IUL' ? projectIULCashValue({
+    monthlyPremium,
+    years: 40,
+    annualReturn: 0.1025,
+    insuranceDrag: 0.01,
+    stopPremiumAfterYears: 20
+  }) : null
 
   return (
     <div style={{ 
@@ -155,48 +210,26 @@ export const IULQuoteModal: React.FC = () => {
         Based on your information, here's your personalized {insuranceType} quote:
       </p>
       
-      {/* Premium Display - Much More Compact */}
+      {/* Coverage Amount Display - Prominent Green Box */}
       <div style={{ 
-        background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', 
+        background: 'linear-gradient(135deg, #10b981, #059669)', 
         color: 'white',
-        padding: '1rem',
+        padding: '1.25rem',
         borderRadius: '8px',
-        margin: '0.75rem 0'
+        margin: '1rem 0',
+        textAlign: 'center',
+        boxShadow: '0 4px 6px rgba(16, 185, 129, 0.2)'
       }}>
-        <div style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.25rem', lineHeight: '1' }}>
-          ${monthlyPremium.toLocaleString()}/month
+        <div style={{ fontSize: '0.9rem', marginBottom: '0.5rem', opacity: 0.9 }}>
+          Coverage Amount
         </div>
-        <p style={{ fontSize: '0.9rem', color: 'white', margin: 0, fontWeight: '600', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
-          Secure this rate
-        </p>
-      </div>
-
-      {/* Insurance Type Info */}
-      <div style={{ 
-        background: '#f8fafc', 
-        padding: '0.75rem', 
-        borderRadius: '6px', 
-        margin: '0.75rem 0',
-        border: '1px solid #e2e8f0'
-      }}>
-        <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0 }}>
-          <strong>Insurance Type:</strong> {insuranceType}
-          {insuranceType === 'Final Expense' && ' - Covers final expenses and burial costs'}
-          {insuranceType === 'IUL' && ' - Indexed Universal Life with cash value growth potential'}
-        </p>
+        <div style={{ fontSize: '2.5rem', fontWeight: 'bold', lineHeight: '1', textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
+          ${sliderValue.toLocaleString()}
+        </div>
       </div>
 
       {/* Coverage Slider */}
       <div style={{ margin: '1rem 0' }}>
-        <label style={{ 
-          display: 'block', 
-          fontSize: '0.9rem', 
-          fontWeight: '600', 
-          color: '#374151', 
-          marginBottom: '0.5rem' 
-        }}>
-          Coverage Amount: ${sliderValue.toLocaleString()}
-        </label>
         <input
           type="range"
           min={coverageRange.min}
@@ -252,33 +285,276 @@ export const IULQuoteModal: React.FC = () => {
           ))}
         </div>
       </div>
+      
+      {/* Premium Display - Smaller and Less Prominent */}
+      <div style={{ 
+        background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', 
+        color: 'white',
+        padding: '0.75rem',
+        borderRadius: '6px',
+        margin: '0.75rem auto',
+        textAlign: 'center',
+        maxWidth: '300px'
+      }}>
+        <div style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.25rem', lineHeight: '1' }}>
+          ${monthlyPremium.toLocaleString()}/month
+        </div>
+        <p style={{ fontSize: '0.8rem', color: 'white', margin: 0, fontWeight: '500', opacity: 0.9 }}>
+          Secure this rate
+        </p>
+      </div>
 
-      {/* Cash Value Growth (IUL only) */}
-      {insuranceType === 'IUL' && cashValueGrowth && (
+      {/* Insurance Type Info */}
+      <div style={{ 
+        background: '#f8fafc', 
+        padding: '0.75rem', 
+        borderRadius: '6px', 
+        margin: '0.75rem 0',
+        border: '1px solid #e2e8f0'
+      }}>
+        <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0 }}>
+          <strong>Insurance Type:</strong> {insuranceType}
+          {insuranceType === 'Final Expense' && ' - Covers final expenses and burial costs'}
+          {insuranceType === 'IUL' && ' - Indexed Universal Life with cash value growth potential'}
+        </p>
+      </div>
+
+      {/* Interactive IUL Cash Value Projection (IUL only) */}
+      {insuranceType === 'IUL' && iulProjection && (
         <div style={{ 
-          background: '#f0f9ff', 
-          padding: '0.75rem', 
-          borderRadius: '6px', 
+          background: '#ffffff', 
+          padding: '1.25rem', 
+          borderRadius: '12px', 
           margin: '0.75rem 0',
-          border: '1px solid #bae6fd'
+          border: '1px solid #e2e8f0',
+          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
         }}>
-          <h4 style={{ fontSize: '0.9rem', margin: '0 0 0.5rem 0', color: '#0369a1' }}>
-            💰 Cash Value Growth Potential
-          </h4>
-          <div style={{ fontSize: '0.75rem', color: '#0c4a6e' }}>
-            {cashValueGrowth.map(({ year, projectedValue, growth }) => (
-              <div key={year} style={{ marginBottom: '0.25rem' }}>
-                <strong>{year} years:</strong> ${projectedValue.toLocaleString()} projected value 
-                (${growth.toLocaleString()} growth)
+          
+          {/* Interactive 40-Year Projection Graph */}
+          <div style={{ 
+            background: '#f8fafc', 
+            padding: '1rem', 
+            borderRadius: '8px',
+            border: '1px solid #e2e8f0',
+            marginBottom: '1rem'
+          }}>
+            <div style={{ 
+              fontSize: '0.9rem', 
+              color: '#374151', 
+              marginBottom: '0.75rem',
+              fontWeight: '600',
+              textAlign: 'center'
+            }}>
+              Policy Value Projections
+            </div>
+            
+            {/* Interactive Line Graph */}
+            <div style={{ 
+              height: '150px', 
+              position: 'relative',
+              marginBottom: '0.5rem'
+            }}>
+              {/* Y-axis labels */}
+              <div style={{ 
+                position: 'absolute', 
+                left: '0', 
+                top: '0', 
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                fontSize: '0.6rem',
+                color: '#6b7280',
+                width: '35px'
+              }}>
+                <span>${Math.max(...iulProjection.map(p => p.cashValue)).toLocaleString()}</span>
+                <span>${Math.round(Math.max(...iulProjection.map(p => p.cashValue)) * 0.75).toLocaleString()}</span>
+                <span>${Math.round(Math.max(...iulProjection.map(p => p.cashValue)) * 0.5).toLocaleString()}</span>
+                <span>${Math.round(Math.max(...iulProjection.map(p => p.cashValue)) * 0.25).toLocaleString()}</span>
+                <span>$0</span>
               </div>
-            ))}
+              
+              {/* Graph area */}
+              <div style={{ 
+                position: 'absolute', 
+                left: '40px', 
+                top: '0', 
+                right: '0', 
+                height: '100%',
+                borderLeft: '1px solid #d1d5db',
+                borderBottom: '1px solid #d1d5db'
+              }}>
+                {/* Grid lines */}
+                {[0, 25, 50, 75, 100].map((percent, index) => (
+                  <div key={index} style={{
+                    position: 'absolute',
+                    left: '0',
+                    right: '0',
+                    top: `${percent}%`,
+                    height: '1px',
+                    background: '#e5e7eb'
+                  }} />
+                ))}
+                
+                {/* Data line */}
+                <svg style={{ 
+                  position: 'absolute', 
+                  left: '0', 
+                  top: '0', 
+                  width: '100%', 
+                  height: '100%',
+                  overflow: 'visible'
+                }}>
+                  <defs>
+                    <linearGradient id="iulLineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="#10b981" stopOpacity="0.3"/>
+                      <stop offset="100%" stopColor="#10b981" stopOpacity="0.1"/>
+                    </linearGradient>
+                  </defs>
+                  
+                  {/* Area fill */}
+                  <path
+                    d={`M 0 ${100 - (iulProjection[0]?.cashValue || 0) / Math.max(...iulProjection.map(p => p.cashValue)) * 100} ${iulProjection.map((point, index) => 
+                      `L ${(index / (iulProjection.length - 1)) * 100} ${100 - (point.cashValue / Math.max(...iulProjection.map(p => p.cashValue))) * 100}`
+                    ).join(' ')} V 100 Z`}
+                    fill="url(#iulLineGradient)"
+                  />
+                  
+                  {/* Line */}
+                  <path
+                    d={`M 0 ${100 - (iulProjection[0]?.cashValue || 0) / Math.max(...iulProjection.map(p => p.cashValue)) * 100} ${iulProjection.map((point, index) => 
+                      `L ${(index / (iulProjection.length - 1)) * 100} ${100 - (point.cashValue / Math.max(...iulProjection.map(p => p.cashValue))) * 100}`
+                    ).join(' ')}`}
+                    stroke="#10b981"
+                    strokeWidth="2"
+                    fill="none"
+                  />
+                  
+                  {/* Data points for key years */}
+                  {[0, 9, 19, 29, 39].map((index) => {
+                    const point = iulProjection[index]
+                    if (!point) return null
+                    return (
+                      <circle
+                        key={index}
+                        cx={`${(index / (iulProjection.length - 1)) * 100}%`}
+                        cy={`${100 - (point.cashValue / Math.max(...iulProjection.map(p => p.cashValue))) * 100}%`}
+                        r="3"
+                        fill="#10b981"
+                        stroke="white"
+                        strokeWidth="1"
+                      />
+                    )
+                  })}
+                </svg>
+                
+                {/* X-axis labels */}
+                <div style={{ 
+                  position: 'absolute', 
+                  bottom: '-20px', 
+                  left: '0', 
+                  right: '0',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  fontSize: '0.6rem',
+                  color: '#6b7280'
+                }}>
+                  <span>Year 1</span>
+                  <span>Year 10</span>
+                  <span>Year 20</span>
+                  <span>Year 30</span>
+                  <span>Year 40</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Benefit Summary Cards */}
+          <div style={{ 
+            display: 'flex', 
+            gap: '0.5rem',
+            justifyContent: 'space-between'
+          }}>
+            <div style={{ 
+              background: '#f0f9ff', 
+              padding: '0.5rem', 
+              borderRadius: '6px',
+              border: '1px solid #bae6fd',
+              flex: '1',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '0.7rem', color: '#0369a1', marginBottom: '0.25rem' }}>
+                Monthly Premium
+              </div>
+              <div style={{ 
+                background: 'white', 
+                padding: '0.25rem', 
+                borderRadius: '4px',
+                fontSize: '0.9rem',
+                fontWeight: 'bold',
+                color: '#1e293b'
+              }}>
+                ${monthlyPremium.toFixed(0)}
+              </div>
+            </div>
+            
+            <div style={{ 
+              background: '#f0f9ff', 
+              padding: '0.5rem', 
+              borderRadius: '6px',
+              border: '1px solid #bae6fd',
+              flex: '1',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '0.7rem', color: '#0369a1', marginBottom: '0.25rem' }}>
+                Death Benefit
+              </div>
+              <div style={{ 
+                background: 'white', 
+                padding: '0.25rem', 
+                borderRadius: '4px',
+                fontSize: '0.9rem',
+                fontWeight: 'bold',
+                color: '#1e293b'
+              }}>
+                ${coverageAmount.toLocaleString()}
+              </div>
+            </div>
+            
+            <div style={{ 
+              background: '#f0f9ff', 
+              padding: '0.5rem', 
+              borderRadius: '6px',
+              border: '1px solid #bae6fd',
+              flex: '1',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '0.7rem', color: '#0369a1', marginBottom: '0.25rem' }}>
+                Year 40 Value
+              </div>
+              <div style={{ 
+                background: 'white', 
+                padding: '0.25rem', 
+                borderRadius: '4px',
+                fontSize: '0.9rem',
+                fontWeight: 'bold',
+                color: '#1e293b'
+              }}>
+                ${(iulProjection[39]?.cashValue || 0).toLocaleString()}
+              </div>
+            </div>
           </div>
         </div>
       )}
 
       {/* Secure Rate Button - Clear and Prominent */}
       <button
-        onClick={handleSecureRate}
+        onClick={(e) => {
+          console.log('🔍 Button clicked!')
+          e.preventDefault()
+          e.stopPropagation()
+          handleSecureRate()
+        }}
         style={{
           background: 'linear-gradient(135deg, #10b981, #059669)',
           color: 'white',
@@ -291,7 +567,10 @@ export const IULQuoteModal: React.FC = () => {
           transition: 'all 0.3s ease',
           marginTop: '1rem',
           width: '100%',
-          maxWidth: '300px'
+          maxWidth: '300px',
+          position: 'relative',
+          zIndex: 10,
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'translateY(-2px)'
@@ -299,7 +578,7 @@ export const IULQuoteModal: React.FC = () => {
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.transform = 'translateY(0)'
-          e.currentTarget.style.boxShadow = 'none'
+          e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)'
         }}
       >
         Secure Your Rate

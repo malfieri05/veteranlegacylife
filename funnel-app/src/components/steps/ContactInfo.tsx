@@ -5,8 +5,6 @@ import { validateContactInfo } from '../../utils/validation'
 
 export const ContactInfo: React.FC = () => {
   const { formData, updateFormData, goToNextStep, autoAdvanceEnabled, setAutoAdvanceEnabled } = useFunnelStore()
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false)
   
   const handleContactInfoChange = (field: keyof typeof formData.contactInfo, value: string | boolean) => {
     updateFormData({
@@ -16,44 +14,19 @@ export const ContactInfo: React.FC = () => {
       }
     })
     
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }))
-    }
-    
     // Re-enable auto-advance when user makes a change
     setAutoAdvanceEnabled(true)
   }
   
-  const validateForm = () => {
-    const validation = validateContactInfo(formData.contactInfo)
-    // Only show errors if user has attempted to submit
-    if (hasAttemptedSubmit) {
-      setErrors(validation.errors)
-    }
-    return validation.isValid
-  }
-  
-  // Only validate and show errors when user has attempted to submit
-  React.useEffect(() => {
-    if (hasAttemptedSubmit && (formData.contactInfo.firstName || formData.contactInfo.lastName || formData.contactInfo.email || formData.contactInfo.phone)) {
-      validateForm()
-    }
-  }, [formData.contactInfo, hasAttemptedSubmit])
-  
-  // Auto-advance when all required fields are filled and form is valid
+  // Auto-advance when all required fields are filled
   useEffect(() => {
     if (autoAdvanceEnabled) {
-      const validation = validateContactInfo(formData.contactInfo)
-      if (validation.isValid) {
-        const timer = setTimeout(() => {
-          goToNextStep()
-        }, 500) // Small delay for better UX
-        return () => clearTimeout(timer)
-      } else {
-        // If form is invalid and auto-advance is enabled, user has attempted to submit
-        setHasAttemptedSubmit(true)
-        setErrors(validation.errors)
+      // Check if all required fields are filled
+      const { firstName, lastName, email, phone, transactionalConsent, marketingConsent } = formData.contactInfo
+      const allFieldsFilled = firstName && lastName && email && phone && transactionalConsent && marketingConsent
+      
+      if (allFieldsFilled) {
+        goToNextStep() // Instant progression
       }
     }
   }, [formData.contactInfo, autoAdvanceEnabled, goToNextStep])
@@ -70,7 +43,6 @@ export const ContactInfo: React.FC = () => {
           type="text"
           value={formData.contactInfo.firstName}
           onChange={(value) => handleContactInfoChange('firstName', value)}
-          error={errors.firstName}
           placeholder="Enter your first name"
           required
         />
@@ -81,7 +53,6 @@ export const ContactInfo: React.FC = () => {
           type="text"
           value={formData.contactInfo.lastName}
           onChange={(value) => handleContactInfoChange('lastName', value)}
-          error={errors.lastName}
           placeholder="Enter your last name"
           required
         />
@@ -93,7 +64,6 @@ export const ContactInfo: React.FC = () => {
         type="email"
         value={formData.contactInfo.email}
         onChange={(value) => handleContactInfoChange('email', value)}
-        error={errors.email}
         placeholder="Enter your email address"
         required
       />
@@ -104,7 +74,6 @@ export const ContactInfo: React.FC = () => {
         type="tel"
         value={formData.contactInfo.phone}
         onChange={(value) => handleContactInfoChange('phone', value)}
-        error={errors.phone}
         placeholder="Enter your phone number"
         required
       />

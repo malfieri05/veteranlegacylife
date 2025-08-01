@@ -2259,7 +2259,7 @@ html {
 
 .header-phone-icon {
     font-size: 1.7rem;
-    color: #4285F4;
+    color: #60A5FA;
     margin-right: 0.7em;
     margin-left: 1.2em;
     align-self: center;
@@ -2282,6 +2282,9 @@ html {
     animation: flash-grow 1.1s linear infinite;
     border: 1.2px solid #fff;
     box-sizing: border-box;
+    width: 50% !important;
+    max-width: 300px;
+    margin: 0 auto;
 }
 
 .funnel-back-btn {

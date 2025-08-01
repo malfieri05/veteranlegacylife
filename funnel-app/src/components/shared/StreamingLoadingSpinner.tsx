@@ -24,24 +24,13 @@ export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = (
     if (!isVisible) return
 
     let typingTimer: NodeJS.Timeout
-    let loaderTimer: NodeJS.Timeout
+    let completionTimer: NodeJS.Timeout
 
     const startLoading = () => {
       // Start typing the message
       typeMessage(processingMessage, () => {
-        // After typing is complete, show loader for remaining time
+        // After typing is complete, show loader
         setShowLoader(true)
-        
-        // Calculate remaining time to make total duration 8 seconds
-        const elapsedTime = processingMessage.length * 30 // 30ms per character
-        const remainingTime = Math.max(8000 - elapsedTime, 2000) // Minimum 2 seconds with loader
-        
-        loaderTimer = setTimeout(() => {
-          onComplete()
-          if (onStepComplete) {
-            onStepComplete()
-          }
-        }, remainingTime)
       })
     }
 
@@ -66,9 +55,17 @@ export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = (
 
     startLoading()
 
+    // Set exact 12-second timer
+    completionTimer = setTimeout(() => {
+      onComplete()
+      if (onStepComplete) {
+        onStepComplete()
+      }
+    }, 12000) // Exactly 12 seconds
+
     return () => {
       clearTimeout(typingTimer)
-      clearTimeout(loaderTimer)
+      clearTimeout(completionTimer)
     }
   }, [isVisible, onComplete])
 
@@ -81,7 +78,7 @@ export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = (
         <img 
                         src="funnel-app/public/logo.png" 
           alt="Veteran Legacy Life Logo" 
-          style={{ height: '4rem', width: 'auto', objectFit: 'contain', margin: '0 auto' }}
+          style={{ height: '6rem', width: 'auto', objectFit: 'contain', margin: '0 auto' }}
           onError={(e) => {
             // Fallback if logo doesn't load
             e.currentTarget.style.display = 'none'
@@ -95,7 +92,7 @@ export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = (
           Calculating Your Policy Options
         </h2>
         <p style={{ color: '#6b7280' }}>
-          Seeing what you qualify for in the {branchOfService}...
+          Seeing what you qualify for: {branchOfService}...
         </p>
       </div>
 

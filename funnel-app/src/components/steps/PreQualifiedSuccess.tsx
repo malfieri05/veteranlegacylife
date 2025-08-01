@@ -73,14 +73,14 @@ export const PreQualifiedSuccess: React.FC = () => {
         onMouseEnter={(e) => e.currentTarget.style.background = '#1d4ed8'}
         onMouseLeave={(e) => e.currentTarget.style.background = '#2563eb'}
       >
-        Complete Application
+        See Personalized Quote
       </button>
 
       {/* Help Section */}
       <div style={{ background: '#eff6ff', borderLeft: '4px solid #3b82f6', padding: '1rem', borderRadius: '0.5rem' }}>
         <p style={{ color: '#1e40af', fontSize: '0.875rem' }}>
-          <strong>Need help?</strong> Call us at (555) 123-4567<br />
-          Monday-Friday 8AM-6PM EST
+          <strong>Need help?</strong> Call us at 503-764-5097<br />
+          Monday-Saturday 8AM-6PM Pacific Time
         </p>
       </div>
     </div>
