@@ -23,6 +23,19 @@ export const LoadingScreen: React.FC = () => {
       justifyContent: 'center',
       minHeight: '300px'
     }}>
+      {/* Logo */}
+      <div style={{ marginBottom: '2rem' }}>
+        <img 
+          src="/logo.png" 
+          alt="Veteran Legacy Life Logo" 
+          style={{ height: '6rem', width: 'auto', objectFit: 'contain', margin: '0 auto' }}
+          onError={(e) => {
+            // Fallback if logo doesn't load
+            e.currentTarget.style.display = 'none'
+          }}
+        />
+      </div>
+      
       <div style={{
         width: '60px',
         height: '60px',

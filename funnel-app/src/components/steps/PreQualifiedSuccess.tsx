@@ -2,11 +2,21 @@ import React from 'react'
 import { useFunnelStore } from '../../store/funnelStore'
 
 export const PreQualifiedSuccess: React.FC = () => {
-  const { } = useFunnelStore()
+  const { goToNextStep } = useFunnelStore()
 
   const handleCompleteApplication = () => {
-    // Move to the IUL Quote Modal step
-    useFunnelStore.getState().setCurrentStep(15)
+    console.log('🔍 PreQualifiedSuccess - handleCompleteApplication called')
+    console.log('🔍 Current step before goToNextStep:', useFunnelStore.getState().currentStep)
+    console.log('🔍 Modal open before goToNextStep:', useFunnelStore.getState().isModalOpen)
+    
+    // Move to the next step (IUL Quote Modal)
+    goToNextStep()
+    
+    // Check state after goToNextStep
+    setTimeout(() => {
+      console.log('🔍 Current step after goToNextStep:', useFunnelStore.getState().currentStep)
+      console.log('🔍 Modal open after goToNextStep:', useFunnelStore.getState().isModalOpen)
+    }, 100)
   }
 
   return (

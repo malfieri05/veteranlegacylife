@@ -482,10 +482,11 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
   },
 
   goToNextStep: () => {
-    const { currentStep, sessionId } = get()
+    const { currentStep, sessionId, isModalOpen } = get()
     const nextStep = currentStep + 1
     
     console.log(`🎯 GO TO NEXT STEP - From step ${currentStep} to ${nextStep} - Session ID: ${sessionId}`)
+    console.log(`🎯 Modal open before step change: ${isModalOpen}`)
     
     // Submit partial data after every step (except the last step)
     if (currentStep < 18) {
@@ -525,12 +526,20 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
       return
     }
     
+    // After step 14 (PreQualifiedSuccess), ensure we go to step 15 (IULQuoteModal)
+    if (currentStep === 14) {
+      console.log('🎯 Advancing from PreQualifiedSuccess (step 14) to IULQuoteModal (step 15)')
+      set({ currentStep: 15 })
+      return
+    }
+    
     // Submit application data after step 18 (final success)
     if (currentStep === 18) {
       get().submitApplication()
     }
     
     set({ currentStep: nextStep })
+    console.log(`🎯 Step changed to ${nextStep}, Modal open after step change: ${get().isModalOpen}`)
   },
   
   goToPreviousStep: () => {

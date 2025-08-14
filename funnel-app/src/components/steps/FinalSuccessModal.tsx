@@ -12,6 +12,19 @@ export const FinalSuccessModal: React.FC = () => {
 
   return (
     <div style={{ textAlign: 'center', padding: '1.5rem', maxWidth: '600px', margin: '0 auto' }}>
+      {/* Logo */}
+      <div style={{ marginBottom: '2rem' }}>
+        <img 
+          src="/logo.png" 
+          alt="Veteran Legacy Life Logo" 
+          style={{ height: '6rem', width: 'auto', objectFit: 'contain', margin: '0 auto' }}
+          onError={(e) => {
+            // Fallback if logo doesn't load
+            e.currentTarget.style.display = 'none'
+          }}
+        />
+      </div>
+      
       {/* Success Icon and Title */}
       <div style={{ marginBottom: '2rem' }}>
         <div style={{ 
