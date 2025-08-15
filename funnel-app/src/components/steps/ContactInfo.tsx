@@ -32,7 +32,34 @@ export const ContactInfo: React.FC = () => {
   }, [formData.contactInfo, autoAdvanceEnabled, goToNextStep])
   
   return (
-    <div>
+    <div className="contact-info-container">
+      <style>
+        {`
+          @media (max-width: 768px) {
+            .contact-info-container h2 {
+              font-size: 1.75rem !important;
+            }
+            .contact-info-container h3 {
+              font-size: 1rem !important;
+            }
+            .contact-info-container .form-grid {
+              grid-template-columns: 1fr !important;
+              gap: 0.75rem !important;
+            }
+            .contact-info-container .consent-text {
+              font-size: 0.75rem !important;
+            }
+          }
+          @media (max-width: 480px) {
+            .contact-info-container h2 {
+              font-size: 1.5rem !important;
+            }
+            .contact-info-container .consent-text {
+              font-size: 0.7rem !important;
+            }
+          }
+        `}
+      </style>
       <h2>Contact Information</h2>
       <p>Please provide your contact information so we can get in touch with you about your quote.</p>
       
@@ -94,7 +121,7 @@ export const ContactInfo: React.FC = () => {
               required
             />
             <div style={{ fontSize: '0.875rem', lineHeight: '1.4' }}>
-              <div style={{ color: '#6b7280', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+              <div className="consent-text" style={{ color: '#6b7280', fontSize: '0.8rem', marginTop: '0.25rem' }}>
                 By checking this box, I consent to receive transactional messages related to my account, orders, or services I have requested. These messages may include appointment reminders, order confirmations, and account notifications among others. Message frequency may vary. Message & Data rates may apply. Reply HELP for help or STOP to opt-out.
               </div>
             </div>
@@ -111,7 +138,7 @@ export const ContactInfo: React.FC = () => {
               required
             />
             <div style={{ fontSize: '0.875rem', lineHeight: '1.4' }}>
-              <div style={{ color: '#6b7280', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+              <div className="consent-text" style={{ color: '#6b7280', fontSize: '0.8rem', marginTop: '0.25rem' }}>
                 By checking this box, I consent to receive marketing and promotional messages, including special offers, discounts, new product updates among others. Message frequency may vary. Message & Data rates may apply. Reply HELP for help or STOP to opt-out.
               </div>
             </div>

@@ -57,7 +57,31 @@ export const ApplicationStep2: React.FC = () => {
   }
 
   return (
-    <div>
+    <div className="application-step2-container">
+      <style>
+        {`
+          @media (max-width: 768px) {
+            .application-step2-container h2 {
+              font-size: 1.75rem !important;
+            }
+            .application-step2-container h3 {
+              font-size: 1.25rem !important;
+            }
+            .application-step2-container .form-grid {
+              grid-template-columns: 1fr !important;
+              gap: 0.75rem !important;
+            }
+          }
+          @media (max-width: 480px) {
+            .application-step2-container h2 {
+              font-size: 1.5rem !important;
+            }
+            .application-step2-container h3 {
+              font-size: 1.125rem !important;
+            }
+          }
+        `}
+      </style>
       <h2>Application Step 2</h2>
       <p>Please provide your SSN, banking, and policy date information.</p>
       

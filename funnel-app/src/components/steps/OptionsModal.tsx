@@ -27,8 +27,41 @@ export const OptionsModal: React.FC = () => {
 
   if (showAgentOptions) {
     return (
-      <div style={{ textAlign: 'center', padding: '2.5rem', maxWidth: '500px', margin: '0 auto' }}>
-        <h2 style={{ 
+      <div className="options-modal-container" style={{ 
+        textAlign: 'center', 
+        padding: '2.5rem', 
+        maxWidth: '500px', 
+        margin: '0 auto'
+      }}>
+        <style>
+          {`
+            @media (max-width: 768px) {
+              .options-modal-container {
+                padding: 2rem 1.5rem !important;
+              }
+              .options-title {
+                font-size: 1.75rem !important;
+              }
+              .options-button {
+                padding: 1rem 1.5rem !important;
+                font-size: 1rem !important;
+              }
+            }
+            @media (max-width: 480px) {
+              .options-modal-container {
+                padding: 1.5rem 1rem !important;
+              }
+              .options-title {
+                font-size: 1.5rem !important;
+              }
+              .options-button {
+                padding: 0.875rem 1.25rem !important;
+                font-size: 0.9rem !important;
+              }
+            }
+          `}
+        </style>
+        <h2 className="options-title" style={{ 
           color: '#1e293b', 
           fontSize: '2rem', 
           marginBottom: '1rem',
@@ -50,6 +83,7 @@ export const OptionsModal: React.FC = () => {
 
         {/* Call Now Button */}
         <button
+          className="options-button"
           onClick={handleCallNow}
           style={{
             background: 'linear-gradient(135deg, #10b981, #059669)',
@@ -91,6 +125,7 @@ export const OptionsModal: React.FC = () => {
 
         {/* Schedule Call Button */}
         <button
+          className="options-button"
           onClick={handleScheduleCall}
           style={{
             background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',

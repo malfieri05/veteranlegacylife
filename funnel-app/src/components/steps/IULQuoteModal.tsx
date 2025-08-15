@@ -142,9 +142,9 @@ export const IULQuoteModal: React.FC = () => {
   }) : null
 
   return (
-    <div style={{ 
+    <div className="iul-quote-container" style={{ 
       textAlign: 'center', 
-      padding: '0.5rem 1rem 1rem 1rem', 
+      padding: '0.5rem 0.75rem 1rem 0.75rem', 
       maxHeight: '70vh', 
       overflowY: 'auto'
     }}>
@@ -170,9 +170,41 @@ export const IULQuoteModal: React.FC = () => {
             border: 2px solid white;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
           }
+          
+          @media (max-width: 768px) {
+            .iul-quote-container {
+              padding: 0.25rem 0.5rem 0.75rem 0.5rem !important;
+            }
+            .iul-title {
+              font-size: 1.75rem !important;
+            }
+            .coverage-display {
+              font-size: 2rem !important;
+            }
+            .quote-button {
+              padding: 1rem 1.5rem !important;
+              font-size: 1rem !important;
+            }
+          }
+          
+          @media (max-width: 480px) {
+            .iul-quote-container {
+              padding: 0.25rem 0.25rem 0.5rem 0.25rem !important;
+            }
+            .iul-title {
+              font-size: 1.5rem !important;
+            }
+            .coverage-display {
+              font-size: 1.75rem !important;
+            }
+            .quote-button {
+              padding: 0.875rem 1.25rem !important;
+              font-size: 0.9rem !important;
+            }
+          }
         `}
       </style>
-      <h2 style={{ fontSize: '2rem', marginBottom: '1rem', fontWeight: 'bold', color: '#1f2937', marginTop: '0' }}>
+      <h2 className="iul-title" style={{ fontSize: '2rem', marginBottom: '1rem', fontWeight: 'bold', color: '#1f2937', marginTop: '0' }}>
         Your Personalized IUL Quote
       </h2>
       
@@ -204,7 +236,7 @@ export const IULQuoteModal: React.FC = () => {
         <div style={{ fontSize: '0.9rem', marginBottom: '0.5rem', opacity: 0.9 }}>
           Coverage Amount
         </div>
-        <div style={{ fontSize: '2.5rem', fontWeight: 'bold', lineHeight: '1', textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
+        <div className="coverage-display" style={{ fontSize: '2.5rem', fontWeight: 'bold', lineHeight: '1', textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
           ${quoteCoverage.toLocaleString()}
         </div>
       </div>
@@ -322,32 +354,33 @@ export const IULQuoteModal: React.FC = () => {
       </div>
       
       {/* Premium Display - Clickable Button */}
-      <button
-        onClick={(e) => {
-          debugLog('Blue quote button clicked!')
-          e.preventDefault()
-          e.stopPropagation()
-          handleContinue()
-        }}
-        style={{
-          background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', 
-          color: 'white',
-          padding: '1.25rem 2rem',
-          borderRadius: '16px',
-          margin: '1rem auto',
-          textAlign: 'center',
-          maxWidth: '320px',
-          width: '100%',
-          border: '2px solid #2563eb',
-          cursor: 'pointer',
-          transition: 'all 0.3s ease',
-          display: 'block',
-          position: 'relative',
-          zIndex: 10,
-          boxShadow: '0 8px 16px rgba(59, 130, 246, 0.3), 0 4px 8px rgba(0, 0, 0, 0.1)',
-          fontWeight: 'bold',
-          fontSize: '1.1rem'
-        }}
+              <button
+          className="quote-button"
+          onClick={(e) => {
+            debugLog('Blue quote button clicked!')
+            e.preventDefault()
+            e.stopPropagation()
+            handleContinue()
+          }}
+          style={{
+            background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', 
+            color: 'white',
+            padding: '1.25rem 2rem',
+            borderRadius: '16px',
+            margin: '1rem auto',
+            textAlign: 'center',
+            maxWidth: '320px',
+            width: '100%',
+            border: '2px solid #2563eb',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            display: 'block',
+            position: 'relative',
+            zIndex: 10,
+            boxShadow: '0 8px 16px rgba(59, 130, 246, 0.3), 0 4px 8px rgba(0, 0, 0, 0.1)',
+            fontWeight: 'bold',
+            fontSize: '1.1rem'
+          }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)'
           e.currentTarget.style.boxShadow = '0 12px 24px rgba(59, 130, 246, 0.4), 0 6px 12px rgba(0, 0, 0, 0.15)'

@@ -130,7 +130,45 @@ export const ApplicationStep1: React.FC = () => {
   }
 
   return (
-    <div>
+    <div className="application-step1-container">
+      <style>
+        {`
+          @media (max-width: 768px) {
+            .application-step1-container h2 {
+              font-size: 1.75rem !important;
+            }
+            .application-step1-container h3 {
+              font-size: 1.25rem !important;
+            }
+            .application-step1-container .form-grid {
+              grid-template-columns: 1fr !important;
+              gap: 0.75rem !important;
+            }
+            .application-step1-container .beneficiary-card {
+              padding: 0.75rem !important;
+            }
+            .application-step1-container .add-beneficiary-btn {
+              padding: 0.75rem 1rem !important;
+              font-size: 0.875rem !important;
+            }
+          }
+          @media (max-width: 480px) {
+            .application-step1-container h2 {
+              font-size: 1.5rem !important;
+            }
+            .application-step1-container h3 {
+              font-size: 1.125rem !important;
+            }
+            .application-step1-container .beneficiary-card {
+              padding: 0.5rem !important;
+            }
+            .application-step1-container .add-beneficiary-btn {
+              padding: 0.875rem 0.75rem !important;
+              font-size: 0.8rem !important;
+            }
+          }
+        `}
+      </style>
       <h2>Application Step 1</h2>
       <p>Please provide your address, beneficiary, and VA information.</p>
       
@@ -191,7 +229,7 @@ export const ApplicationStep1: React.FC = () => {
         <h3>Beneficiary Information</h3>
         
         {beneficiaries.map((beneficiary, index) => (
-          <div key={index} style={{ 
+          <div key={index} className="beneficiary-card" style={{ 
             border: '1px solid #e5e7eb', 
             borderRadius: '8px', 
             padding: '1rem', 
@@ -270,6 +308,7 @@ export const ApplicationStep1: React.FC = () => {
         
         <button
           type="button"
+          className="add-beneficiary-btn"
           onClick={addBeneficiary}
           style={{
             background: '#3b82f6',

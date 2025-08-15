@@ -11,7 +11,41 @@ export const FinalSuccessModal: React.FC = () => {
   const quoteType = formData.quoteData?.type || 'IUL'
 
   return (
-    <div style={{ textAlign: 'center', padding: '0 1.5rem', maxWidth: '600px', margin: '0 auto' }}>
+    <div className="success-modal-container" style={{ textAlign: 'center', padding: '0 1.5rem', maxWidth: '600px', margin: '0 auto' }}>
+      <style>
+        {`
+          @media (max-width: 768px) {
+            .success-modal-container {
+              padding: 0 1rem !important;
+            }
+            .success-title {
+              font-size: 1.6rem !important;
+            }
+            .success-coverage {
+              font-size: 1.8rem !important;
+            }
+            .success-button {
+              padding: 1rem 1.5rem !important;
+              font-size: 1rem !important;
+            }
+          }
+          @media (max-width: 480px) {
+            .success-modal-container {
+              padding: 0 0.75rem !important;
+            }
+            .success-title {
+              font-size: 1.4rem !important;
+            }
+            .success-coverage {
+              font-size: 1.6rem !important;
+            }
+            .success-button {
+              padding: 0.875rem 1.25rem !important;
+              font-size: 0.9rem !important;
+            }
+          }
+        `}
+      </style>
       {/* Logo */}
       <div style={{ marginBottom: '1rem' }}>
         <img 
@@ -27,7 +61,7 @@ export const FinalSuccessModal: React.FC = () => {
       
       {/* Success Title */}
       <div style={{ marginBottom: '1.5rem' }}>
-        <h2 style={{ 
+        <h2 className="success-title" style={{ 
           color: '#1e293b', 
           fontSize: '1.8rem', 
           marginBottom: '0.75rem',
@@ -64,7 +98,7 @@ export const FinalSuccessModal: React.FC = () => {
         }}>
           Coverage Amount
         </div>
-        <div style={{ 
+        <div className="success-coverage" style={{ 
           fontSize: '2.2rem', 
           fontWeight: 'bold', 
           marginBottom: '0.5rem',

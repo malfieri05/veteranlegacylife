@@ -235,12 +235,26 @@ export const FunnelModal: React.FC = () => {
 
         {/* Don't show action buttons during loading screen or for IULQuoteModal */}
         {currentStep !== 13 && currentStep !== 15 && (
-          <div style={{ 
+          <div className="modal-action-buttons" style={{ 
             display: 'flex', 
             justifyContent: 'space-between', 
             marginTop: '2rem',
             gap: '1rem'
           }}>
+            <style>
+              {`
+                @media (max-width: 480px) {
+                  .modal-action-buttons {
+                    flex-direction: column !important;
+                    gap: 0.75rem !important;
+                  }
+                  .modal-action-buttons .cta-button {
+                    width: 100% !important;
+                    padding: 0.875rem 1rem !important;
+                  }
+                }
+              `}
+            </style>
             {currentStep > 1 && (
               <Button
                 variant="secondary"
