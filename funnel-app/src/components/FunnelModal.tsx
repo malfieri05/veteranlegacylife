@@ -243,14 +243,26 @@ export const FunnelModal: React.FC = () => {
           }}>
             <style>
               {`
+                @media (max-width: 768px) {
+                  .modal-action-buttons {
+                    margin-top: 1.5rem !important;
+                    gap: 0.75rem !important;
+                  }
+                  .modal-action-buttons .cta-button {
+                    padding: 0.875rem 1rem !important;
+                    font-size: 0.875rem !important;
+                  }
+                }
                 @media (max-width: 480px) {
                   .modal-action-buttons {
                     flex-direction: column !important;
                     gap: 0.75rem !important;
+                    margin-top: 1rem !important;
                   }
                   .modal-action-buttons .cta-button {
                     width: 100% !important;
-                    padding: 0.875rem 1rem !important;
+                    padding: 0.75rem 1rem !important;
+                    font-size: 0.875rem !important;
                   }
                 }
               `}
