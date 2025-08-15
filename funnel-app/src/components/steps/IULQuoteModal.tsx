@@ -3,7 +3,7 @@ import { useFunnelStore } from '../../store/funnelStore'
 import { calculatePremium } from '../../data/quoteRates'
 
 export const IULQuoteModal: React.FC = () => {
-  const { goToNextStep, formData } = useFunnelStore()
+  const { goToNextStep, formData, updateFormData } = useFunnelStore()
   
   // State management for quote customization
   const [quoteGender, setQuoteGender] = useState<'male' | 'female'>('male')
@@ -66,72 +66,66 @@ export const IULQuoteModal: React.FC = () => {
     }
   }, [])
 
-  // IUL Cash Value Projection Function - Industry Standard
+  /**
+   * Calculate IUL cash value projection
+   * @param {number} monthlyPremium - User's monthly premium in dollars
+   * @param {number} years - Projection length (default 25 years)
+   * @returns {Array} - Array of projection data for each year
+   */
   const projectIULCashValue = ({
     monthlyPremium,
-    years = 40,
-    capRate = 0.12, // 12% cap rate (industry best)
-    floorRate = 0.01, // 1% floor rate
-    participationRate = 1.0, // 100% participation
-    insuranceDrag = 0.008, // 0.8% insurance costs (industry low)
-    premiumToCashValue = 0.88, // 88% of premium goes to cash value (industry best)
-    stopPremiumAfterYears = 20,
+    years = 25,
   }: {
     monthlyPremium: number
     years?: number
-    capRate?: number
-    floorRate?: number
-    participationRate?: number
-    insuranceDrag?: number
-    premiumToCashValue?: number
-    stopPremiumAfterYears?: number
   }) => {
-    const annualPremium = monthlyPremium * 12
-    const annualCashValueContribution = annualPremium * premiumToCashValue
-    let cashValue = 0
-    const projection = []
-
-    // Historical S&P 500 returns for realistic projections (last 40 years)
-    const historicalReturns = [
-      0.12, 0.15, 0.08, 0.11, 0.13, 0.09, 0.14, 0.12, 0.10, 0.13,
-      0.11, 0.14, 0.09, 0.12, 0.15, 0.08, 0.11, 0.13, 0.10, 0.14,
-      0.12, 0.09, 0.13, 0.11, 0.15, 0.08, 0.12, 0.14, 0.10, 0.13,
-      0.11, 0.09, 0.14, 0.12, 0.15, 0.08, 0.11, 0.13, 0.10, 0.12
-    ]
+    const annualReturn = 0.11; // 11% annual return
+    const annualPremium = monthlyPremium * 12;
+    let cashValue = 0;
+    const projection = [];
 
     for (let year = 1; year <= years; year++) {
-      // Add premium contribution (if still paying)
-      if (year <= stopPremiumAfterYears) {
-        cashValue += annualCashValueContribution
+      let allocationPercent;
+
+      if (year === 1) {
+        allocationPercent = 0.70; // Year 1: 70% to cash value
+      } else if (year === 2) {
+        allocationPercent = 0.85; // Year 2: 85% to cash value
+      } else {
+        allocationPercent = 0.90; // Year 3+: 90% to cash value
       }
 
-      // Calculate indexed return for this year
-      const marketReturn = historicalReturns[(year - 1) % historicalReturns.length]
-      let indexedReturn = marketReturn * participationRate
-      
-      // Apply cap and floor
-      indexedReturn = Math.min(indexedReturn, capRate)
-      indexedReturn = Math.max(indexedReturn, floorRate)
-      
-      // Subtract insurance costs
-      const netReturn = indexedReturn - insuranceDrag
-      
-      // Apply growth to existing cash value
-      cashValue *= (1 + netReturn)
-      
+      const allocatedPremium = annualPremium * allocationPercent;
+
+      // Add allocated premium, then grow by annual return
+      cashValue = (cashValue + allocatedPremium) * (1 + annualReturn);
+
       projection.push({ 
         year, 
         cashValue: Math.round(cashValue),
-        indexedReturn: Math.round(indexedReturn * 100) / 100,
-        netReturn: Math.round(netReturn * 100) / 100
-      })
+        allocatedPremium: Math.round(allocatedPremium),
+        annualReturn: annualReturn
+      });
     }
 
-    return projection
+    return projection;
   }
 
   const handleContinue = () => {
     debugLog('Continue button clicked')
+    
+    // Save quote data to store
+    updateFormData({
+      quoteData: {
+        policyDate: new Date().toISOString().split('T')[0],
+        coverage: quoteCoverage.toString(),
+        premium: quote ? quote.toFixed(2) : '0',
+        age: quoteAge.toString(),
+        gender: quoteGender,
+        type: 'IUL'
+      }
+    })
+    
     goToNextStep()
   }
 
@@ -144,28 +138,58 @@ export const IULQuoteModal: React.FC = () => {
   // Calculate interactive IUL projection
   const iulProjection = quote ? projectIULCashValue({
     monthlyPremium: quote,
-    years: 40,
-    capRate: 0.12,
-    floorRate: 0.01,
-    participationRate: 1.0,
-    insuranceDrag: 0.008,
-    premiumToCashValue: 0.88,
-    stopPremiumAfterYears: 20
+    years: 25
   }) : null
 
   return (
     <div style={{ 
       textAlign: 'center', 
-      padding: '1rem', 
+      padding: '0.5rem 1rem 1rem 1rem', 
       maxHeight: '70vh', 
       overflowY: 'auto'
     }}>
-      <h2 style={{ fontSize: '1.25rem', marginBottom: '0.25rem' }}>
+      <style>
+        {`
+          .gold-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #10b981;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+          }
+          .gold-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #10b981;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+          }
+        `}
+      </style>
+      <h2 style={{ fontSize: '2rem', marginBottom: '1rem', fontWeight: 'bold', color: '#1f2937', marginTop: '0' }}>
         Your Personalized IUL Quote
       </h2>
-      <p style={{ fontSize: '0.8rem', color: '#6b7280', marginBottom: '0.75rem' }}>
-        Based on your information, here's your personalized IUL quote:
-      </p>
+      
+      {/* Insurance Type Info - Moved here */}
+      <div style={{ 
+        background: '#f8fafc', 
+        padding: '0.75rem', 
+        borderRadius: '6px', 
+        margin: '0.5rem 0',
+        border: '1px solid #e2e8f0'
+      }}>
+        <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0 }}>
+          <strong>Insurance Type:</strong> IUL - Indexed Universal Life with cash value growth potential
+        </p>
+      </div>
+      
+
       
       {/* Coverage Amount Display - Prominent Green Box */}
       <div style={{ 
@@ -207,6 +231,7 @@ export const IULQuoteModal: React.FC = () => {
             WebkitAppearance: 'none',
             cursor: 'pointer'
           }}
+          className="gold-slider"
         />
         <div style={{ 
           display: 'flex', 
@@ -251,6 +276,7 @@ export const IULQuoteModal: React.FC = () => {
             WebkitAppearance: 'none',
             cursor: 'pointer'
           }}
+          className="gold-slider"
         />
         <div style={{ 
           display: 'flex', 
@@ -295,38 +321,56 @@ export const IULQuoteModal: React.FC = () => {
         </div>
       </div>
       
-      {/* Premium Display - Smaller and Less Prominent */}
-      <div style={{ 
-        background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', 
-        color: 'white',
-        padding: '0.75rem',
-        borderRadius: '6px',
-        margin: '0.75rem auto',
-        textAlign: 'center',
-        maxWidth: '300px'
-      }}>
-        <div style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.25rem', lineHeight: '1' }}>
-          ${isLoading ? 'Calculating...' : error ? 'Error' : quote ? quote.toFixed(2) : '0'}/month
-        </div>
+      {/* Premium Display - Clickable Button */}
+      <button
+        onClick={(e) => {
+          debugLog('Blue quote button clicked!')
+          e.preventDefault()
+          e.stopPropagation()
+          handleContinue()
+        }}
+        style={{
+          background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', 
+          color: 'white',
+          padding: '1.25rem 2rem',
+          borderRadius: '16px',
+          margin: '1rem auto',
+          textAlign: 'center',
+          maxWidth: '320px',
+          width: '100%',
+          border: '2px solid #2563eb',
+          cursor: 'pointer',
+          transition: 'all 0.3s ease',
+          display: 'block',
+          position: 'relative',
+          zIndex: 10,
+          boxShadow: '0 8px 16px rgba(59, 130, 246, 0.3), 0 4px 8px rgba(0, 0, 0, 0.1)',
+          fontWeight: 'bold',
+          fontSize: '1.1rem'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)'
+          e.currentTarget.style.boxShadow = '0 12px 24px rgba(59, 130, 246, 0.4), 0 6px 12px rgba(0, 0, 0, 0.15)'
+          e.currentTarget.style.background = 'linear-gradient(135deg, #60a5fa, #3b82f6)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'translateY(0) scale(1)'
+          e.currentTarget.style.boxShadow = '0 8px 16px rgba(59, 130, 246, 0.3), 0 4px 8px rgba(0, 0, 0, 0.1)'
+          e.currentTarget.style.background = 'linear-gradient(135deg, #3b82f6, #1d4ed8)'
+        }}
+      >
+                  <div style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.25rem', lineHeight: '1' }}>
+            <span>${isLoading ? 'Calculating...' : error ? 'Error' : quote ? quote.toFixed(2) : '0'}</span>
+            <span style={{ fontSize: '1.2rem' }}> /mo</span>
+          </div>
         <p style={{ fontSize: '0.8rem', color: 'white', margin: 0, fontWeight: '500', opacity: 0.9 }}>
-          Secure this rate
+          Secure this rate →
         </p>
-      </div>
+      </button>
 
-      {/* Insurance Type Info */}
-      <div style={{ 
-        background: '#f8fafc', 
-        padding: '0.75rem', 
-        borderRadius: '6px', 
-        margin: '0.75rem 0',
-        border: '1px solid #e2e8f0'
-      }}>
-        <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0 }}>
-          <strong>Insurance Type:</strong> IUL - Indexed Universal Life with cash value growth potential
-        </p>
-      </div>
 
-      {/* Interactive IUL Cash Value Projection (IUL only) */}
+
+      {/* Benefit Summary Cards */}
       {quote && iulProjection && (
         <div style={{ 
           background: '#ffffff', 
@@ -336,147 +380,6 @@ export const IULQuoteModal: React.FC = () => {
           border: '1px solid #e2e8f0',
           boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
         }}>
-          
-          {/* Interactive 40-Year Projection Graph */}
-          <div style={{ 
-            background: '#f8fafc', 
-            padding: '1rem', 
-            borderRadius: '8px',
-            border: '1px solid #e2e8f0',
-            marginBottom: '1rem'
-          }}>
-            <div style={{ 
-              fontSize: '0.9rem', 
-              color: '#374151', 
-              marginBottom: '0.75rem',
-              fontWeight: '600',
-              textAlign: 'center'
-            }}>
-              Policy Value Projections
-            </div>
-            
-            {/* Interactive Line Graph */}
-            <div style={{ 
-              height: '150px', 
-              position: 'relative',
-              marginBottom: '0.5rem'
-            }}>
-              {/* Y-axis labels */}
-              <div style={{ 
-                position: 'absolute', 
-                left: '0', 
-                top: '0', 
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                fontSize: '0.6rem',
-                color: '#6b7280',
-                width: '35px'
-              }}>
-                <span>${Math.max(...iulProjection.map(p => p.cashValue)).toLocaleString()}</span>
-                <span>${Math.round(Math.max(...iulProjection.map(p => p.cashValue)) * 0.75).toLocaleString()}</span>
-                <span>${Math.round(Math.max(...iulProjection.map(p => p.cashValue)) * 0.5).toLocaleString()}</span>
-                <span>${Math.round(Math.max(...iulProjection.map(p => p.cashValue)) * 0.25).toLocaleString()}</span>
-                <span>$0</span>
-              </div>
-              
-              {/* Graph area */}
-              <div style={{ 
-                position: 'absolute', 
-                left: '40px', 
-                top: '0', 
-                right: '0', 
-                height: '100%',
-                borderLeft: '1px solid #d1d5db',
-                borderBottom: '1px solid #d1d5db'
-              }}>
-                {/* Grid lines */}
-                {[0, 25, 50, 75, 100].map((percent, index) => (
-                  <div key={index} style={{
-                    position: 'absolute',
-                    left: '0',
-                    right: '0',
-                    top: `${percent}%`,
-                    height: '1px',
-                    background: '#e5e7eb'
-                  }} />
-                ))}
-                
-                {/* Data line */}
-                <svg style={{ 
-                  position: 'absolute', 
-                  left: '0', 
-                  top: '0', 
-                  width: '100%', 
-                  height: '100%',
-                  overflow: 'visible'
-                }}>
-                  <defs>
-                    <linearGradient id="iulLineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#10b981" stopOpacity="0.3"/>
-                      <stop offset="100%" stopColor="#10b981" stopOpacity="0.1"/>
-                    </linearGradient>
-                  </defs>
-                  
-                  {/* Area fill */}
-                  <path
-                    d={`M 0 ${100 - (iulProjection[0]?.cashValue || 0) / Math.max(...iulProjection.map(p => p.cashValue)) * 100} ${iulProjection.map((point, index) => 
-                      `L ${(index / (iulProjection.length - 1)) * 100} ${100 - (point.cashValue / Math.max(...iulProjection.map(p => p.cashValue))) * 100}`
-                    ).join(' ')} V 100 Z`}
-                    fill="url(#iulLineGradient)"
-                  />
-                  
-                  {/* Line */}
-                  <path
-                    d={`M 0 ${100 - (iulProjection[0]?.cashValue || 0) / Math.max(...iulProjection.map(p => p.cashValue)) * 100} ${iulProjection.map((point, index) => 
-                      `L ${(index / (iulProjection.length - 1)) * 100} ${100 - (point.cashValue / Math.max(...iulProjection.map(p => p.cashValue))) * 100}`
-                    ).join(' ')}`}
-                    stroke="#10b981"
-                    strokeWidth="2"
-                    fill="none"
-                  />
-                  
-                  {/* Data points for key years */}
-                  {[0, 9, 19, 29, 39].map((index) => {
-                    const point = iulProjection[index]
-                    if (!point) return null
-                    return (
-                      <circle
-                        key={index}
-                        cx={`${(index / (iulProjection.length - 1)) * 100}%`}
-                        cy={`${100 - (point.cashValue / Math.max(...iulProjection.map(p => p.cashValue))) * 100}%`}
-                        r="3"
-                        fill="#10b981"
-                        stroke="white"
-                        strokeWidth="1"
-                      />
-                    )
-                  })}
-                </svg>
-                
-                {/* X-axis labels */}
-                <div style={{ 
-                  position: 'absolute', 
-                  bottom: '-20px', 
-                  left: '0', 
-                  right: '0',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  fontSize: '0.6rem',
-                  color: '#6b7280'
-                }}>
-                  <span>Year 1</span>
-                  <span>Year 10</span>
-                  <span>Year 20</span>
-                  <span>Year 30</span>
-                  <span>Year 40</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Benefit Summary Cards */}
           <div style={{ 
             display: 'flex', 
             gap: '0.5rem',
@@ -536,60 +439,28 @@ export const IULQuoteModal: React.FC = () => {
               flex: '1',
               textAlign: 'center'
             }}>
-              <div style={{ fontSize: '0.7rem', color: '#0369a1', marginBottom: '0.25rem' }}>
-                Year 40 Value
-              </div>
-              <div style={{ 
-                background: 'white', 
-                padding: '0.25rem', 
-                borderRadius: '4px',
-                fontSize: '0.9rem',
-                fontWeight: 'bold',
-                color: '#1e293b'
-              }}>
-                ${(iulProjection[39]?.cashValue || 0).toLocaleString()}
-              </div>
+                              <div style={{ fontSize: '0.7rem', color: '#0369a1', marginBottom: '0.25rem' }}>
+                  Cash Value
+                </div>
+                <div style={{ 
+                  background: 'white', 
+                  padding: '0.25rem', 
+                  borderRadius: '4px',
+                  fontSize: '0.7rem',
+                  fontWeight: 'bold',
+                  color: '#1e293b',
+                  lineHeight: '1.2'
+                }}>
+                  Market linked<br/>
+                  Tax-deferred<br/>
+                  0% Floor
+                </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Secure Rate Button - Clear and Prominent */}
-      <button
-        onClick={(e) => {
-          debugLog('Button clicked!')
-          e.preventDefault()
-          e.stopPropagation()
-          handleContinue()
-        }}
-        style={{
-          background: 'linear-gradient(135deg, #10b981, #059669)',
-          color: 'white',
-          border: 'none',
-          padding: '0.75rem 1.5rem',
-          borderRadius: '8px',
-          fontSize: '1rem',
-          fontWeight: '600',
-          cursor: 'pointer',
-          transition: 'all 0.3s ease',
-          marginTop: '1rem',
-          width: '100%',
-          maxWidth: '300px',
-          position: 'relative',
-          zIndex: 10,
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = 'translateY(-2px)'
-          e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.4)'
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = 'translateY(0)'
-          e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)'
-        }}
-      >
-        Secure Your Rate
-      </button>
+
 
       {/* Age Display */}
       <div style={{ 

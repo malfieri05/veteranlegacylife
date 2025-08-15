@@ -15,7 +15,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   const sections = [
     { name: 'Basic Info', start: 1, end: 7, total: 7 },
     { name: 'Medical Questions', start: 8, end: 12, total: 5 },
-    { name: 'Application', start: 16, end: 17, total: 2 }
+    { name: 'Application', start: 17, end: 18, total: 2 }
   ]
   
   // Find which section the current step belongs to

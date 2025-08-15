@@ -435,7 +435,7 @@ export const ApplicationStep1: React.FC = () => {
           fontSize: '0.9rem',
           margin: '0'
         }}>
-          <strong>Note:</strong> All fields marked with * are required. VA information is optional but may help with your application.
+          <strong>Note:</strong> All fields marked with * are required.
         </p>
       </div>
     </div>

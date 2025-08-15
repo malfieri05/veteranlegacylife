@@ -489,7 +489,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
     console.log(`🎯 Modal open before step change: ${isModalOpen}`)
     
     // Submit partial data after every step (except the last step)
-    if (currentStep < 18) {
+    if (currentStep < 19) {
       const stepNames = [
         'State Selection',
         'Military Status',
@@ -506,6 +506,7 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
         'Loading Screen',
         'Pre-Qualified Success',
         'IUL Quote Modal',
+        'Options Modal',
         'Application Step 1',
         'Application Step 2',
         'Final Success'
@@ -533,8 +534,15 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
       return
     }
     
-    // Submit application data after step 18 (final success)
-    if (currentStep === 18) {
+    // After step 15 (IULQuoteModal), go to step 16 (OptionsModal)
+    if (currentStep === 15) {
+      console.log('🎯 Advancing from IULQuoteModal (step 15) to OptionsModal (step 16)')
+      set({ currentStep: 16 })
+      return
+    }
+    
+    // Submit application data after step 19 (final success)
+    if (currentStep === 19) {
       get().submitApplication()
     }
     
@@ -559,6 +567,8 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
         set({ currentStep: 16 })
       } else if (currentStep === 18) {
         set({ currentStep: 17 })
+      } else if (currentStep === 19) {
+        set({ currentStep: 18 })
       } else {
         set({ currentStep: currentStep - 1 })
       }

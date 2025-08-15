@@ -19,12 +19,13 @@ import { DiabetesMedication } from './steps/DiabetesMedication'
 
 import { PreQualifiedSuccess } from './steps/PreQualifiedSuccess'
 import { IULQuoteModal } from './steps/IULQuoteModal'
+import { OptionsModal } from './steps/OptionsModal'
 import { ApplicationStep1 } from './steps/ApplicationStep1'
 import { ApplicationStep2 } from './steps/ApplicationStep2'
 import { FinalSuccessModal } from './steps/FinalSuccessModal'
 import { validateContactInfo } from '../utils/validation'
 
-const TOTAL_STEPS = 18
+const TOTAL_STEPS = 19
 
 export const FunnelModal: React.FC = () => {
   const { 
@@ -76,10 +77,12 @@ export const FunnelModal: React.FC = () => {
       case 15:
         return <IULQuoteModal />
       case 16:
-        return <ApplicationStep1 />
+        return <OptionsModal />
       case 17:
-        return <ApplicationStep2 />
+        return <ApplicationStep1 />
       case 18:
+        return <ApplicationStep2 />
+      case 19:
         return <FinalSuccessModal />
       default:
         return <div>
@@ -123,10 +126,12 @@ export const FunnelModal: React.FC = () => {
       case 15:
         return true // IUL Quote Modal - can always proceed
       case 16:
-        return isApplicationStep1Complete()
+        return true // OptionsModal - can always proceed
       case 17:
-        return isApplicationStep2Complete()
+        return isApplicationStep1Complete()
       case 18:
+        return isApplicationStep2Complete()
+      case 19:
         return true // Final success - can always proceed
       default:
         return true
@@ -211,8 +216,8 @@ export const FunnelModal: React.FC = () => {
           ×
         </button>
 
-        {/* Don't show progress bar during loading screen */}
-        {currentStep !== 13 && (
+        {/* Don't show progress bar during loading screen, options modal, or final success */}
+        {currentStep !== 13 && currentStep !== 16 && currentStep !== 19 && (
           <ProgressBar currentStep={currentStep} totalSteps={TOTAL_STEPS} />
         )}
 
@@ -247,7 +252,7 @@ export const FunnelModal: React.FC = () => {
             
             <div style={{ flex: 1 }}></div>
             
-            {currentStep < TOTAL_STEPS && (
+            {currentStep < TOTAL_STEPS && currentStep !== 16 && (
               <Button
                 onClick={handleNext}
                 disabled={!canGoNext()}
