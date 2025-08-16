@@ -372,7 +372,7 @@
     width: 40px;
     height: 40px;
     font-size: 1.1rem;
-    top: 0.5rem;
+    top: 0.25rem;
     right: 0.5rem;
     z-index: 10;
   }
@@ -476,12 +476,13 @@
     width: 36px;
     height: 36px;
     font-size: 1rem;
-    top: 0.25rem;
+    top: 0.125rem;
     right: 0.25rem;
   }
   
   .veteran-funnel .progress-container {
     margin-bottom: 0.75rem;
+    margin-top: 2rem !important;
   }
   
   .veteran-funnel .progress-text {

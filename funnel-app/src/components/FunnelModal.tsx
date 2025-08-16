@@ -215,12 +215,19 @@ export const FunnelModal: React.FC = () => {
         exit={{ y: 50, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Don't show progress bar during loading screen, options modal, or final success */}
+        {currentStep !== 13 && currentStep !== 16 && currentStep !== 19 && (
+          <div style={{ marginTop: '0.5rem' }}>
+            <ProgressBar currentStep={currentStep} totalSteps={TOTAL_STEPS} />
+          </div>
+        )}
+
         <button
           className="modal-close"
           onClick={closeModal}
           style={{
             position: 'absolute',
-            top: '0.75rem',
+            top: '0.5rem',
             right: '1rem',
             background: 'none',
             border: 'none',
@@ -239,13 +246,6 @@ export const FunnelModal: React.FC = () => {
         >
           ×
         </button>
-
-        {/* Don't show progress bar during loading screen, options modal, or final success */}
-        {currentStep !== 13 && currentStep !== 16 && currentStep !== 19 && (
-          <div style={{ marginTop: '1.5rem' }}>
-            <ProgressBar currentStep={currentStep} totalSteps={TOTAL_STEPS} />
-          </div>
-        )}
 
         <AnimatePresence mode="wait">
           <motion.div
