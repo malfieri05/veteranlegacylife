@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && npm run copy-index",
-    "copy-index": "cp index.html dist/index.html && sed -i '' 's|<script type=\"module\" src=\"/src/main.tsx\"></script>|<script src=\"veteran-funnel.iife.js\"></script>|g' dist/index.html && sed -i '' 's|<link rel=\"stylesheet\" href=\"/src/styles/globals.css\">|<link rel=\"stylesheet\" href=\"veteran-funnel.css\">|g' dist/index.html",
+    "copy-index": "node scripts/copy-index.js",
     "build:emails": "node scripts/buildEmailTemplates.js",
     "build:all": "npm run build && npm run build:emails",
     "preview": "vite preview",
