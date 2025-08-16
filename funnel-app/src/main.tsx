@@ -41,30 +41,45 @@ if (document.readyState === 'loading') {
   initializeFunnel()
 }
 
+// For production builds, also try to initialize immediately
+// This ensures the React app mounts even if DOMContentLoaded already fired
+setTimeout(initializeFunnel, 0)
+
 // Create and expose the global API
 const VeteranFunnel = {
   open: () => {
     // Use the store directly without hooks
     const store = useFunnelStore.getState()
     store.openModal()
+    console.log('🎯 VeteranFunnel.open() called')
   },
   
   close: () => {
     // Use the store directly without hooks
     const store = useFunnelStore.getState()
     store.closeModal()
+    console.log('🎯 VeteranFunnel.close() called')
   },
   
   isOpen: () => {
     // Use the store directly without hooks
     const store = useFunnelStore.getState()
-    return store.isModalOpen
+    const isOpen = store.isModalOpen
+    console.log('🎯 VeteranFunnel.isOpen() called, result:', isOpen)
+    return isOpen
   },
   
   reset: () => {
     // Use the store directly without hooks
     const store = useFunnelStore.getState()
     store.reset()
+    console.log('🎯 VeteranFunnel.reset() called')
+  },
+  
+  // Add a method to check if the app is initialized
+  isInitialized: () => {
+    const container = document.getElementById('veteran-funnel-container')
+    return !!container
   }
 }
 

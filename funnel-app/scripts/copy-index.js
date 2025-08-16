@@ -41,6 +41,9 @@ try {
             testButton.onclick = () => {
                 console.log('🎯 Test button clicked');
                 if (window.VeteranFunnel) {
+                    console.log('✅ VeteranFunnel found');
+                    console.log('🔍 Is initialized:', window.VeteranFunnel.isInitialized());
+                    console.log('🔍 Is open:', window.VeteranFunnel.isOpen());
                     window.VeteranFunnel.open();
                     console.log('🎯 Modal opened via test button');
                 } else {
