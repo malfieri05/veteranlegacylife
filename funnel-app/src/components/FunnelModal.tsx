@@ -226,7 +226,15 @@ export const FunnelModal: React.FC = () => {
             border: 'none',
             fontSize: '1.5rem',
             cursor: 'pointer',
-            color: 'var(--text-light)'
+            color: 'var(--text-light)',
+            zIndex: 10,
+            width: '2rem',
+            height: '2rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '50%',
+            transition: 'all 0.3s ease'
           }}
         >
           ×

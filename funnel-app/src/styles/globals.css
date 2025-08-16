@@ -154,6 +154,7 @@
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s ease;
+  padding: 1rem;
 }
 
 .veteran-funnel .modal-overlay.active {
@@ -172,6 +173,7 @@
   box-shadow: var(--shadow-xl);
   transform: translateY(20px);
   transition: transform 0.3s ease;
+  position: relative;
 }
 
 .veteran-funnel .modal-overlay.active .modal-content {
@@ -320,11 +322,18 @@
 
 /* Mobile responsive */
 @media (max-width: 768px) {
+  .veteran-funnel .modal-overlay {
+    padding: 0.5rem;
+    align-items: flex-start;
+    padding-top: 1rem;
+  }
+  
   .veteran-funnel .modal-content {
     padding: 1rem;
     width: 98%;
-    max-height: 98vh;
-    margin: 0.5rem;
+    max-height: calc(100vh - 2rem);
+    margin: 0;
+    border-radius: 8px;
   }
   
   .veteran-funnel h1 { font-size: 2rem; }
@@ -363,6 +372,7 @@
     font-size: 1.1rem;
     top: 0.5rem;
     right: 0.5rem;
+    z-index: 10;
   }
   
   /* Improve touch targets for checkboxes and radio buttons */
@@ -385,6 +395,16 @@
   /* Improve modal scrolling on mobile */
   .veteran-funnel .modal-content {
     -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  /* Ensure close button is always visible */
+  .veteran-funnel .modal-close {
+    position: sticky;
+    top: 0;
+    float: right;
+    margin-bottom: 1rem;
   }
   
   /* Progress bar mobile optimization */
@@ -398,10 +418,16 @@
 }
 
 @media (max-width: 480px) {
+  .veteran-funnel .modal-overlay {
+    padding: 0.25rem;
+    align-items: flex-start;
+    padding-top: 0.5rem;
+  }
+  
   .veteran-funnel .modal-content {
     padding: 0.75rem;
     width: 100%;
-    max-height: 100vh;
+    max-height: calc(100vh - 1rem);
     margin: 0;
     border-radius: 0;
   }
@@ -461,9 +487,16 @@
 }
 
 @media (max-width: 360px) {
+  .veteran-funnel .modal-overlay {
+    padding: 0;
+    align-items: flex-start;
+    padding-top: 0.25rem;
+  }
+  
   .veteran-funnel .modal-content {
     padding: 0.75rem;
     width: 100%;
+    max-height: calc(100vh - 0.5rem);
     border-radius: 0;
   }
   
