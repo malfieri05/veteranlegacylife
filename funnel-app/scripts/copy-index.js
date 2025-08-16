@@ -27,34 +27,7 @@ try {
     );
   }
   
-      // Add a test button to trigger the modal
-    if (!content.includes('Test Modal')) {
-      content = content.replace(
-        '<script src="veteran-funnel.iife.js"></script>',
-        `<script src="veteran-funnel.iife.js"></script>
-    <script>
-        // Add test button after 3 seconds
-        setTimeout(() => {
-            const testButton = document.createElement('button');
-            testButton.textContent = 'TEST MODAL';
-            testButton.style.cssText = 'position:fixed;top:20px;right:20px;z-index:9999;background:red;color:white;padding:10px;border:none;cursor:pointer;';
-            testButton.onclick = () => {
-                console.log('🎯 Test button clicked');
-                if (window.VeteranFunnel) {
-                    console.log('✅ VeteranFunnel found');
-                    console.log('🔍 Is initialized:', window.VeteranFunnel.isInitialized());
-                    console.log('🔍 Is open:', window.VeteranFunnel.isOpen());
-                    window.VeteranFunnel.open();
-                    console.log('🎯 Modal opened via test button');
-                } else {
-                    console.log('❌ VeteranFunnel not found');
-                }
-            };
-            document.body.appendChild(testButton);
-        }, 3000);
-    </script>`
-      );
-    }
+  
     
     // Write the modified content to dist/index.html
     fs.writeFileSync(destPath, content, 'utf8');
