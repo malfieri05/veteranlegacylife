@@ -65,7 +65,7 @@ export const StateSelection: React.FC = () => {
     if (formData.preQualification?.state && autoAdvanceEnabled) {
       const timer = setTimeout(() => {
         goToNextStep()
-      }, 500) // Small delay for better UX
+      }, 200) // Reduced delay for faster response
       return () => clearTimeout(timer)
     }
   }, [formData.preQualification?.state, autoAdvanceEnabled, goToNextStep])

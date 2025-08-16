@@ -18,14 +18,18 @@ export const MilitaryStatus: React.FC = () => {
     if (formData.preQualification?.militaryStatus && autoAdvanceEnabled) {
       const timer = setTimeout(() => {
         goToNextStep()
-      }, 500) // Small delay for better UX
+      }, 200) // Reduced delay for faster response
       return () => clearTimeout(timer)
     }
   }, [formData.preQualification?.militaryStatus, autoAdvanceEnabled, goToNextStep])
   
   const handleMilitaryStatusChange = (value: string) => {
-    updateFormData({ militaryStatus: value })
-    // Re-enable auto-advance when user makes a selection
+    updateFormData({
+      preQualification: {
+        ...formData.preQualification,
+        militaryStatus: value
+      }
+    })
     setAutoAdvanceEnabled(true)
   }
   
@@ -44,15 +48,7 @@ export const MilitaryStatus: React.FC = () => {
                 name="militaryStatus"
                 value={option.value}
                 checked={formData.preQualification?.militaryStatus === option.value}
-                onChange={() => {
-                  updateFormData({
-                    preQualification: {
-                      ...formData.preQualification,
-                      militaryStatus: option.value
-                    }
-                  })
-                  setAutoAdvanceEnabled(true)
-                }}
+                onChange={() => handleMilitaryStatusChange(option.value)}
               />
               <span>{option.label}</span>
             </label>

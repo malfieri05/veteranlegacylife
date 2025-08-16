@@ -19,14 +19,18 @@ export const BranchOfService: React.FC = () => {
     if (formData.preQualification?.branchOfService && autoAdvanceEnabled) {
       const timer = setTimeout(() => {
         goToNextStep()
-      }, 500) // Small delay for better UX
+      }, 200) // Reduced delay for faster response
       return () => clearTimeout(timer)
     }
   }, [formData.preQualification?.branchOfService, autoAdvanceEnabled, goToNextStep])
 
   const handleBranchChange = (value: string) => {
-    updateFormData({ branchOfService: value })
-    // Re-enable auto-advance when user makes a selection
+    updateFormData({
+      preQualification: {
+        ...formData.preQualification,
+        branchOfService: value
+      }
+    })
     setAutoAdvanceEnabled(true)
   }
 
@@ -45,15 +49,7 @@ export const BranchOfService: React.FC = () => {
                 name="branchOfService"
                 value={option.value}
                 checked={formData.preQualification?.branchOfService === option.value}
-                onChange={() => {
-                  updateFormData({
-                    preQualification: {
-                      ...formData.preQualification,
-                      branchOfService: option.value
-                    }
-                  })
-                  setAutoAdvanceEnabled(true)
-                }}
+                onChange={() => handleBranchChange(option.value)}
               />
               <span>{option.label}</span>
             </label>
