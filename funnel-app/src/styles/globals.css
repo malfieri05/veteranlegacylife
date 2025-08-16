@@ -183,6 +183,7 @@
 /* Progress bar styles */
 .veteran-funnel .progress-container {
   margin-bottom: 2rem;
+  margin-top: 1rem;
 }
 
 .veteran-funnel .progress-bar {
@@ -324,16 +325,17 @@
 @media (max-width: 768px) {
   .veteran-funnel .modal-overlay {
     padding: 0.5rem;
-    align-items: flex-start;
-    padding-top: 1rem;
+    align-items: center;
+    justify-content: center;
   }
   
   .veteran-funnel .modal-content {
     padding: 1rem;
-    width: 98%;
+    width: 95%;
     max-height: calc(100vh - 2rem);
-    margin: 0;
-    border-radius: 8px;
+    margin: 0 auto;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   }
   
   .veteran-funnel h1 { font-size: 2rem; }
@@ -420,16 +422,17 @@
 @media (max-width: 480px) {
   .veteran-funnel .modal-overlay {
     padding: 0.25rem;
-    align-items: flex-start;
-    padding-top: 0.5rem;
+    align-items: center;
+    justify-content: center;
   }
   
   .veteran-funnel .modal-content {
     padding: 0.75rem;
-    width: 100%;
+    width: 98%;
     max-height: calc(100vh - 1rem);
-    margin: 0;
-    border-radius: 0;
+    margin: 0 auto;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   }
   
   .veteran-funnel h1 { font-size: 1.75rem; }
@@ -488,16 +491,17 @@
 
 @media (max-width: 360px) {
   .veteran-funnel .modal-overlay {
-    padding: 0;
-    align-items: flex-start;
-    padding-top: 0.25rem;
+    padding: 0.25rem;
+    align-items: center;
+    justify-content: center;
   }
   
   .veteran-funnel .modal-content {
     padding: 0.75rem;
-    width: 100%;
+    width: 98%;
     max-height: calc(100vh - 0.5rem);
-    border-radius: 0;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   }
   
   .veteran-funnel h1 { font-size: 1.75rem; }

@@ -276,6 +276,7 @@
         .insurance-type {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
             font-size: 0.9rem;
             color: white;
@@ -283,6 +284,7 @@
             padding: 0.5rem 1rem;
             border-radius: 25px;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
         }
 
         .insurance-type i {
@@ -612,6 +614,11 @@
             flex-direction: column;
             gap: 0.5rem;
             padding: 0.5rem 0;
+        }
+        
+        /* Hide navigation on mobile */
+        .header-nav {
+            display: none;
         }
         
         /* Prevent zoom on input focus */

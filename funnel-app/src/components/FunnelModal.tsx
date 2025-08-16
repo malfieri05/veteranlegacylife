@@ -220,7 +220,7 @@ export const FunnelModal: React.FC = () => {
           onClick={closeModal}
           style={{
             position: 'absolute',
-            top: '1rem',
+            top: '0.75rem',
             right: '1rem',
             background: 'none',
             border: 'none',
@@ -242,7 +242,9 @@ export const FunnelModal: React.FC = () => {
 
         {/* Don't show progress bar during loading screen, options modal, or final success */}
         {currentStep !== 13 && currentStep !== 16 && currentStep !== 19 && (
-          <ProgressBar currentStep={currentStep} totalSteps={TOTAL_STEPS} />
+          <div style={{ marginTop: '1.5rem' }}>
+            <ProgressBar currentStep={currentStep} totalSteps={TOTAL_STEPS} />
+          </div>
         )}
 
         <AnimatePresence mode="wait">
