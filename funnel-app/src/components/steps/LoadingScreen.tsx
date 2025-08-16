@@ -26,7 +26,7 @@ export const LoadingScreen: React.FC = () => {
       {/* Logo */}
       <div style={{ marginBottom: '2rem' }}>
         <img 
-          src="/logo.png" 
+                          src="/assets/logo.png" 
           alt="Veteran Legacy Life Logo" 
           style={{ height: '6rem', width: 'auto', objectFit: 'contain', margin: '0 auto' }}
           onError={(e) => {

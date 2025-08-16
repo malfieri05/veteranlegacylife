@@ -144,7 +144,7 @@ export const FinalSuccessModal: React.FC = () => {
       {/* Logo */}
       <div style={{ marginBottom: '1rem' }}>
         <img 
-          src="/logo.png" 
+                          src="/assets/logo.png" 
           alt="Veteran Legacy Life Logo" 
           style={{ height: '4rem', width: 'auto', objectFit: 'contain', margin: '0 auto' }}
           onError={(e) => {
