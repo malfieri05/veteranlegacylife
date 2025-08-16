@@ -268,8 +268,8 @@ function sendApplicationCompleteEmail(data) {
       city: parsedFormData.applicationData?.city || '',
       applicationState: parsedFormData.applicationData?.state || '',
       zipCode: parsedFormData.applicationData?.zipCode || '',
-      beneficiaryName: parsedFormData.applicationData?.beneficiaryName || '',
-      beneficiaryRelationship: parsedFormData.applicationData?.beneficiaryRelationship || '',
+      beneficiaryName: parsedFormData.applicationData?.beneficiaries?.[0]?.name || '',
+      beneficiaryRelationship: parsedFormData.applicationData?.beneficiaries?.[0]?.relationship || '',
       vaNumber: parsedFormData.applicationData?.vaNumber || '',
       serviceConnected: parsedFormData.applicationData?.serviceConnected || '',
       ssn: encryptSensitiveData(parsedFormData.applicationData?.ssn || ''),
@@ -337,8 +337,8 @@ function sendApplicationNotification(data, sessionId) {
       city: parsedFormData.applicationData?.city || '',
       applicationState: parsedFormData.applicationData?.state || '',
       zipCode: parsedFormData.applicationData?.zipCode || '',
-      beneficiaryName: parsedFormData.applicationData?.beneficiaryName || '',
-      beneficiaryRelationship: parsedFormData.applicationData?.beneficiaryRelationship || '',
+      beneficiaryName: parsedFormData.applicationData?.beneficiaries?.[0]?.name || '',
+      beneficiaryRelationship: parsedFormData.applicationData?.beneficiaries?.[0]?.relationship || '',
       vaNumber: parsedFormData.applicationData?.vaNumber || '',
       serviceConnected: parsedFormData.applicationData?.serviceConnected || '',
       ssn: encryptSensitiveData(parsedFormData.applicationData?.ssn || ''),
@@ -381,14 +381,21 @@ function sendApplicationNotification(data, sessionId) {
 
 function sendApplicationConfirmation(data) {
   Logger.log('Sending COMPLETE APPLICATION confirmation email to customer');
+  Logger.log('Raw data received:', JSON.stringify(data));
   
   try {
     // Parse form data
     const parsedFormData = {
       contactInfo: data.contactInfo || {},
       preQualification: data.preQualification || {},
+      applicationData: data.applicationData || {},
       quoteData: data.quoteData || {}
     };
+    
+    Logger.log('Parsed application data:', JSON.stringify(parsedFormData.applicationData));
+    Logger.log('Beneficiaries array:', JSON.stringify(parsedFormData.applicationData?.beneficiaries));
+    Logger.log('Beneficiary Name (direct):', parsedFormData.applicationData?.beneficiaryName);
+    Logger.log('Beneficiary Relationship (direct):', parsedFormData.applicationData?.beneficiaryRelationship);
     
     // Build email data
     const emailData = {
@@ -398,10 +405,18 @@ function sendApplicationConfirmation(data) {
       militaryStatus: parsedFormData.preQualification?.militaryStatus || '',
       branchOfService: parsedFormData.preQualification?.branchOfService || '',
       coverageAmount: parsedFormData.preQualification?.coverageAmount || '',
+      vaNumber: parsedFormData.applicationData?.vaNumber || '',
+      serviceConnected: parsedFormData.applicationData?.serviceConnected || '',
+      beneficiaryName: parsedFormData.applicationData?.beneficiaryName || '',
+      beneficiaryRelationship: parsedFormData.applicationData?.beneficiaryRelationship || '',
       quoteCoverage: parsedFormData.quoteData?.coverage || '',
       quotePremium: parsedFormData.quoteData?.premium || '',
       quoteType: parsedFormData.quoteData?.type || ''
     };
+    
+    Logger.log('Email data built:', JSON.stringify(emailData));
+    Logger.log('Beneficiary name from email data:', emailData.beneficiaryName);
+    Logger.log('Beneficiary relationship from email data:', emailData.beneficiaryRelationship);
     
     // Generate HTML email
     const html = generateApplicationConfirmationHTML(emailData);
@@ -533,7 +548,6 @@ function generateLeadNotificationHTML(data) {
         
         <div class="footer">
           <p><strong>Veteran Legacy Life</strong></p>
-          <p>Phone: <a href="tel:${companyConfig.PHONE_DIALABLE}">${companyConfig.PHONE}</a></p>
           <p>Website: <a href="${companyConfig.WEBSITE}">${companyConfig.WEBSITE}</a></p>
         </div>
       </div>
@@ -585,12 +599,11 @@ function generateLeadConfirmationHTML(data) {
             <p>We understand the unique needs of veterans and their families, and we're committed to finding you the best insurance options available.</p>
           </div>
           
-          <p>If you have any questions, please don't hesitate to contact us at ${companyConfig.PHONE}.</p>
+          <p>If you have any questions, please don't hesitate to contact us through our website.</p>
         </div>
         
         <div class="footer">
           <p><strong>Veteran Legacy Life</strong></p>
-          <p>Phone: <a href="tel:${companyConfig.PHONE_DIALABLE}">${companyConfig.PHONE}</a></p>
           <p>Website: <a href="${companyConfig.WEBSITE}">${companyConfig.WEBSITE}</a></p>
         </div>
       </div>
@@ -672,7 +685,6 @@ function generateApplicationCompleteHTML(data) {
         
         <div class="footer">
           <p><strong>Veteran Legacy Life</strong></p>
-          <p>Phone: <a href="tel:${companyConfig.PHONE_DIALABLE}">${companyConfig.PHONE}</a></p>
           <p>Website: <a href="${companyConfig.WEBSITE}">${companyConfig.WEBSITE}</a></p>
         </div>
       </div>
@@ -721,17 +733,20 @@ function generateApplicationConfirmationHTML(data) {
               <li><strong>Quote Coverage:</strong> ${data.quoteCoverage}</li>
               <li><strong>Monthly Premium:</strong> ${data.quotePremium}</li>
               <li><strong>Policy Type:</strong> ${data.quoteType}</li>
+              <li><strong>VA Number:</strong> ${data.vaNumber}</li>
+              <li><strong>Service Connected:</strong> ${data.serviceConnected}</li>
+              <li><strong>Beneficiary Name:</strong> ${data.beneficiaryName}</li>
+              <li><strong>Beneficiary Relationship:</strong> ${data.beneficiaryRelationship}</li>
             </ul>
             
             <p>Our team will review your application and contact you within 1-2 business days to discuss next steps and answer any questions you may have.</p>
           </div>
           
-          <p>If you have any questions or need to make changes to your application, please contact us at ${companyConfig.PHONE}.</p>
+          <p>If you have any questions or need to make changes to your application, please contact us through our website.</p>
         </div>
         
         <div class="footer">
           <p><strong>Veteran Legacy Life</strong></p>
-          <p>Phone: <a href="tel:${companyConfig.PHONE_DIALABLE}">${companyConfig.PHONE}</a></p>
           <p>Website: <a href="${companyConfig.WEBSITE}">${companyConfig.WEBSITE}</a></p>
         </div>
       </div>
@@ -783,7 +798,6 @@ function generateAbandonmentAlertHTML(data) {
         
         <div class="footer">
           <p><strong>Veteran Legacy Life</strong></p>
-          <p>Phone: <a href="tel:${companyConfig.PHONE_DIALABLE}">${companyConfig.PHONE}</a></p>
           <p>Website: <a href="${companyConfig.WEBSITE}">${companyConfig.WEBSITE}</a></p>
         </div>
       </div>
@@ -842,12 +856,11 @@ function generateAbandonmentRecoveryHTML(data) {
             </ul>
           </div>
           
-          <p>If you have any questions or need assistance, please contact us at ${companyConfig.PHONE}.</p>
+          <p>If you have any questions or need assistance, please contact us through our website.</p>
         </div>
         
         <div class="footer">
           <p><strong>Veteran Legacy Life</strong></p>
-          <p>Phone: <a href="tel:${companyConfig.PHONE_DIALABLE}">${companyConfig.PHONE}</a></p>
           <p>Website: <a href="${companyConfig.WEBSITE}">${companyConfig.WEBSITE}</a></p>
         </div>
       </div>

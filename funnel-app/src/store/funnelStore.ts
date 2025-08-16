@@ -44,6 +44,8 @@ export interface ApplicationData {
   beneficiaryName: string
   beneficiaryRelationship: string
   beneficiaries: Beneficiary[]
+  vaNumber: string
+  serviceConnected: string
   vaClinicName: string
   primaryDoctor: string
   ssn: string
@@ -134,6 +136,8 @@ const initialState: FormData = {
     beneficiaryName: '',
     beneficiaryRelationship: '',
     beneficiaries: [{ name: '', relationship: '', percentage: 100 }],
+    vaNumber: '',
+    serviceConnected: '',
     vaClinicName: '',
     primaryDoctor: '',
     ssn: '',
@@ -217,6 +221,10 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
       
       console.log(`🔍 submitPartial - Step ${currentStep} (${stepName})`)
       console.log(`🔍 submitPartial - Quote data:`, formData.quoteData)
+      console.log(`🔍 submitPartial - Application data:`, formData.applicationData)
+      console.log(`🔍 submitPartial - Beneficiaries:`, formData.applicationData?.beneficiaries)
+      console.log(`🔍 submitPartial - Beneficiary Name:`, formData.applicationData?.beneficiaryName)
+      console.log(`🔍 submitPartial - Beneficiary Relationship:`, formData.applicationData?.beneficiaryRelationship)
       
       const params = new URLSearchParams();
       for (const [key, value] of Object.entries(payload)) {

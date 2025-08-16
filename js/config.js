@@ -6,7 +6,7 @@ const Config = (function() {
     
     // Google Apps Script URL - Use global config if available, fallback to local config
     const GOOGLE_APPS_SCRIPT_URL = (window.VeteranFunnelConfig && window.VeteranFunnelConfig.GOOGLE_APPS_SCRIPT.URL) || 
-        'https://script.google.com/macros/s/AKfycbwnU-KpI1d0yuFeB1dIqBbpwlvpkakdXu1rN8IiRKFalHwiESYF7gs14w58Dkk_ObHWwg/exec';
+        'https://script.google.com/macros/s/AKfycbxhXl4p_iBSAY_XjkbNlQbC7KOcfS0UPlcYNnNYOqZzc-Fbk7Y_PUJAktPea4HyEMMM6Q/exec';
     
     // Helper function to get API URL
     function getApiUrl() {

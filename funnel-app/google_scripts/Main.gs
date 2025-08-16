@@ -125,6 +125,9 @@ function doPost(e) {
       case 'Application':
         result = handleApplicationSubmission(parsedData, sessionId);
         break;
+      case 'ApplicationComplete':
+        result = handleApplicationCompleteEmail(parsedData, sessionId);
+        break;
       default:
         throw new Error(`Unknown form type: ${formType}`);
     }
@@ -184,8 +187,21 @@ function handleApplicationSubmission(data, sessionId) {
     rowData[SHEET_COLUMNS.CITY - 1] = data.applicationData?.city || '';
     rowData[SHEET_COLUMNS.APPLICATION_STATE - 1] = data.applicationData?.state || '';
     rowData[SHEET_COLUMNS.ZIP_CODE - 1] = data.applicationData?.zipCode || '';
-    rowData[SHEET_COLUMNS.BENEFICIARY_NAME - 1] = data.applicationData?.beneficiaryName || '';
-    rowData[SHEET_COLUMNS.BENEFICIARY_RELATIONSHIP - 1] = data.applicationData?.beneficiaryRelationship || '';
+    
+    // Handle beneficiary data consistently - check both direct fields and beneficiaries array
+    let beneficiaryName = data.applicationData?.beneficiaryName || '';
+    let beneficiaryRelationship = data.applicationData?.beneficiaryRelationship || '';
+    
+    // If direct fields are empty, try to get from beneficiaries array
+    if (!beneficiaryName && data.applicationData?.beneficiaries && data.applicationData.beneficiaries.length > 0) {
+      beneficiaryName = data.applicationData.beneficiaries[0].name || '';
+    }
+    if (!beneficiaryRelationship && data.applicationData?.beneficiaries && data.applicationData.beneficiaries.length > 0) {
+      beneficiaryRelationship = data.applicationData.beneficiaries[0].relationship || '';
+    }
+    
+    rowData[SHEET_COLUMNS.BENEFICIARY_NAME - 1] = beneficiaryName;
+    rowData[SHEET_COLUMNS.BENEFICIARY_RELATIONSHIP - 1] = beneficiaryRelationship;
     rowData[SHEET_COLUMNS.VA_NUMBER - 1] = data.applicationData?.vaNumber || '';
     rowData[SHEET_COLUMNS.SERVICE_CONNECTED - 1] = data.applicationData?.serviceConnected || '';
     rowData[SHEET_COLUMNS.SSN - 1] = data.applicationData?.ssn || '';
@@ -212,6 +228,7 @@ function handleApplicationSubmission(data, sessionId) {
     rowData[SHEET_COLUMNS.QUOTE_TYPE - 1] = quoteType;
     
     Logger.log(`[${sessionId}] Quote data array positions: [35]=${rowData[35]}, [36]=${rowData[36]}, [37]=${rowData[37]}, [38]=${rowData[38]}, [39]=${rowData[39]}, [40]=${rowData[40]}`);
+    Logger.log(`[${sessionId}] Beneficiary data array positions: [26]=${rowData[26]}, [27]=${rowData[27]}`);
     
     // Tracking (columns 42-49)
     rowData[SHEET_COLUMNS.CURRENT_STEP - 1] = data.trackingData?.currentStep || '';
@@ -278,9 +295,41 @@ function findRowBySessionId(sheet, sessionId) {
   return null; // Not found
 }
 
+// Helper function to process beneficiary data - concatenate multiple beneficiaries
+function processBeneficiaryData(data, sessionId) {
+  let beneficiaryName = data.applicationData?.beneficiaryName || '';
+  let beneficiaryRelationship = data.applicationData?.beneficiaryRelationship || '';
+  
+  // If we have a beneficiaries array, concatenate all beneficiaries
+  if (data.applicationData?.beneficiaries && data.applicationData.beneficiaries.length > 0) {
+    const names = data.applicationData.beneficiaries
+      .filter(b => b.name && b.name.trim() !== '')
+      .map(b => b.name.trim());
+    
+    const relationships = data.applicationData.beneficiaries
+      .filter(b => b.relationship && b.relationship.trim() !== '')
+      .map(b => b.relationship.trim());
+    
+    // Use concatenated values if we have them, otherwise fall back to direct fields
+    if (names.length > 0) {
+      beneficiaryName = names.join(', ');
+    }
+    if (relationships.length > 0) {
+      beneficiaryRelationship = relationships.join(', ');
+    }
+  }
+  
+  Logger.log(`[${sessionId}] Beneficiary processing - Names: "${beneficiaryName}", Relationships: "${beneficiaryRelationship}"`);
+  
+  return { beneficiaryName, beneficiaryRelationship };
+}
+
 function handlePartialSubmission(data, sessionId) {
   Logger.log(`[${sessionId}] Processing Partial submission`);
   Logger.log(`[${sessionId}] Quote data received: ${JSON.stringify(data.quoteData)}`);
+  Logger.log(`[${sessionId}] Application data received: ${JSON.stringify(data.applicationData)}`);
+  Logger.log(`[${sessionId}] Beneficiary data - direct fields: name=${data.applicationData?.beneficiaryName}, relationship=${data.applicationData?.beneficiaryRelationship}`);
+  Logger.log(`[${sessionId}] Beneficiary data - array: ${JSON.stringify(data.applicationData?.beneficiaries)}`);
   
   try {
     const sheet = SpreadsheetApp.getActiveSheet();
@@ -312,8 +361,21 @@ function handlePartialSubmission(data, sessionId) {
     rowData[SHEET_COLUMNS.CITY - 1] = data.applicationData?.city || '';
     rowData[SHEET_COLUMNS.APPLICATION_STATE - 1] = data.applicationData?.state || '';
     rowData[SHEET_COLUMNS.ZIP_CODE - 1] = data.applicationData?.zipCode || '';
-    rowData[SHEET_COLUMNS.BENEFICIARY_NAME - 1] = data.applicationData?.beneficiaryName || '';
-    rowData[SHEET_COLUMNS.BENEFICIARY_RELATIONSHIP - 1] = data.applicationData?.beneficiaryRelationship || '';
+    
+    // Handle beneficiary data consistently - check both direct fields and beneficiaries array
+    let beneficiaryName = data.applicationData?.beneficiaryName || '';
+    let beneficiaryRelationship = data.applicationData?.beneficiaryRelationship || '';
+    
+    // If direct fields are empty, try to get from beneficiaries array
+    if (!beneficiaryName && data.applicationData?.beneficiaries && data.applicationData.beneficiaries.length > 0) {
+      beneficiaryName = data.applicationData.beneficiaries[0].name || '';
+    }
+    if (!beneficiaryRelationship && data.applicationData?.beneficiaries && data.applicationData.beneficiaries.length > 0) {
+      beneficiaryRelationship = data.applicationData.beneficiaries[0].relationship || '';
+    }
+    
+    rowData[SHEET_COLUMNS.BENEFICIARY_NAME - 1] = beneficiaryName;
+    rowData[SHEET_COLUMNS.BENEFICIARY_RELATIONSHIP - 1] = beneficiaryRelationship;
     rowData[SHEET_COLUMNS.VA_NUMBER - 1] = data.applicationData?.vaNumber || '';
     rowData[SHEET_COLUMNS.SERVICE_CONNECTED - 1] = data.applicationData?.serviceConnected || '';
     rowData[SHEET_COLUMNS.SSN - 1] = data.applicationData?.ssn || '';
@@ -339,6 +401,7 @@ function handlePartialSubmission(data, sessionId) {
     rowData[SHEET_COLUMNS.QUOTE_TYPE - 1] = quoteType;
     
     Logger.log(`[${sessionId}] Partial - Quote data array positions: [35]=${rowData[35]}, [36]=${rowData[36]}, [37]=${rowData[37]}, [38]=${rowData[38]}, [39]=${rowData[39]}, [40]=${rowData[40]}`);
+    Logger.log(`[${sessionId}] Partial - Beneficiary data array positions: [26]=${rowData[26]}, [27]=${rowData[27]}`);
     
     rowData[SHEET_COLUMNS.CURRENT_STEP - 1] = data.trackingData?.currentStep || '';
     rowData[SHEET_COLUMNS.STEP_NAME - 1] = data.trackingData?.stepName || '';
@@ -407,8 +470,21 @@ function handleLeadSubmission(data, sessionId) {
     rowData[SHEET_COLUMNS.CITY - 1] = data.applicationData?.city || '';
     rowData[SHEET_COLUMNS.APPLICATION_STATE - 1] = data.applicationData?.state || '';
     rowData[SHEET_COLUMNS.ZIP_CODE - 1] = data.applicationData?.zipCode || '';
-    rowData[SHEET_COLUMNS.BENEFICIARY_NAME - 1] = data.applicationData?.beneficiaryName || '';
-    rowData[SHEET_COLUMNS.BENEFICIARY_RELATIONSHIP - 1] = data.applicationData?.beneficiaryRelationship || '';
+    
+    // Handle beneficiary data consistently - check both direct fields and beneficiaries array
+    let beneficiaryName = data.applicationData?.beneficiaryName || '';
+    let beneficiaryRelationship = data.applicationData?.beneficiaryRelationship || '';
+    
+    // If direct fields are empty, try to get from beneficiaries array
+    if (!beneficiaryName && data.applicationData?.beneficiaries && data.applicationData.beneficiaries.length > 0) {
+      beneficiaryName = data.applicationData.beneficiaries[0].name || '';
+    }
+    if (!beneficiaryRelationship && data.applicationData?.beneficiaries && data.applicationData.beneficiaries.length > 0) {
+      beneficiaryRelationship = data.applicationData.beneficiaries[0].relationship || '';
+    }
+    
+    rowData[SHEET_COLUMNS.BENEFICIARY_NAME - 1] = beneficiaryName;
+    rowData[SHEET_COLUMNS.BENEFICIARY_RELATIONSHIP - 1] = beneficiaryRelationship;
     rowData[SHEET_COLUMNS.VA_NUMBER - 1] = data.applicationData?.vaNumber || '';
     rowData[SHEET_COLUMNS.SERVICE_CONNECTED - 1] = data.applicationData?.serviceConnected || '';
     rowData[SHEET_COLUMNS.SSN - 1] = data.applicationData?.ssn || '';
@@ -505,8 +581,21 @@ function handleLeadPartialSubmission(data, sessionId) {
     rowData[SHEET_COLUMNS.CITY - 1] = data.applicationData?.city || '';
     rowData[SHEET_COLUMNS.APPLICATION_STATE - 1] = data.applicationData?.state || '';
     rowData[SHEET_COLUMNS.ZIP_CODE - 1] = data.applicationData?.zipCode || '';
-    rowData[SHEET_COLUMNS.BENEFICIARY_NAME - 1] = data.applicationData?.beneficiaryName || '';
-    rowData[SHEET_COLUMNS.BENEFICIARY_RELATIONSHIP - 1] = data.applicationData?.beneficiaryRelationship || '';
+    
+    // Handle beneficiary data consistently - check both direct fields and beneficiaries array
+    let beneficiaryName = data.applicationData?.beneficiaryName || '';
+    let beneficiaryRelationship = data.applicationData?.beneficiaryRelationship || '';
+    
+    // If direct fields are empty, try to get from beneficiaries array
+    if (!beneficiaryName && data.applicationData?.beneficiaries && data.applicationData.beneficiaries.length > 0) {
+      beneficiaryName = data.applicationData.beneficiaries[0].name || '';
+    }
+    if (!beneficiaryRelationship && data.applicationData?.beneficiaries && data.applicationData.beneficiaries.length > 0) {
+      beneficiaryRelationship = data.applicationData.beneficiaries[0].relationship || '';
+    }
+    
+    rowData[SHEET_COLUMNS.BENEFICIARY_NAME - 1] = beneficiaryName;
+    rowData[SHEET_COLUMNS.BENEFICIARY_RELATIONSHIP - 1] = beneficiaryRelationship;
     rowData[SHEET_COLUMNS.VA_NUMBER - 1] = data.applicationData?.vaNumber || '';
     rowData[SHEET_COLUMNS.SERVICE_CONNECTED - 1] = data.applicationData?.serviceConnected || '';
     rowData[SHEET_COLUMNS.SSN - 1] = data.applicationData?.ssn || '';
@@ -610,8 +699,12 @@ function testNewEntriesAndEmails() {
         city: 'Test City',
         state: 'CA',
         zipCode: '90210',
-        beneficiaryName: 'Jane Doe',
-        beneficiaryRelationship: 'Spouse',
+        beneficiaryName: 'Jane Doe, Bob Smith',
+        beneficiaryRelationship: 'Spouse, Child',
+        beneficiaries: [
+          { name: 'Jane Doe', relationship: 'Spouse', percentage: 60 },
+          { name: 'Bob Smith', relationship: 'Child', percentage: 40 }
+        ],
         vaNumber: '123456789',
         serviceConnected: 'No',
         ssn: '123-45-6789',
@@ -669,6 +762,7 @@ function testNewEntriesAndEmails() {
         zipCode: '',
         beneficiaryName: '',
         beneficiaryRelationship: '',
+        beneficiaries: [],
         vaNumber: '',
         serviceConnected: '',
         ssn: '',
@@ -724,8 +818,12 @@ function testNewEntriesAndEmails() {
         city: 'Partial City',
         state: 'FL',
         zipCode: '33101',
-        beneficiaryName: 'Child Johnson',
-        beneficiaryRelationship: 'Child',
+        beneficiaryName: 'Child Johnson, Sister Johnson',
+        beneficiaryRelationship: 'Child, Sister',
+        beneficiaries: [
+          { name: 'Child Johnson', relationship: 'Child', percentage: 70 },
+          { name: 'Sister Johnson', relationship: 'Sister', percentage: 30 }
+        ],
         vaNumber: '987654321',
         serviceConnected: 'Yes',
         ssn: '987-65-4321',
@@ -766,7 +864,239 @@ function testNewEntriesAndEmails() {
       error: error.toString()
     })).setMimeType(ContentService.MimeType.JSON);
   }
-} 
+}
+
+function handleApplicationCompleteEmail(data, sessionId) {
+  Logger.log(`[${sessionId}] Processing Application Complete Email`);
+  
+  try {
+    // Send customer confirmation email
+    try {
+      Logger.log(`[${sessionId}] Sending application completion email to customer`);
+      sendApplicationConfirmation(data);
+      Logger.log(`[${sessionId}] Application completion email sent to customer successfully`);
+    } catch (emailError) {
+      Logger.log(`[${sessionId}] Error sending application completion email to customer: ${emailError.toString()}`);
+    }
+    
+    return {
+      success: true,
+      sessionId: sessionId,
+      message: 'Application completion email sent successfully'
+    };
+    
+  } catch (error) {
+    Logger.log(`[${sessionId}] Error in handleApplicationCompleteEmail: ${error.toString()}`);
+    throw error;
+  }
+}
+
+// Simplified email functions for testing
+function sendApplicationCompleteEmail(data) {
+  Logger.log('Sending COMPLETE APPLICATION notification');
+  
+  try {
+    const parsedFormData = {
+      contactInfo: data.contactInfo || {},
+      preQualification: data.preQualification || {},
+      applicationData: data.applicationData || {},
+      quoteData: data.quoteData || {}
+    };
+    
+    const emailData = {
+      firstName: parsedFormData.contactInfo?.firstName || 'Test',
+      lastName: parsedFormData.contactInfo?.lastName || 'User',
+      email: parsedFormData.contactInfo?.email || 'michaelalfieri.ffl@gmail.com',
+      phone: parsedFormData.contactInfo?.phone || '555-123-4567',
+      militaryStatus: parsedFormData.preQualification?.militaryStatus || 'Veteran',
+      branchOfService: parsedFormData.preQualification?.branchOfService || 'Army',
+      coverageAmount: parsedFormData.preQualification?.coverageAmount || '$100,000',
+      beneficiaryName: parsedFormData.applicationData?.beneficiaryName || 'Test Beneficiary',
+      beneficiaryRelationship: parsedFormData.applicationData?.beneficiaryRelationship || 'Spouse',
+      quoteCoverage: parsedFormData.quoteData?.coverage || '$100,000',
+      quotePremium: parsedFormData.quoteData?.premium || '$45.00',
+      quoteType: parsedFormData.quoteData?.type || 'Term Life'
+    };
+    
+    Logger.log('Email data for admin notification:', JSON.stringify(emailData));
+    
+    // Send admin notification
+    const emailConfig = getEmailConfig();
+    MailApp.sendEmail({
+      to: emailConfig.ADMIN,
+      from: emailConfig.FROM,
+      replyTo: emailConfig.REPLY_TO,
+      subject: `✅ APPLICATION COMPLETE: ${emailData.firstName} ${emailData.lastName} - ${emailData.quoteCoverage} Coverage`,
+      htmlBody: `
+        <h2>Application Complete Notification</h2>
+        <p><strong>Name:</strong> ${emailData.firstName} ${emailData.lastName}</p>
+        <p><strong>Email:</strong> ${emailData.email}</p>
+        <p><strong>Phone:</strong> ${emailData.phone}</p>
+        <p><strong>Military Status:</strong> ${emailData.militaryStatus} - ${emailData.branchOfService}</p>
+        <p><strong>Coverage:</strong> ${emailData.quoteCoverage}</p>
+        <p><strong>Premium:</strong> ${emailData.quotePremium}</p>
+        <p><strong>Beneficiaries:</strong> ${emailData.beneficiaryName}</p>
+        <p><strong>Relationships:</strong> ${emailData.beneficiaryRelationship}</p>
+        <p><strong>Policy Type:</strong> ${emailData.quoteType}</p>
+      `
+    });
+    
+    Logger.log('✅ Admin notification email sent successfully');
+    return true;
+    
+  } catch (error) {
+    Logger.log('❌ Error sending admin notification:', error.toString());
+    return false;
+  }
+}
+
+function sendApplicationConfirmation(data) {
+  Logger.log('Sending COMPLETE APPLICATION confirmation email to customer');
+  
+  try {
+    const parsedFormData = {
+      contactInfo: data.contactInfo || {},
+      preQualification: data.preQualification || {},
+      quoteData: data.quoteData || {}
+    };
+    
+    const emailData = {
+      firstName: parsedFormData.contactInfo?.firstName || 'Test',
+      lastName: parsedFormData.contactInfo?.lastName || 'User',
+      email: parsedFormData.contactInfo?.email || 'michaelalfieri.ffl@gmail.com',
+      militaryStatus: parsedFormData.preQualification?.militaryStatus || 'Veteran',
+      branchOfService: parsedFormData.preQualification?.branchOfService || 'Army',
+      coverageAmount: parsedFormData.preQualification?.coverageAmount || '$100,000',
+      quoteCoverage: parsedFormData.quoteData?.coverage || '$100,000',
+      quotePremium: parsedFormData.quoteData?.premium || '$45.00',
+      quoteType: parsedFormData.quoteData?.type || 'Term Life'
+    };
+    
+    Logger.log('Email data for customer confirmation:', JSON.stringify(emailData));
+    
+    // Send email to customer
+    const emailConfig = getEmailConfig();
+    MailApp.sendEmail({
+      to: emailData.email,
+      from: emailConfig.FROM,
+      replyTo: emailConfig.REPLY_TO,
+      subject: `Your Veteran Legacy Life Insurance Application is Complete`,
+      htmlBody: `
+        <h2>🎉 Your Application is Complete!</h2>
+        <p>Congratulations, ${emailData.firstName}!</p>
+        <p>Your Veteran Legacy Life Insurance application has been successfully submitted.</p>
+        
+        <h3>Application Summary:</h3>
+        <ul>
+          <li><strong>Name:</strong> ${emailData.firstName} ${emailData.lastName}</li>
+          <li><strong>Military Status:</strong> ${emailData.militaryStatus} - ${emailData.branchOfService}</li>
+          <li><strong>Coverage Amount:</strong> ${emailData.coverageAmount}</li>
+          <li><strong>Quote Coverage:</strong> ${emailData.quoteCoverage}</li>
+          <li><strong>Monthly Premium:</strong> ${emailData.quotePremium}</li>
+          <li><strong>Policy Type:</strong> ${emailData.quoteType}</li>
+        </ul>
+        
+        <p>Our team will review your application and contact you within 1-2 business days.</p>
+      `
+    });
+    
+    Logger.log('✅ Customer confirmation email sent successfully');
+    return true;
+    
+  } catch (error) {
+    Logger.log('❌ Error sending customer confirmation email:', error.toString());
+    return false;
+  }
+}
+
+function sendLeadNotification(data) {
+  Logger.log('Sending NEW LEAD notification email');
+  
+  try {
+    const parsedFormData = {
+      contactInfo: data.contactInfo || {},
+      preQualification: data.preQualification || {}
+    };
+    
+    const emailData = {
+      firstName: parsedFormData.contactInfo?.firstName || 'Test',
+      lastName: parsedFormData.contactInfo?.lastName || 'User',
+      email: parsedFormData.contactInfo?.email || 'test@example.com',
+      phone: parsedFormData.contactInfo?.phone || '555-123-4567',
+      militaryStatus: parsedFormData.preQualification?.militaryStatus || 'Veteran',
+      branchOfService: parsedFormData.preQualification?.branchOfService || 'Army',
+      coverageAmount: parsedFormData.preQualification?.coverageAmount || '$100,000'
+    };
+    
+    const emailConfig = getEmailConfig();
+    MailApp.sendEmail({
+      to: emailConfig.ADMIN,
+      from: emailConfig.FROM,
+      replyTo: emailConfig.REPLY_TO,
+      subject: `🚨 NEW LEAD: ${emailData.firstName} ${emailData.lastName} (${emailData.branchOfService})`,
+      htmlBody: `
+        <h2>New Lead Received</h2>
+        <p><strong>Name:</strong> ${emailData.firstName} ${emailData.lastName}</p>
+        <p><strong>Email:</strong> ${emailData.email}</p>
+        <p><strong>Phone:</strong> ${emailData.phone}</p>
+        <p><strong>Military Status:</strong> ${emailData.militaryStatus} - ${emailData.branchOfService}</p>
+        <p><strong>Coverage:</strong> ${emailData.coverageAmount}</p>
+      `
+    });
+    
+    Logger.log('✅ Lead notification email sent successfully');
+    return true;
+    
+  } catch (error) {
+    Logger.log('❌ Error sending lead notification:', error.toString());
+    return false;
+  }
+}
+
+function sendPartialLeadEmail(data, sessionId) {
+  Logger.log('Sending PARTIAL LEAD abandonment alert');
+  
+  try {
+    const parsedFormData = {
+      contactInfo: data.contactInfo || {},
+      preQualification: data.preQualification || {}
+    };
+    
+    const emailData = {
+      firstName: parsedFormData.contactInfo?.firstName || 'Test',
+      lastName: parsedFormData.contactInfo?.lastName || 'User',
+      email: parsedFormData.contactInfo?.email || 'test@example.com',
+      phone: parsedFormData.contactInfo?.phone || '555-123-4567',
+      militaryStatus: parsedFormData.preQualification?.militaryStatus || 'Veteran',
+      branchOfService: parsedFormData.preQualification?.branchOfService || 'Army',
+      coverageAmount: parsedFormData.preQualification?.coverageAmount || '$100,000'
+    };
+    
+    const emailConfig = getEmailConfig();
+    MailApp.sendEmail({
+      to: emailConfig.ADMIN,
+      from: emailConfig.FROM,
+      replyTo: emailConfig.REPLY_TO,
+      subject: `⚠️ ABANDONED LEAD: ${emailData.firstName} ${emailData.lastName} - Follow up needed`,
+      htmlBody: `
+        <h2>Abandoned Lead Alert</h2>
+        <p><strong>Name:</strong> ${emailData.firstName} ${emailData.lastName}</p>
+        <p><strong>Email:</strong> ${emailData.email}</p>
+        <p><strong>Phone:</strong> ${emailData.phone}</p>
+        <p><strong>Military Status:</strong> ${emailData.militaryStatus} - ${emailData.branchOfService}</p>
+        <p><strong>Desired Coverage:</strong> ${emailData.coverageAmount}</p>
+        <p>This lead started the application process but did not complete it.</p>
+      `
+    });
+    
+    Logger.log('✅ Partial lead email sent successfully');
+    return true;
+    
+  } catch (error) {
+    Logger.log('❌ Error sending partial lead email:', error.toString());
+    return false;
+  }
+}
 
 function setupHeaders() {
   try {

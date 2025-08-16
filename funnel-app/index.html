@@ -7,7 +7,7 @@
     <meta name="description" content="Exclusive 2025 life insurance benefits for veterans, active service members, and their families. Get whole life, term life, and IUL coverage with living benefits.">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="../assets/favicon.png">
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -772,7 +772,7 @@
                 <h1>You May Qualify for New Life Insurance Benefits in 2025</h1>
                 <p>As a resident of your state, you are entitled to check your eligibility for exclusive life insurance benefits designed specifically for our nation's heroes.</p>
                 <div class="hero-buttons">
-                    <button class="cta-button qualify-button" onclick="window.VeteranFunnel.open()">See If I Qualify <span>→</span></button>
+                    <button class="cta-button qualify-button" onclick="if(window.VeteranFunnel) window.VeteranFunnel.open(); else console.log('VeteranFunnel not loaded yet');">See If I Qualify <span>→</span></button>
                 </div>
                 <div class="security-note">
                     <i class="fas fa-shield-alt"></i>

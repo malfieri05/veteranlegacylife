@@ -217,6 +217,108 @@ export class EmailTemplateService {
   }
 
   /**
+   * Generate a simple application confirmation email template
+   */
+  static generateSimpleApplicationConfirmationHTML(data: ApplicationCompleteData): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Application Confirmation - ${EMAIL_CONFIG.COMPANY_NAME}</title>
+        <style>
+          ${this.SHARED_STYLES}
+        </style>
+      </head>
+      <body>
+        <div class="email-container">
+          ${this.HEADER_TEMPLATE}
+          
+          <div class="content">
+            <h2 style="color: #1e3a8a; margin-bottom: 20px;">Congratulations, ${data.contactInfo.firstName}!</h2>
+            
+            <div class="alert-box success">
+              <h3>Your Application Has Been Submitted Successfully</h3>
+              <p>Thank you for choosing ${EMAIL_CONFIG.COMPANY_NAME} for your life insurance needs. A licensed insurance representative will contact you within 24 hours to finalize your policy.</p>
+            </div>
+
+            <!-- Coverage Summary -->
+            <div class="section">
+              <h3>Your Coverage Summary</h3>
+              <div style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; padding: 20px; border-radius: 12px; text-align: center; margin: 20px 0;">
+                <div style="font-size: 14px; margin-bottom: 10px; opacity: 0.9;">Coverage Amount</div>
+                <div style="font-size: 32px; font-weight: bold; margin-bottom: 10px;">$${data.applicationData.quoteData.coverageAmount.toLocaleString()}</div>
+                <div style="font-size: 18px; font-weight: 500;">$${data.applicationData.quoteData.monthlyPremium.toFixed(2)} /month</div>
+              </div>
+            </div>
+
+            <!-- Policy Details -->
+            <div class="section">
+              <h3>Policy Details</h3>
+              <table class="data-table">
+                <tr>
+                  <th>Policy Type</th>
+                  <td>${data.applicationData.quoteData.quoteType}</td>
+                </tr>
+                <tr>
+                  <th>Age</th>
+                  <td>${data.applicationData.quoteData.userAge}</td>
+                </tr>
+                <tr>
+                  <th>Gender</th>
+                  <td>${data.applicationData.quoteData.userGender === 'male' ? 'Male' : 'Female'}</td>
+                </tr>
+                <tr>
+                  <th>Coverage Amount</th>
+                  <td>$${data.applicationData.quoteData.coverageAmount.toLocaleString()}</td>
+                </tr>
+                <tr>
+                  <th>Monthly Premium</th>
+                  <td>$${data.applicationData.quoteData.monthlyPremium.toFixed(2)}</td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- Next Steps -->
+            <div class="section">
+              <h3>What Happens Next?</h3>
+              <ul style="line-height: 1.8; color: #374151;">
+                <li><strong>Confirmation Email:</strong> You'll receive this confirmation within 5 minutes</li>
+                <li><strong>Agent Contact:</strong> A licensed agent will call you within 24 hours</li>
+                <li><strong>Policy Processing:</strong> Your policy will be processed and finalized</li>
+                <li><strong>Coverage Start:</strong> Coverage will begin on your selected start date</li>
+              </ul>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="section">
+              <h3>Need Immediate Assistance?</h3>
+              <div class="contact-grid">
+                <div class="contact-item">
+                  <strong>Phone</strong>
+                  <span><a href="tel:${EMAIL_CONFIG.SUPPORT_PHONE}">${EMAIL_CONFIG.SUPPORT_PHONE}</a></span>
+                </div>
+                <div class="contact-item">
+                  <strong>Hours</strong>
+                  <span>Monday-Friday 8AM-6PM Pacific Time</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="tel:${EMAIL_CONFIG.SUPPORT_PHONE}" class="cta-button">Call Now</a>
+            </div>
+          </div>
+          
+          ${this.FOOTER_TEMPLATE}
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  /**
    * Populate template with data
    */
   private static populateTemplate(template: string, data: Record<string, any>): string {

@@ -4,6 +4,8 @@ import { useFunnelStore } from '../../store/funnelStore'
 export const ApplicationStep1: React.FC = () => {
   const { formData, updateFormData, submitPartial } = useFunnelStore()
   
+
+  
   // Initialize beneficiaries array if it doesn't exist
   const beneficiaries = formData.applicationData?.beneficiaries || [
     { name: '', relationship: '', percentage: 100 }
@@ -24,8 +26,32 @@ export const ApplicationStep1: React.FC = () => {
   }
 
   const handleBeneficiaryChange = (index: number, field: string, value: string) => {
+    console.log(`🎯 handleBeneficiaryChange - Index: ${index}, Field: ${field}, Value: ${value}`)
+    
+    // For the first beneficiary, also update the direct fields (like VA Number does)
+    if (index === 0) {
+      if (field === 'name') {
+        updateFormData({
+          applicationData: {
+            ...formData.applicationData,
+            beneficiaryName: value
+          }
+        })
+      } else if (field === 'relationship') {
+        updateFormData({
+          applicationData: {
+            ...formData.applicationData,
+            beneficiaryRelationship: value
+          }
+        })
+      }
+    }
+    
+    // Also update the beneficiaries array for consistency
     const updatedBeneficiaries = [...beneficiaries]
     updatedBeneficiaries[index] = { ...updatedBeneficiaries[index], [field]: value }
+    
+    console.log(`🎯 Updated beneficiaries:`, updatedBeneficiaries)
     
     // Recalculate percentages if there are multiple beneficiaries
     if (updatedBeneficiaries.length > 1) {
@@ -43,6 +69,8 @@ export const ApplicationStep1: React.FC = () => {
         beneficiaries: updatedBeneficiaries
       }
     })
+    
+    console.log(`🎯 Form data updated with beneficiaries:`, updatedBeneficiaries)
     
     // Trigger partial save after each field change
     setTimeout(() => {
@@ -357,6 +385,33 @@ export const ApplicationStep1: React.FC = () => {
         <h3>VA Information</h3>
         <div className="form-grid">
           <div>
+            <label htmlFor="vaNumber">VA Number *</label>
+            <input
+              type="text"
+              id="vaNumber"
+              name="vaNumber"
+              value={formData.applicationData?.vaNumber || ''}
+              onChange={(e) => handleVAInfoChange('vaNumber', e.target.value)}
+              placeholder="Enter your VA number"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="serviceConnected">Service Connected *</label>
+            <select
+              id="serviceConnected"
+              name="serviceConnected"
+              value={formData.applicationData?.serviceConnected || ''}
+              onChange={(e) => handleVAInfoChange('serviceConnected', e.target.value)}
+              required
+            >
+              <option value="">Select Status</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+              <option value="Pending">Pending</option>
+            </select>
+          </div>
+          <div>
             <label htmlFor="vaClinicName">VA Clinic Name</label>
             <input
               type="text"
@@ -461,6 +516,8 @@ export const ApplicationStep1: React.FC = () => {
           </div>
         </div>
       </div>
+
+
 
       <div style={{ 
         background: '#fef3c7', 

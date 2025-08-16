@@ -1,14 +1,109 @@
-import React from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useFunnelStore } from '../../store/funnelStore'
+import { EmailTemplateService } from '../../services/emailService'
+import { getApiUrl } from '../../config/globalConfig'
 
 export const FinalSuccessModal: React.FC = () => {
-  const { formData, closeModal } = useFunnelStore()
+  const { formData, closeModal, sessionId } = useFunnelStore()
+  const [emailSent, setEmailSent] = useState(false)
+  const [emailError, setEmailError] = useState<string | null>(null)
+  const [emailAttempted, setEmailAttempted] = useState(false)
+  const emailSentRef = useRef(false)
   
   const monthlyPremium = parseFloat(formData.quoteData?.premium?.replace('$', '').replace(',', '') || '0')
   const coverageAmount = parseFloat(formData.quoteData?.coverage?.replace('$', '').replace(',', '') || '0')
   const userAge = parseInt(formData.quoteData?.age || '0')
   const userGender = formData.quoteData?.gender || ''
   const quoteType = formData.quoteData?.type || 'IUL'
+
+  // Send confirmation email when component mounts
+  useEffect(() => {
+    console.log('🎯 FinalSuccessModal mounted - triggering email')
+    console.log('🎯 Current form data:', formData)
+    console.log('🎯 User email:', formData.contactInfo?.email)
+    console.log('🎯 Session ID:', sessionId)
+    
+    // Only send email once to prevent duplicates using ref
+    if (!emailSentRef.current) {
+      emailSentRef.current = true
+      setEmailAttempted(true)
+      sendConfirmationEmail()
+    }
+  }, [])
+
+  const sendConfirmationEmail = async () => {
+    console.log('📧 sendConfirmationEmail function called!')
+    try {
+      console.log('📧 Starting email confirmation process...')
+      console.log('📧 User email:', formData.contactInfo?.email)
+      console.log('📧 Session ID:', sessionId)
+      
+      // Prepare data in the format expected by Google Apps Script
+      // Use the same pattern as the working 'Lead' form type
+      const payload = {
+        sessionId,
+        formType: 'Application',
+        contactInfo: formData.contactInfo,
+        preQualification: formData.preQualification,
+        medicalAnswers: formData.medicalAnswers,
+        applicationData: formData.applicationData,
+        quoteData: formData.quoteData,
+        trackingData: {
+          currentStep: '19',
+          stepName: 'Application Complete'
+        }
+      }
+      
+      console.log('📧 Payload prepared:', payload)
+      console.log('📧 Beneficiaries in payload:', formData.applicationData?.beneficiaries)
+      console.log('📧 First beneficiary name:', formData.applicationData?.beneficiaryName)
+      console.log('📧 First beneficiary relationship:', formData.applicationData?.beneficiaryRelationship)
+      
+      // Convert to URL-encoded format (same as other API calls)
+      const params = new URLSearchParams();
+      for (const [key, value] of Object.entries(payload)) {
+        if (typeof value === 'object') {
+          params.append(key, JSON.stringify(value));
+        } else {
+          params.append(key, String(value));
+        }
+      }
+      
+      console.log('📧 API URL:', getApiUrl())
+      console.log('📧 Request body:', params.toString())
+      
+      console.log('📧 About to send fetch request...')
+      
+      // Send to Google Apps Script (same endpoint as other submissions)
+      const response = await fetch(getApiUrl(), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params.toString()
+      })
+      
+      console.log('📧 Fetch request completed')
+      
+      console.log('📧 Response status:', response.status)
+      console.log('📧 Response ok:', response.ok)
+      
+      if (response.ok) {
+        const responseText = await response.text()
+        console.log('📧 Response body:', responseText)
+        console.log('✅ Confirmation email sent successfully via Google Apps Script')
+        setEmailSent(true)
+      } else {
+        const errorText = await response.text()
+        console.error('❌ Failed to send confirmation email')
+        console.error('❌ Error response:', errorText)
+        setEmailError('Failed to send confirmation email')
+      }
+    } catch (error) {
+      console.error('❌ Error sending confirmation email:', error)
+      setEmailError('Error sending confirmation email')
+    }
+  }
 
   return (
     <div className="success-modal-container" style={{ textAlign: 'center', padding: '0 1.5rem', maxWidth: '600px', margin: '0 auto' }}>
@@ -81,13 +176,13 @@ export const FinalSuccessModal: React.FC = () => {
         
       {/* Prominent Quote Display - Shows user's actual selections */}
       <div style={{ 
-        background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', 
+        background: 'linear-gradient(135deg, #fbbf24, #f59e0b)', 
         color: 'white',
         padding: '1.5rem',
         borderRadius: '12px',
         marginBottom: '1rem',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        border: '2px solid #2563eb'
+        boxShadow: '0 4px 6px rgba(251, 191, 36, 0.3)',
+        border: '2px solid #d97706'
       }}>
         <div style={{ 
           fontSize: '0.9rem', 
@@ -101,19 +196,10 @@ export const FinalSuccessModal: React.FC = () => {
         <div className="success-coverage" style={{ 
           fontSize: '2.2rem', 
           fontWeight: 'bold', 
-          marginBottom: '0.5rem',
+          marginBottom: '0',
           textShadow: '0 1px 2px rgba(0,0,0,0.1)'
         }}>
           ${coverageAmount.toLocaleString()}
-        </div>
-        <div style={{ 
-          fontSize: '1.1rem', 
-          fontWeight: '500',
-          opacity: 0.95,
-          margin: '0',
-          textShadow: '0 1px 2px rgba(0,0,0,0.1)'
-        }}>
-          ${monthlyPremium.toFixed(2)} /mo
         </div>
       </div>
 
@@ -200,6 +286,39 @@ export const FinalSuccessModal: React.FC = () => {
           <li>Coverage will begin on your selected start date</li>
         </ul>
       </div>
+
+      {/* Email Status */}
+      {emailSent && (
+        <div style={{ 
+          background: '#f0fdf4', 
+          border: '1px solid #bbf7d0', 
+          borderRadius: '8px', 
+          padding: '1rem', 
+          marginBottom: '1rem',
+          textAlign: 'center'
+        }}>
+          <i className="fas fa-check-circle" style={{ color: '#16a34a', fontSize: '1.2rem', marginBottom: '0.5rem' }}></i>
+          <p style={{ fontSize: '0.9rem', color: '#16a34a', margin: '0' }}>
+            <strong>Confirmation email sent!</strong> Check your inbox for your policy details.
+          </p>
+        </div>
+      )}
+      
+      {emailError && (
+        <div style={{ 
+          background: '#fef2f2', 
+          border: '1px solid #fecaca', 
+          borderRadius: '8px', 
+          padding: '1rem', 
+          marginBottom: '1rem',
+          textAlign: 'center'
+        }}>
+          <i className="fas fa-exclamation-triangle" style={{ color: '#dc2626', fontSize: '1.2rem', marginBottom: '0.5rem' }}></i>
+          <p style={{ fontSize: '0.9rem', color: '#dc2626', margin: '0' }}>
+            {emailError}
+          </p>
+        </div>
+      )}
 
       {/* Contact Information - More Compact */}
       <div style={{ 

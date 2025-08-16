@@ -69,8 +69,8 @@ const APIModule = (function() {
             // Log the current configuration
             Config.log('info', '🔧 CONFIGURATION DEBUG:');
             Config.log('info', '- Google Apps Script URL:', Config.GOOGLE_APPS_SCRIPT_URL);
-            Config.log('info', '- URL contains correct deployment ID:', Config.GOOGLE_APPS_SCRIPT_URL.includes('AKfycbwnU-KpI1d0yuFeB1dIqBbpwlvpkakdXu1rN8IiRKFalHwiESYF7gs14w58Dkk_ObHWwg'));
-            Config.log('info', '- Expected deployment ID: AKfycbwnU-KpI1d0yuFeB1dIqBbpwlvpkakdXu1rN8IiRKFalHwiESYF7gs14w58Dkk_ObHWwg');
+                Config.log('info', '- URL contains correct deployment ID:', Config.GOOGLE_APPS_SCRIPT_URL.includes('AKfycbxhXl4p_iBSAY_XjkbNlQbC7KOcfS0UPlcYNnNYOqZzc-Fbk7Y_PUJAktPea4HyEMMM6Q'));
+    Config.log('info', '- Expected deployment ID: AKfycbxhXl4p_iBSAY_XjkbNlQbC7KOcfS0UPlcYNnNYOqZzc-Fbk7Y_PUJAktPea4HyEMMM6Q');
             
             // Validate data
             if (!data || typeof data !== 'object') {

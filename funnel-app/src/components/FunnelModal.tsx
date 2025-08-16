@@ -39,6 +39,7 @@ export const FunnelModal: React.FC = () => {
   } = useFunnelStore()
 
   const renderStep = () => {
+    console.log('🎯 Rendering step:', currentStep)
     switch (currentStep) {
       case 1:
         return <StateSelection />
@@ -153,17 +154,29 @@ export const FunnelModal: React.FC = () => {
   const isApplicationStep1Complete = () => {
     const beneficiaries = formData.applicationData?.beneficiaries || []
     
+    // Debug logging
+    console.log('🔍 ApplicationStep1 Validation Check:')
+    console.log('Street Address:', formData.applicationData?.streetAddress)
+    console.log('City:', formData.applicationData?.city)
+    console.log('State:', formData.applicationData?.state)
+    console.log('ZIP Code:', formData.applicationData?.zipCode)
+    console.log('Drivers License:', formData.applicationData?.driversLicense)
+    console.log('License State:', formData.applicationData?.licenseState)
+    console.log('Beneficiaries:', beneficiaries)
+    
     // Check if at least one beneficiary is complete
     const hasValidBeneficiary = beneficiaries.length > 0 && 
-      beneficiaries.some(beneficiary => 
-        beneficiary.name && beneficiary.relationship
-      )
+      beneficiaries.some(beneficiary => {
+        const isValid = beneficiary.name && beneficiary.name.trim() !== '' && beneficiary.relationship && beneficiary.relationship !== ''
+        console.log('Beneficiary validation:', { name: beneficiary.name, relationship: beneficiary.relationship, isValid })
+        return isValid
+      })
     
     // Check if multiple beneficiaries have valid percentages
     const hasValidPercentages = beneficiaries.length <= 1 || 
       beneficiaries.reduce((sum, b) => sum + b.percentage, 0) === 100
     
-    return !!formData.applicationData?.streetAddress &&
+    const isComplete = !!formData.applicationData?.streetAddress &&
            !!formData.applicationData?.city &&
            !!formData.applicationData?.state &&
            !!formData.applicationData?.zipCode &&
@@ -171,6 +184,9 @@ export const FunnelModal: React.FC = () => {
            hasValidPercentages &&
            !!formData.applicationData?.driversLicense &&
            !!formData.applicationData?.licenseState
+    
+    console.log('✅ ApplicationStep1 Complete:', isComplete)
+    return isComplete
   }
 
   const isApplicationStep2Complete = () => {

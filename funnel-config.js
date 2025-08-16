@@ -7,7 +7,7 @@
 window.VeteranFunnelConfig = {
   // Google Apps Script Deployment URL
   GOOGLE_APPS_SCRIPT: {
-    URL: 'https://script.google.com/macros/s/AKfycbwnU-KpI1d0yuFeB1dIqBbpwlvpkakdXu1rN8IiRKFalHwiESYF7gs14w58Dkk_ObHWwg/exec'
+    URL: 'https://script.google.com/macros/s/AKfycbxhXl4p_iBSAY_XjkbNlQbC7KOcfS0UPlcYNnNYOqZzc-Fbk7Y_PUJAktPea4HyEMMM6Q/exec'
   },
   
   // Google Sheet Configuration
