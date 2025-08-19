@@ -23,7 +23,6 @@ import { OptionsModal } from './steps/OptionsModal'
 import { ApplicationStep1 } from './steps/ApplicationStep1'
 import { ApplicationStep2 } from './steps/ApplicationStep2'
 import { FinalSuccessModal } from './steps/FinalSuccessModal'
-import { LoadingScreen } from './steps/LoadingScreen'
 import { validateContactInfo } from '../utils/validation'
 
 const TOTAL_STEPS = 19
@@ -67,7 +66,19 @@ export const FunnelModal: React.FC = () => {
       case 12:
         return <DiabetesMedication />
       case 13:
-        return <LoadingScreen />
+        console.log('🎯 Rendering StreamingLoadingSpinner for step 13')
+        return (
+          <StreamingLoadingSpinner
+            branchOfService={formData.preQualification?.branchOfService || 'Military'}
+            isVisible={true}
+            onComplete={() => {
+              console.log('🎯 StreamingLoadingSpinner completed, calling goToNextStep')
+              setTimeout(() => {
+                goToNextStep()
+              }, 100) // Small delay to ensure proper rendering
+            }}
+          />
+        )
       case 14:
         return <PreQualifiedSuccess />
       case 15:
@@ -244,7 +255,7 @@ export const FunnelModal: React.FC = () => {
 
         <AnimatePresence mode="wait">
           <motion.div
-            key={currentStep}
+            key={currentStep === 13 ? 'loading-step-13' : currentStep} // Stable key for step 13
             initial={{ x: 20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -20, opacity: 0 }}

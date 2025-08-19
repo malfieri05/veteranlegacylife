@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { getApiUrl } from '../config/globalConfig'
+import { validateStepTransition } from '../utils/validation'
 
 // Types
 export interface ContactInfo {
@@ -86,6 +87,8 @@ interface FunnelStore {
   autoAdvanceEnabled: boolean
   sessionId: string
   formData: FormData
+  loadingStepStartedAt?: number // Add this for deadline-based timer
+  loadingStepCompleted?: boolean // Add this to prevent double completion
   
   setCurrentStep: (step: number) => void
   openModal: () => void
@@ -490,11 +493,17 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
   },
 
   goToNextStep: () => {
-    const { currentStep, sessionId, isModalOpen } = get()
+    const { currentStep } = get()
     const nextStep = currentStep + 1
     
-    console.log(`🎯 GO TO NEXT STEP - From step ${currentStep} to ${nextStep} - Session ID: ${sessionId}`)
-    console.log(`🎯 Modal open before step change: ${isModalOpen}`)
+    // Validate step transition
+    if (!validateStepTransition(currentStep, nextStep)) {
+      console.error(`🚨 Cannot advance from step ${currentStep} to ${nextStep}`)
+      return
+    }
+    
+    console.log(`🎯 GO TO NEXT STEP - From step ${currentStep} to ${nextStep} - Session ID: ${get().sessionId}`)
+    console.log(`🎯 Modal open before step change: ${get().isModalOpen}`)
     
     // Submit partial data after every step (except the last step)
     if (currentStep < 19) {
@@ -530,8 +539,13 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
     
     // After step 12 (Diabetes Medication), go to loading step (13) and submit lead partial
     if (currentStep === 12) {
+      console.log('🎯 Moving from step 12 to step 13 (StreamingLoadingSpinner)')
       get().submitLeadPartial()
-      set({ currentStep: 13 })
+      set({ 
+        currentStep: 13,
+        loadingStepStartedAt: Date.now(), // Set the start time for deadline-based timer
+        loadingStepCompleted: false // Reset completion flag
+      })
       return
     }
     
@@ -590,6 +604,8 @@ export const useFunnelStore = create<FunnelStore>((set, get) => ({
       isModalOpen: false,
       isLoading: false,
       sessionId: '', // Clear session ID on reset
+      loadingStepStartedAt: undefined, // Clear loading step start time
+      loadingStepCompleted: undefined, // Clear loading step completion flag
       formData: initialState
     });
   }

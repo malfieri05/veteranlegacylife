@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+import { useFunnelStore } from '../../store/funnelStore'
 
 interface StreamingLoadingSpinnerProps {
   branchOfService: string
@@ -16,20 +17,67 @@ export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = (
   onComplete,
   onStepComplete
 }) => {
+  console.log('🎯 StreamingLoadingSpinner component MOUNTED, isVisible:', isVisible)
+  console.log('🎯 StreamingLoadingSpinner props:', { branchOfService, isVisible })
+  
+  const { loadingStepStartedAt, loadingStepCompleted } = useFunnelStore()
+  console.log('🎯 StreamingLoadingSpinner store values:', { loadingStepStartedAt, loadingStepCompleted })
+  
   const [currentMessage, setCurrentMessage] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [showLoader, setShowLoader] = useState(false)
+  const [hasCompleted, setHasCompleted] = useState(false)
+  const onCompleteRef = useRef(onComplete)
+  const onStepCompleteRef = useRef(onStepComplete)
+  const hasStartedRef = useRef(false) // Move hasStarted to useRef to persist across re-renders
+
+  // Update refs when props change to prevent stale closures
+  useEffect(() => {
+    onCompleteRef.current = onComplete
+    onStepCompleteRef.current = onStepComplete
+  }, [onComplete, onStepComplete])
 
   useEffect(() => {
-    if (!isVisible) return
+    console.log('🎯 StreamingLoadingSpinner useEffect triggered, isVisible:', isVisible, 'hasCompleted:', hasCompleted, 'hasStarted:', hasStartedRef.current, 'loadingStepCompleted:', loadingStepCompleted)
+    
+    // Simplified condition - just check if we should start
+    if (!isVisible) {
+      console.log('🎯 StreamingLoadingSpinner skipping - not visible')
+      return
+    }
+    
+    if (hasCompleted) {
+      console.log('🎯 StreamingLoadingSpinner skipping - already completed locally')
+      return
+    }
+    
+    if (hasStartedRef.current) {
+      console.log('🎯 StreamingLoadingSpinner skipping - already started')
+      return
+    }
+    
+    if (loadingStepCompleted) {
+      console.log('🎯 StreamingLoadingSpinner skipping - already completed globally')
+      return
+    }
+    
+    console.log('🎯 StreamingLoadingSpinner starting - all conditions passed')
 
     let typingTimer: NodeJS.Timeout
     let completionTimer: NodeJS.Timeout
 
     const startLoading = () => {
+      if (hasStartedRef.current) {
+        console.log('🎯 StreamingLoadingSpinner already started, skipping')
+        return
+      }
+      hasStartedRef.current = true
+      console.log('🎯 StreamingLoadingSpinner starting loading sequence')
+      
       // Start typing the message
       typeMessage(processingMessage, () => {
         // After typing is complete, show loader
+        console.log('🎯 StreamingLoadingSpinner typing complete, showing loader')
         setShowLoader(true)
       })
     }
@@ -55,19 +103,44 @@ export const StreamingLoadingSpinner: React.FC<StreamingLoadingSpinnerProps> = (
 
     startLoading()
 
-    // Set exact 12-second timer
-    completionTimer = setTimeout(() => {
-      onComplete()
-      if (onStepComplete) {
-        onStepComplete()
+    // DEADLINE-BASED TIMER (resistant to remounts)
+    const now = Date.now()
+    const startTime = loadingStepStartedAt || now
+    const elapsed = now - startTime
+    const remainingMs = Math.max(0, 12000 - elapsed)
+    
+    console.log(`🎯 StreamingLoadingSpinner deadline timer: elapsed=${elapsed}ms, remaining=${remainingMs}ms, startTime=${startTime}`)
+    
+    if (remainingMs <= 0) {
+      console.log('🎯 StreamingLoadingSpinner deadline already passed, calling onComplete immediately')
+      setHasCompleted(true)
+      // Set global completion flag to prevent double completion
+      useFunnelStore.setState({ loadingStepCompleted: true })
+      console.log('🎯 Loading step completed - calling onComplete')
+      onCompleteRef.current()
+      if (onStepCompleteRef.current) {
+        onStepCompleteRef.current()
       }
-    }, 12000) // Exactly 12 seconds
+    } else {
+      console.log(`🎯 StreamingLoadingSpinner setting deadline timer for ${remainingMs}ms`)
+      completionTimer = setTimeout(() => {
+        console.log('🎯 StreamingLoadingSpinner deadline timer completed, calling onComplete')
+        setHasCompleted(true)
+        // Set global completion flag to prevent double completion
+        useFunnelStore.setState({ loadingStepCompleted: true })
+        console.log('🎯 Loading step completed - calling onComplete')
+        onCompleteRef.current()
+        if (onStepCompleteRef.current) {
+          onStepCompleteRef.current()
+        }
+      }, remainingMs)
+    }
 
     return () => {
       clearTimeout(typingTimer)
       clearTimeout(completionTimer)
     }
-  }, [isVisible, onComplete])
+  }, [isVisible, loadingStepStartedAt, loadingStepCompleted]) // Add loadingStepStartedAt to dependencies
 
   if (!isVisible) return null
 

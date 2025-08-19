@@ -203,3 +203,24 @@ export const validateApplicationData = (applicationData: {
     errors
   }
 } 
+
+// Step transition validation
+export const validateStepTransition = (fromStep: number, toStep: number): boolean => {
+  const validTransitions: Record<number, number[]> = {
+    1: [2], 2: [3], 3: [4], 4: [5], 5: [6], 6: [7], 7: [8], 8: [9], 9: [10], 
+    10: [11], 11: [12], 12: [13], 13: [14], 14: [15], 15: [16], 16: [17], 
+    17: [18], 18: [19], 19: []
+  }
+  
+  const allowedSteps = validTransitions[fromStep] || []
+  const isValid = allowedSteps.includes(toStep)
+  
+  if (!isValid) {
+    console.error(`🚨 INVALID STEP TRANSITION: ${fromStep} → ${toStep}`)
+    console.error(`🚨 Allowed transitions from step ${fromStep}:`, allowedSteps)
+  } else {
+    console.log(`✅ VALID STEP TRANSITION: ${fromStep} → ${toStep}`)
+  }
+  
+  return isValid
+} 

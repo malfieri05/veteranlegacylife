@@ -1,18 +1,29 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useFunnelStore } from '../../store/funnelStore'
 
 export const DiabetesMedication: React.FC = () => {
   const { formData, updateFormData, goToNextStep, autoAdvanceEnabled, setAutoAdvanceEnabled } = useFunnelStore()
+  const goToNextStepRef = useRef(goToNextStep)
+  const hasAdvancedRef = useRef(false)
+
+  // Update the ref when goToNextStep changes
+  useEffect(() => {
+    goToNextStepRef.current = goToNextStep
+  }, [goToNextStep])
 
   // Auto-continue when a selection is made (only if auto-advance is enabled)
   useEffect(() => {
-    if (formData.medicalAnswers?.diabetesMedication && autoAdvanceEnabled) {
+    if (formData.medicalAnswers?.diabetesMedication && autoAdvanceEnabled && !hasAdvancedRef.current) {
+      hasAdvancedRef.current = true
       const timer = setTimeout(() => {
-        goToNextStep()
-      }, 500) // Small delay for better UX
+        // Only advance if we're still on step 12
+        if (useFunnelStore.getState().currentStep === 12) {
+          goToNextStepRef.current()
+        }
+      }, 200) // Reduced delay for faster response
       return () => clearTimeout(timer)
     }
-  }, [formData.medicalAnswers?.diabetesMedication, autoAdvanceEnabled, goToNextStep])
+  }, [formData.medicalAnswers?.diabetesMedication, autoAdvanceEnabled]) // Removed goToNextStep from dependencies
 
     const handleDiabetesChange = (value: string) => {
     updateFormData({ 
