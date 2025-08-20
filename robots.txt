@@ -1,18 +1,6 @@
 User-agent: *
 Allow: /
 
-# Sitemap
-Sitemap: https://veteranlegacylife.com/sitemap.xml
-
-# Disallow admin or private areas (if any)
-Disallow: /admin/
-Disallow: /private/
-
-# Allow all other content
-Allow: /assets/
-Allow: /css/
-Allow: /js/
-
 # Allow all major search engines
 User-agent: Googlebot
 Allow: /
@@ -23,5 +11,46 @@ Allow: /
 User-agent: Slurp
 Allow: /
 
-# Crawl delay (optional - adjust as needed)
-Crawl-delay: 1 
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+# Sitemap location
+Sitemap: https://veteranlegacylife.com/sitemap.xml
+
+# Crawl delay (optional)
+Crawl-delay: 1
+
+# Disallow admin areas (if any)
+Disallow: /admin/
+Disallow: /private/
+Disallow: /temp/
+Disallow: /cache/
+
+# Allow important directories
+Allow: /assets/
+Allow: /css/
+Allow: /js/
+Allow: /images/
+
+# Specific pages to prioritize
+Allow: /veteran-life-insurance
+Allow: /military-life-insurance
+Allow: /va-life-insurance
+Allow: /whole-life-insurance-veterans
+Allow: /term-life-insurance-veterans
+Allow: /iul-life-insurance-veterans
+Allow: /burial-insurance-veterans
+Allow: /final-expense-insurance-veterans
+Allow: /no-medical-exam-life-insurance-veterans
+Allow: /veteran-life-insurance-quotes
+Allow: /veteran-life-insurance-rates
+Allow: /veteran-life-insurance-companies
+Allow: /veteran-life-insurance-reviews
+Allow: /veteran-life-insurance-faq
+Allow: /veteran-life-insurance-guide 
