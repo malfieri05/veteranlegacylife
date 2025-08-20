@@ -159,67 +159,14 @@ const FUNNEL_STEPS = {
         dataField: 'coverageAmount'
     },
     
-    // Step 6: Contact Information
+    // Step 6: Contact Information (Final Step)
     CONTACT: {
         id: 'funnel-contact-form',
         name: 'Contact Information',
         description: 'Enter your contact details',
         hasLoadingScreen: false,
-        dataField: 'contactInfo'
-    },
-    
-    // Step 7: Tobacco Use
-    TOBACCO: {
-        id: 'funnel-medical-tobacco',
-        name: 'Tobacco Use',
-        description: 'Do you use tobacco products?',
-        hasLoadingScreen: false,
-        dataField: 'tobaccoUse'
-    },
-    
-    // Step 8: Medical Conditions
-    CONDITIONS: {
-        id: 'funnel-medical-conditions',
-        name: 'Medical Conditions',
-        description: 'Select any medical conditions',
-        hasLoadingScreen: false,
-        dataField: 'medicalConditions'
-    },
-    
-    // Step 9: Height & Weight
-    HEIGHT_WEIGHT: {
-        id: 'funnel-medical-height-weight',
-        name: 'Height & Weight',
-        description: 'Enter your height and weight',
-        hasLoadingScreen: false,
-        dataField: 'heightWeight'
-    },
-    
-    // Step 10: Hospital Care
-    HOSPITAL: {
-        id: 'funnel-medical-hospital',
-        name: 'Hospital Care',
-        description: 'Recent hospital care questions',
-        hasLoadingScreen: false,
-        dataField: 'hospitalCare'
-    },
-    
-    // Step 11: Diabetes Medication
-    DIABETES: {
-        id: 'funnel-medical-diabetes',
-        name: 'Diabetes Medication',
-        description: 'Do you take medication for diabetes?',
-        hasLoadingScreen: true, // This step has a loading screen
-        dataField: 'diabetesMedication'
-    },
-    
-    // Step 12: Quote Tool
-    QUOTE_TOOL: {
-        id: 'funnel-quote-tool',
-        name: 'Quote Tool',
-        description: 'Get your personalized quote',
-        hasLoadingScreen: false,
-        dataField: 'quoteData'
+        dataField: 'contactInfo',
+        isFinalStep: true
     }
 };
 
@@ -297,8 +244,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const userAge = window.funnelData.age || 26; // Default to 26 if not set
             console.log('🎯 User age for quote modal:', userAge);
             
-            if (userAge <= 60) {
-                // Show IUL quoting tool for ages 60 and below
+                if (userAge <= 60) {
+                    // Show IUL quoting tool for ages 60 and below
                 const iulModal = document.getElementById('iul-quote-modal');
                 if (iulModal) {
                     iulModal.style.display = 'flex';
@@ -309,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (!window.iulQuoteSlider) {
                         window.iulQuoteSlider = new IULQuoteSlider();
                         window.iulQuoteSlider.init(); // Initialize with proper data
-                    } else {
+                } else {
                         // Re-initialize with updated data
                         window.iulQuoteSlider.userAge = userAge;
                         window.iulQuoteSlider.coverageRange = window.iulQuoteSlider.getCoverageRangeFromPreviousStep();
@@ -320,22 +267,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             } else {
-                // Show final expense quoting tool for ages 61 and above
+                    // Show final expense quoting tool for ages 61 and above
                 const coverageModal = document.getElementById('coverage-slider-modal');
                 if (coverageModal) {
                     coverageModal.style.display = 'flex';
                     coverageModal.classList.add('active');
                     console.log('📊 Coverage Slider modal displayed');
                     
-                    // Initialize the coverage slider
-                    if (!window.coverageSlider) {
-                        window.coverageSlider = new CoverageSlider();
+                // Initialize the coverage slider
+                if (!window.coverageSlider) {
+                    window.coverageSlider = new CoverageSlider();
                     }
                 }
             }
         });
     }
-    
+
     // Note: Quote modals are now triggered only after application submission
     // The get-quote-btn now only shows the application form, not the quote modals
 
@@ -351,7 +298,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to accumulate funnel data
     function accumulateFunnelData(stepName, stepData) {
+        if (!window.funnelData) {
+            window.funnelData = {};
+        }
         window.funnelData[stepName] = stepData;
+        console.log(`📝 Accumulated data for ${stepName}:`, stepData);
     }
 
     // ============================================================================
@@ -360,24 +311,44 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Function to go to next step with optional loading screen
     function goToNextStep(currentStepId, showLoadingScreen = false) {
+        console.log(`🔄 goToNextStep called with: ${currentStepId}`);
+        
+        // Debug FUNNEL_STEPS_ARRAY
+        console.log('🔍 FUNNEL_STEPS_ARRAY:', FUNNEL_STEPS_ARRAY);
+        
         const currentStepIndex = FUNNEL_STEPS_ARRAY.findIndex(step => step.id === currentStepId);
+        console.log(`🔍 Current step index: ${currentStepIndex}`);
+        
+        if (currentStepIndex === -1) {
+            console.error(`❌ Current step not found in array: ${currentStepId}`);
+            return;
+        }
+        
         const nextStep = FUNNEL_STEPS_ARRAY[currentStepIndex + 1];
+        console.log(`🔍 Next step:`, nextStep);
         
         if (nextStep) {
+            console.log(`🔍 Next step ID: ${nextStep.id}`);
+            
             // Hide current step
             const currentElement = document.getElementById(currentStepId);
             if (currentElement) {
                 currentElement.style.display = 'none';
+                console.log(`🔍 Hidden current step: ${currentStepId}`);
+            } else {
+                console.error(`❌ Current step element not found: ${currentStepId}`);
             }
             
             // Show loading screen if specified
             if (showLoadingScreen && nextStep.hasLoadingScreen) {
+                console.log('🔄 Showing loading screen...');
                 showLoadingModal();
                 setTimeout(() => {
                     hideLoadingModal();
                     showStep(nextStep.id);
                 }, 3000); // 3 second loading screen
             } else {
+                console.log('🔄 Showing next step directly...');
                 showStep(nextStep.id);
             }
             
@@ -387,7 +358,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update current step for abandonment tracking
             window.currentStep = currentStepIndex + 2; // +2 because arrays are 0-indexed and we're moving to next step
             
-            console.log(`✅ Moved from ${currentStepId} to ${nextStep.id} (Step ${currentStepIndex + 2}/12)`);
+            console.log(`✅ Moved from ${currentStepId} to ${nextStep.id} (Step ${currentStepIndex + 2}/6)`);
+        } else {
+            console.error(`❌ No next step found for: ${currentStepId}`);
+            console.error(`❌ Current step index: ${currentStepIndex}, Array length: ${FUNNEL_STEPS_ARRAY.length}`);
         }
     }
     
@@ -396,6 +370,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const stepElement = document.getElementById(stepId);
         if (stepElement) {
             stepElement.style.display = 'flex';
+            console.log(`🔍 Showing step: ${stepId}`);
+        } else {
+            console.error(`❌ Step element not found: ${stepId}`);
         }
     }
     
@@ -420,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update current step for abandonment tracking
             window.currentStep = currentStepIndex;
             
-            console.log(`⬅️ Moved back from ${currentStepId} to ${previousStep.id} (Step ${currentStepIndex}/12)`);
+            console.log(`⬅️ Moved back from ${currentStepId} to ${previousStep.id} (Step ${currentStepIndex}/6)`);
         }
     }
     
@@ -454,9 +431,23 @@ document.addEventListener('DOMContentLoaded', function() {
     function openFunnelModal() {
         const modal = document.getElementById('funnel-modal');
         if (modal) {
+            // Force the modal to be visible with proper background
             modal.style.display = 'flex';
+            modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+            modal.style.zIndex = '1000';
             modal.classList.add('active');
-        resetFunnel();
+            
+            // Prevent modal from closing when clicking outside
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                }
+            });
+            
+            console.log('✅ Funnel modal opened with background');
+            
+            resetFunnel();
             
             // Send session start email
             window.sendSessionStartEmail();
@@ -765,7 +756,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Trigger smooth entrance animation
-            setTimeout(() => {
+        setTimeout(() => {
                 appModal.style.opacity = '1';
                 appContent.style.transform = 'scale(1)';
             }, 10);
@@ -778,8 +769,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add event listener for the "Complete Application" button
     function initializeMedicalCongratsButton() {
-        const getQuoteBtn = document.getElementById('get-quote-btn');
-        if (getQuoteBtn) {
+            const getQuoteBtn = document.getElementById('get-quote-btn');
+            if (getQuoteBtn) {
             console.log('✅ Medical congratulations button found and initialized');
             getQuoteBtn.addEventListener('click', function() {
                 console.log('🔄 "Complete Application" button clicked - showing quote modal');
@@ -791,34 +782,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 const userAge = window.funnelData.age || 26; // Default to 26 if not set
                 console.log('🎯 User age for quote modal:', userAge);
                 
-                if (userAge <= 60) {
-                    // Show IUL quoting tool for ages 60 and below
+                        if (userAge <= 60) {
+                            // Show IUL quoting tool for ages 60 and below
                     const iulModal = document.getElementById('iul-quote-modal');
                     if (iulModal) {
                         iulModal.style.display = 'flex';
                         iulModal.classList.add('active');
                         console.log('📊 IUL Quote modal displayed');
                         
-                        // Initialize the IUL quote slider if not already done
-                        if (!window.iulQuoteSlider) {
-                            window.iulQuoteSlider = new IULQuoteSlider();
+                            // Initialize the IUL quote slider if not already done
+                            if (!window.iulQuoteSlider) {
+                                window.iulQuoteSlider = new IULQuoteSlider();
                         }
-                    }
-                } else {
-                    // Show final expense quoting tool for ages 61 and above
+                            }
+                        } else {
+                            // Show final expense quoting tool for ages 61 and above
                     const coverageModal = document.getElementById('coverage-slider-modal');
                     if (coverageModal) {
                         coverageModal.style.display = 'flex';
                         coverageModal.classList.add('active');
                         console.log('📊 Coverage Slider modal displayed');
                         
-                        // Initialize the coverage slider
-                        if (!window.coverageSlider) {
-                            window.coverageSlider = new CoverageSlider();
+                // Initialize the coverage slider
+                            if (!window.coverageSlider) {
+                                window.coverageSlider = new CoverageSlider();
+                            }
                         }
-                    }
-                }
-            });
+            }
+        });
         } else {
             console.error('❌ Medical congratulations button not found');
         }
@@ -891,16 +882,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 maritalStatus: window.funnelData.maritalStatus || '',
                 coverageAmount: window.funnelData.coverageAmount || '',
                 
-                tobaccoUse: medicalAnswers.tobaccoUse || '',
-                medicalConditions: medicalAnswers.medicalConditions || [],
-                height: medicalAnswers.height || '',
-                weight: medicalAnswers.weight || '',
-                hospitalCare: medicalAnswers.hospitalCare || '',
-                diabetesMedication: medicalAnswers.diabetesMedication || '',
-                
-                timestamp: new Date().toISOString()
-            };
-            
+            timestamp: new Date().toISOString()
+        };
+        
             console.log('Abandonment data being sent:', abandonmentData);
             await submitFormData(abandonmentData);
             console.log(`=== ABANDONMENT EMAIL SENT: ${reason} ===`);
@@ -916,7 +900,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Abandonment reason:', reason);
             console.error('Current step:', window.currentStep);
             console.error('Funnel data available:', !!window.funnelData);
-            console.error('Medical answers available:', !!medicalAnswers);
         }
     }
 
@@ -956,13 +939,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 maritalStatus: window.funnelData.maritalStatus || '',
                 coverageAmount: window.funnelData.coverageAmount || '',
                 
-                tobaccoUse: medicalAnswers?.tobaccoUse || '',
-                medicalConditions: medicalAnswers?.medicalConditions || [],
-                height: medicalAnswers?.height || '',
-                weight: medicalAnswers?.weight || '',
-                hospitalCare: medicalAnswers?.hospitalCare || '',
-                diabetesMedication: medicalAnswers?.diabetesMedication || '',
-                
                 formType: 'Partial',
                 funnelProgress: `Step ${stepNumber}/${totalSteps}`,
                 timestamp: new Date().toISOString()
@@ -980,7 +956,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Step number:', stepNumber);
             console.error('Total steps:', totalSteps);
             console.error('Funnel data available:', !!window.funnelData);
-            console.error('Medical answers available:', !!medicalAnswers);
         }
     }
 
@@ -988,11 +963,72 @@ document.addEventListener('DOMContentLoaded', function() {
     // COMPLETE FUNNEL DATA SUBMISSION
     // ============================================================================
     
+    async function sendFinalContactData() {
+        try {
+            console.log('=== START: sendFinalContactData ===');
+            console.log('funnelData:', window.funnelData);
+            
+            // Calculate age from date of birth
+            let calculatedAge = null;
+            if (window.funnelData.contactInfo?.dateOfBirth) {
+                const today = new Date();
+                const birthDate = new Date(window.funnelData.contactInfo.dateOfBirth);
+                const age = today.getFullYear() - birthDate.getFullYear();
+                const monthDiff = today.getMonth() - birthDate.getMonth();
+                calculatedAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) ? age - 1 : age;
+            }
+            
+            const contactData = {
+                sessionId: window.sessionId,
+                firstName: window.funnelData.contactInfo?.firstName || '',
+                lastName: window.funnelData.contactInfo?.lastName || '',
+                phone: window.funnelData.contactInfo?.phone || '',
+                email: window.funnelData.contactInfo?.email || '',
+                dateOfBirth: window.funnelData.contactInfo?.dateOfBirth || '',
+                age: calculatedAge || userAge || '',
+                transactionalConsent: window.funnelData.contactInfo?.transactionalConsent || false,
+                marketingConsent: window.funnelData.contactInfo?.marketingConsent || false,
+                
+                state: window.funnelData.state || '',
+                militaryStatus: window.funnelData.militaryStatus || '',
+                branchOfService: window.funnelData.branchOfService || '',
+                maritalStatus: window.funnelData.maritalStatus || '',
+                coverageAmount: window.funnelData.coverageAmount || '',
+                
+                formType: 'Contact',
+                funnelProgress: 'Complete',
+                timestamp: new Date().toISOString()
+            };
+            
+            console.log('Contact data being sent:', contactData);
+            
+            // Data validation - Required fields
+            console.log('Data validation - Required fields:');
+            console.log('- firstName:', !!contactData.firstName);
+            console.log('- lastName:', !!contactData.lastName);
+            console.log('- email:', !!contactData.email);
+            console.log('- phone:', !!contactData.phone);
+            
+            console.log('Calling submitFormData...');
+            const result = await submitFormData(contactData);
+            console.log('submitFormData result:', result);
+            
+            console.log('=== END: sendFinalContactData (SUCCESS) ===');
+            return result;
+            
+        } catch (error) {
+            console.error('=== ERROR in sendFinalContactData ===');
+            console.error('Error type:', error.constructor.name);
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack);
+            throw error;
+        }
+    }
+    
     async function sendCompleteFunnelData() {
         try {
             console.log('=== START: sendCompleteFunnelData ===');
             console.log('funnelData:', window.funnelData);
-            console.log('medicalAnswers:', medicalAnswers);
             
             // Calculate age from date of birth
             let calculatedAge = null;
@@ -1020,13 +1056,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 branchOfService: window.funnelData.branchOfService || '',
                 maritalStatus: window.funnelData.maritalStatus || '',
                 coverageAmount: window.funnelData.coverageAmount || '',
-                
-                tobaccoUse: medicalAnswers.tobaccoUse || '',
-                medicalConditions: medicalAnswers.medicalConditions || [],
-                height: medicalAnswers.height || '',
-                weight: medicalAnswers.weight || '',
-                hospitalCare: medicalAnswers.hospitalCare || '',
-                diabetesMedication: medicalAnswers.diabetesMedication || '',
                 
                 formType: 'Funnel',
                 funnelProgress: 'Complete',
@@ -1064,37 +1093,60 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // STEP 1: State Selection
     function initializeStateStep() {
+        console.log('🔧 Initializing state step...');
         const stateForm = document.getElementById(FUNNEL_STEPS.STATE.id);
-        if (!stateForm) return;
+        if (!stateForm) {
+            console.error('❌ State form not found');
+            return;
+        }
+        
+        console.log('✅ State form found, adding submit listener');
         
         stateForm.addEventListener('submit', function(e) {
-        e.preventDefault();
+            e.preventDefault();
+            console.log('📝 State form submitted');
             
             try {
-        const stateSelect = document.getElementById('funnel-state-select');
+                const stateSelect = document.getElementById('funnel-state-select');
                 console.log('State select element found:', !!stateSelect);
                 console.log('Selected state value:', stateSelect?.value);
                 
                 if (!stateSelect || !stateSelect.value) {
-                    showFieldError(stateSelect, 'Please select your state');
+                    console.error('❌ No state selected');
+                    if (stateSelect) {
+                        stateSelect.style.borderColor = 'red';
+                        setTimeout(() => {
+                            stateSelect.style.borderColor = '';
+                        }, 2000);
+                    }
                     return;
+                }
+                
+                // Ensure funnelData is initialized
+                if (!window.funnelData) {
+                    window.funnelData = {};
                 }
                 
                 // Save state data
                 window.funnelData.state = stateSelect.value;
-                console.log('State saved to funnelData:', window.funnelData.state);
-            
-            // Accumulate data
-            accumulateFunnelData('state', stateSelect.value);
-                console.log('State data accumulated successfully');
+                console.log('✅ State saved to funnelData:', window.funnelData.state);
                 
+                // Accumulate data
+                accumulateFunnelData('state', stateSelect.value);
+                console.log('✅ State data accumulated successfully');
+                
+                // Go to next step
+                console.log('🔄 Calling goToNextStep...');
                 goToNextStep(FUNNEL_STEPS.STATE.id);
                 console.log('✅ State step completed successfully');
                 
             } catch (error) {
-                console.error('Error in state step:', error);
+                console.error('❌ Error in state step:', error);
+                console.error('Error stack:', error.stack);
             }
         });
+        
+        console.log('✅ State step initialized successfully');
     }
     
     // STEP 2: Military Status
@@ -1185,8 +1237,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     transactionalConsent: formData.get('transactionalConsent') === 'on',
                     marketingConsent: formData.get('marketingConsent') === 'on'
                 };
-                
-                // Validate required fields
+        
+        // Validate required fields
                 const requiredFields = ['firstName', 'lastName', 'phone', 'email', 'dateOfBirth'];
                 for (const field of requiredFields) {
                     if (!contactData[field] || contactData[field].trim() === '') {
@@ -1212,175 +1264,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Contact data saved:', contactData);
                 console.log('Calculated age:', userAge);
                 
-                goToNextStep(FUNNEL_STEPS.CONTACT.id);
+                // Show success modal instead of going to next step
+                showContactSuccessModal();
                 
             } catch (error) {
                 console.error('Error in contact step:', error);
             }
         });
-    }
-    
-    // STEP 7: Tobacco Use
-    function initializeTobaccoStep() {
-        const tobaccoInputs = document.querySelectorAll(`#${FUNNEL_STEPS.TOBACCO.id} input[name="tobaccoUse"]`);
-        tobaccoInputs.forEach(input => {
-            input.addEventListener('click', () => {
-                medicalAnswers.tobaccoUse = input.value;
-                
-                setTimeout(() => {
-                    goToNextStep(FUNNEL_STEPS.TOBACCO.id);
-                }, 300);
-            });
-        });
-    }
-    
-    // STEP 8: Medical Conditions
-    function initializeConditionsStep() {
-        const conditionsForm = document.getElementById(FUNNEL_STEPS.CONDITIONS.id);
-        if (!conditionsForm) return;
-        
-        conditionsForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const selectedConditions = [];
-            const checkboxes = conditionsForm.querySelectorAll('input[type="checkbox"]:checked');
-            checkboxes.forEach(checkbox => {
-                selectedConditions.push(checkbox.value);
-            });
-            
-            medicalAnswers.medicalConditions = selectedConditions;
-            
-            goToNextStep(FUNNEL_STEPS.CONDITIONS.id);
-        });
-    }
-    
-    // STEP 9: Height & Weight
-    function initializeHeightWeightStep() {
-        const heightWeightForm = document.getElementById(FUNNEL_STEPS.HEIGHT_WEIGHT.id);
-        if (!heightWeightForm) return;
-        
-        // Add click event listener for the Next button
-        const nextButton = document.getElementById('medical-height-weight-next');
-        if (nextButton) {
-            nextButton.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                const heightInput = heightWeightForm.querySelector('input[name="height"]');
-                const weightInput = heightWeightForm.querySelector('input[name="weight"]');
-                
-                if (!heightInput.value || !weightInput.value) {
-            showFieldError(document.querySelector('#funnel-medical-height-weight input'), 'Please fill in both height and weight');
-            return;
-        }
-        
-                medicalAnswers.height = heightInput.value;
-                medicalAnswers.weight = weightInput.value;
-                
-                goToNextStep(FUNNEL_STEPS.HEIGHT_WEIGHT.id);
-            });
-        }
-        
-        heightWeightForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const heightInput = heightWeightForm.querySelector('input[name="height"]');
-            const weightInput = heightWeightForm.querySelector('input[name="weight"]');
-            
-            if (!heightInput.value || !weightInput.value) {
-                showFieldError(document.querySelector('#funnel-medical-height-weight input'), 'Please fill in both height and weight');
-            return;
-        }
-        
-            medicalAnswers.height = heightInput.value;
-            medicalAnswers.weight = weightInput.value;
-            
-            goToNextStep(FUNNEL_STEPS.HEIGHT_WEIGHT.id);
-        });
-    }
-    
-    // STEP 10: Hospital Care
-    function initializeHospitalStep() {
-        const hospitalInputs = document.querySelectorAll(`#${FUNNEL_STEPS.HOSPITAL.id} input[name="hospitalCare"]`);
-        hospitalInputs.forEach(input => {
-            input.addEventListener('click', () => {
-                medicalAnswers.hospitalCare = input.value;
-                
-                setTimeout(() => {
-                    goToNextStep(FUNNEL_STEPS.HOSPITAL.id);
-                }, 300);
-            });
-        });
-        
-        // Add click event listener for the Next button
-        const nextButton = document.getElementById('medical-hospital-next');
-        if (nextButton) {
-            nextButton.addEventListener('click', function(e) {
-        e.preventDefault();
-                
-                const selectedInput = document.querySelector(`#${FUNNEL_STEPS.HOSPITAL.id} input[name="hospitalCare"]:checked`);
-                
-                if (!selectedInput) {
-                    showFieldError(document.querySelector('#funnel-medical-hospital input'), 'Please select an option');
-            return;
-                }
-                
-                medicalAnswers.hospitalCare = selectedInput.value;
-                goToNextStep(FUNNEL_STEPS.HOSPITAL.id);
-            });
-        }
-    }
-    
-    // STEP 11: Diabetes Medication (with loading screen)
-    function initializeDiabetesStep() {
-        const diabetesForm = document.getElementById(FUNNEL_STEPS.DIABETES.id);
-        if (!diabetesForm) return;
-        
-        // Add click event listener for the submit button as backup
-        const submitButton = document.getElementById('medical-submit');
-        if (submitButton) {
-            submitButton.addEventListener('click', async function(e) {
-                e.preventDefault();
-                
-                const diabetesInputs = diabetesForm.querySelectorAll('input[name="diabetesMedication"]');
-                let selectedValue = '';
-                
-                diabetesInputs.forEach(input => {
-                    if (input.checked) {
-                        selectedValue = input.value;
-                    }
-                });
-                
-                if (!selectedValue) {
-                    showFieldError(document.querySelector('#funnel-medical-diabetes input'), 'Please select an option');
-                    return;
-                }
-                
-                medicalAnswers.diabetesMedication = selectedValue;
-                
-                // Show fake loading screen for 3 seconds
-                showLoadingModal();
-                
-                setTimeout(() => {
-                    hideLoadingModal();
-                    // Show medical congratulations modal
-                    showMedicalCongratsModal();
-                }, 3000); // 3 second loading screen
-                
-                // Send complete funnel data in background
-                try {
-                    await sendCompleteFunnelData();
-                    console.log('✅ Complete funnel data sent successfully');
-                } catch (error) {
-                    console.error('❌ Error sending complete funnel data:', error);
-                }
-            });
-        }
-    }
-    
-    // STEP 12: Quote Tool (final step)
-    function initializeQuoteToolStep() {
-        // This step is handled by the quote tool classes
-        console.log('Quote tool step initialized');
     }
     
     // ============================================================================
@@ -1405,7 +1295,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============================================================================
     
     function initializeAllFunnelSteps() {
-        console.log('🚀 Initializing all 12 funnel steps...');
+        console.log('🚀 Initializing all 6 funnel steps...');
         
         // Initialize each step
         initializeStateStep();
@@ -1414,82 +1304,42 @@ document.addEventListener('DOMContentLoaded', function() {
         initializeMaritalStep();
         initializeCoverageStep();
         initializeContactStep();
-        initializeTobaccoStep();
-        initializeConditionsStep();
-        initializeHeightWeightStep();
-        initializeHospitalStep();
-        initializeDiabetesStep();
-        initializeQuoteToolStep();
         
         // Initialize back buttons
         initializeBackButtons();
         
-        console.log('✅ All 12 funnel steps initialized');
+        console.log('✅ All 6 funnel steps initialized');
     }
     
     // Initialize all funnel steps
     initializeAllFunnelSteps();
+    
+    // Test function to verify funnel steps are working
+    window.testFunnelSteps = function() {
+        console.log('🧪 Testing funnel steps...');
+        console.log('FUNNEL_STEPS:', FUNNEL_STEPS);
+        console.log('FUNNEL_STEPS_ARRAY:', FUNNEL_STEPS_ARRAY);
+        console.log('FUNNEL_STEPS_ARRAY.length:', FUNNEL_STEPS_ARRAY.length);
+        
+        // Test each step element exists
+        FUNNEL_STEPS_ARRAY.forEach((step, index) => {
+            const element = document.getElementById(step.id);
+            console.log(`Step ${index + 1}: ${step.id} - Element found:`, !!element);
+        });
+    };
+    
+    // Run test on page load
+        setTimeout(() => {
+        window.testFunnelSteps();
+    }, 1000);
 
     // ============================================================================
     // ADDITIONAL BUTTON INITIALIZATIONS (RESTORED FROM ORIGINAL)
     // ============================================================================
     
-    // Initialize "Load Screen" button
-    const loadScreenBtn = document.querySelector('.load-screen-btn, [data-action="load-screen"]');
-    if (loadScreenBtn) {
-        loadScreenBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('🔄 Load Screen button clicked');
-            showLoadingModal();
-            setTimeout(() => {
-                hideLoadingModal();
-                // Show medical congratulations modal
-                showMedicalCongratsModal();
-            }, 7000); // 7 seconds as requested
-        });
-    }
+
     
-    // Initialize all medical form inputs (restored from original)
-    function initializeMedicalFormInputs() {
-        // Tobacco use inputs
-        const tobaccoInputs = document.querySelectorAll('#funnel-medical-tobacco input[name="tobaccoUse"]');
-        tobaccoInputs.forEach(input => {
-            input.addEventListener('click', () => {
-                medicalAnswers.tobaccoUse = input.value;
-                // Navigation is handled by the form submit in the step functions
-            });
-        });
-        
-        // Hospital care inputs
-        const hospitalInputs = document.querySelectorAll('#funnel-medical-hospital input[name="hospitalCare"]');
-        hospitalInputs.forEach(input => {
-            input.addEventListener('click', () => {
-                medicalAnswers.hospitalCare = input.value;
-                // Navigation is handled by the form submit in the step functions
-            });
-        });
-        
-        // Diabetes medication inputs
-        const diabetesInputs = document.querySelectorAll('#funnel-medical-diabetes input[name="diabetesMedication"]');
-        diabetesInputs.forEach(input => {
-            input.addEventListener('click', () => {
-                medicalAnswers.diabetesMedication = input.value;
-                // Navigation is handled by the form submit in the step functions
-            });
-        });
-    }
-    
-    // Initialize medical form inputs
-    initializeMedicalFormInputs();
-    
-    // Initialize height/weight dropdowns
-    initializeHeightWeightDropdowns();
-    
-    // Initialize medical conditions logic
-    initializeMedicalConditionsLogic();
-    
-    // Initialize application form navigation
-    initializeApplicationFormNavigation();
+
     
     // Initialize FAQ functionality
     initializeFAQ();
@@ -1531,14 +1381,15 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateFunnelProgress(currentStepId) {
         const currentStepIndex = FUNNEL_STEPS_ARRAY.findIndex(step => step.id === currentStepId);
         const stepNumber = currentStepIndex + 1;
-        const percentage = Math.round((stepNumber / 12) * 100);
+        const totalSteps = FUNNEL_STEPS_ARRAY.length;
+        const percentage = Math.round((stepNumber / totalSteps) * 100);
         
-        console.log(`📊 Progress: Step ${stepNumber}/12 (${percentage}%)`);
+        console.log(`📊 Progress: Step ${stepNumber}/${totalSteps} (${percentage}%)`);
         
         // Update progress tracker text
         const progressTracker = document.querySelector('.funnel-progress-tracker');
         if (progressTracker) {
-            progressTracker.textContent = `${stepNumber}/12`;
+            progressTracker.textContent = `${stepNumber}/${totalSteps}`;
         }
         
         // Update progress bar fill
@@ -1593,10 +1444,51 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Remove after animation
             setTimeout(() => {
-                congratsModal.style.display = 'none';
+            congratsModal.style.display = 'none';
                 console.log('✅ Medical congratulations modal hidden');
             }, 300);
         }
+    }
+
+    function showContactSuccessModal() {
+        // Hide the funnel modal
+        const funnelModal = document.getElementById('funnel-modal');
+        if (funnelModal) {
+            funnelModal.style.display = 'none';
+        }
+        
+        // Show success modal
+        const successModal = document.getElementById('success-modal');
+        if (successModal) {
+            successModal.style.display = 'flex';
+            successModal.style.opacity = '1';
+            successModal.style.zIndex = '10000';
+        }
+        
+        // Send final data to Google Apps Script
+        sendFinalContactData();
+        
+        console.log('✅ Contact success modal displayed');
+        
+        // Auto-close success modal and entire funnel after 3 seconds
+        setTimeout(() => {
+            if (successModal) {
+                successModal.style.opacity = '0';
+                successModal.style.transition = 'opacity 0.5s ease-out';
+                
+                setTimeout(() => {
+                    successModal.style.display = 'none';
+                    
+                    // Also close the funnel modal completely to return to main site
+                    if (funnelModal) {
+                        funnelModal.style.display = 'none';
+                        funnelModal.classList.remove('active');
+                    }
+                    
+                    console.log('✅ Success modal and funnel auto-closed after 3 seconds');
+                }, 500);
+            }
+        }, 3000);
     }
 
     // ============================================================================
@@ -2106,10 +1998,10 @@ class CoverageSlider {
                         <div class="premium-amount">$${monthlyPremium.toLocaleString()}</div>
                         <p>For $${this.currentValue.toLocaleString()} in coverage</p>
                         <button class="cta-button" onclick="handleCoverageQuoteNow()">Get Your Quote Now</button>
-                    </div>
-                `;
+                </div>
+            `;
                 console.log('✅ Coverage quote display updated successfully');
-            } else {
+        } else {
                 console.error('❌ Coverage quote display element not found');
             }
         } catch (error) {
@@ -2249,8 +2141,8 @@ class IULQuoteSlider {
                 console.log('📊 Coverage slider range set:', coverageRange.min, 'to', coverageRange.max);
             }
 
-            this.setupEventListeners();
-            this.updateQuote();
+        this.setupEventListeners();
+        this.updateQuote();
             console.log('✅ IUL Quote Slider initialized successfully with age:', this.userAge, 'coverage range:', coverageRange);
         } catch (error) {
             console.error('❌ Error initializing IUL Quote Slider:', error);
@@ -2265,30 +2157,30 @@ class IULQuoteSlider {
                     try {
                         this.currentValue = parseInt(this.slider.value);
                         console.log('📊 Coverage slider changed to:', this.currentValue);
-                        this.updateQuote();
+            this.updateQuote();
                     } catch (error) {
                         console.error('❌ Error handling coverage slider change:', error);
-                    }
-                });
+        }
+            });
             } else {
                 console.error('❌ Coverage slider not found');
-            }
+        }
 
             // Age slider is disabled and locked - no event listener needed
 
             // Gender selection (still active)
             const genderInputs = document.querySelectorAll('input[name="gender"]');
-            genderInputs.forEach(input => {
-                input.addEventListener('change', () => {
+        genderInputs.forEach(input => {
+            input.addEventListener('change', () => {
                     try {
                         this.userGender = input.value;
                         console.log('📊 Gender changed to:', this.userGender);
-                        this.updateQuote();
+                this.updateQuote();
                     } catch (error) {
                         console.error('❌ Error handling gender change:', error);
                     }
-                });
             });
+        });
 
             console.log('✅ IUL Quote Slider event listeners set up successfully');
         } catch (error) {
@@ -2308,8 +2200,8 @@ class IULQuoteSlider {
                         <div class="premium-amount" style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">$${monthlyPremium.toLocaleString()}</div>
                         <p class="secure-rate-text" style="font-size: 1rem; color: #ffffff; opacity: 0.9; margin-bottom: 1.5rem;">Secure this rate</p>
                         <button class="cta-button" onclick="handleIULQuoteNow()" style="background: #10b981; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background-color 0.3s ease;">Secure Your Rate</button>
-                    </div>
-                `;
+                </div>
+            `;
                 
                 // Update individual display spans
                 const ageDisplay = document.getElementById('iul-age-display');
@@ -2325,7 +2217,7 @@ class IULQuoteSlider {
                 }
                 
                 console.log('✅ Quote display updated successfully');
-            } else {
+        } else {
                 console.error('❌ Quote display element not found');
             }
         } catch (error) {
@@ -2379,7 +2271,7 @@ class IULQuoteSlider {
             console.error('❌ Error in showSecureQuoteModal:', error);
         }
     }
-        
+
     hideSecureQuoteModal() {
         try {
             const modal = document.getElementById('iul-secure-quote-modal');
@@ -2393,7 +2285,7 @@ class IULQuoteSlider {
             console.error('❌ Error hiding IUL secure quote modal:', error);
         }
     }
-        
+    
     setupModalCloseListener() {
         try {
             const closeBtn = document.querySelector('#iul-secure-quote-modal .close-btn');
@@ -2413,9 +2305,9 @@ class IULQuoteSlider {
             const form = document.getElementById('iul-quote-form');
             if (!form) {
                 console.error('❌ IUL quote form not found');
-                return;
-            }
-            
+        return;
+    }
+    
             const formData = new FormData(form);
             const data = {
                 formType: 'IULQuote',
@@ -2437,176 +2329,7 @@ class IULQuoteSlider {
     }
 }
 
-    // ============================================================================
-    // MEDICAL FORM FUNCTIONS
-    // ============================================================================
-    
-function initializeHeightWeightDropdowns() {
-        // Height dropdown
-        const heightInput = document.getElementById('height-input');
-    const heightDropdown = document.getElementById('height-dropdown');
-        
-        if (heightInput && heightDropdown) {
-    heightInput.addEventListener('input', () => {
-        filterDropdownItems(heightInput, heightDropdown);
-            });
-            
-    heightInput.addEventListener('keydown', (e) => {
-        handleDropdownKeydown(e, heightInput, heightDropdown);
-    });
-    
-            // Add click listeners to dropdown items
-            const heightItems = heightDropdown.querySelectorAll('.dropdown-item');
-            heightItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    heightInput.value = item.textContent;
-                    heightDropdown.style.display = 'none';
-                    medicalAnswers.height = item.textContent;
-                });
-            });
-        }
-        
-        // Weight dropdown
-        const weightInput = document.getElementById('weight-input');
-        const weightDropdown = document.getElementById('weight-dropdown');
-        
-        if (weightInput && weightDropdown) {
-    weightInput.addEventListener('input', () => {
-        filterDropdownItems(weightInput, weightDropdown);
-            });
-            
-    weightInput.addEventListener('keydown', (e) => {
-        handleDropdownKeydown(e, weightInput, weightDropdown);
-    });
-    
-            // Add click listeners to dropdown items
-            const weightItems = weightDropdown.querySelectorAll('.dropdown-item');
-            weightItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    weightInput.value = item.textContent;
-                    weightDropdown.style.display = 'none';
-                    medicalAnswers.weight = item.textContent;
-                });
-            });
-        }
-}
 
-function filterDropdownItems(input, dropdown) {
-    const searchTerm = input.value.toLowerCase();
-    const items = dropdown.querySelectorAll('.dropdown-item');
-    
-    items.forEach(item => {
-        const text = item.textContent.toLowerCase();
-            if (text.includes(searchTerm)) {
-                item.style.display = 'block';
-        } else {
-                item.style.display = 'none';
-        }
-    });
-        
-        dropdown.style.display = 'block';
-}
-
-function handleDropdownKeydown(e, input, dropdown) {
-        const items = dropdown.querySelectorAll('.dropdown-item:not([style*="display: none"])');
-        const currentIndex = Array.from(items).findIndex(item => item.classList.contains('selected'));
-    
-        switch (e.key) {
-            case 'ArrowDown':
-        e.preventDefault();
-                const nextIndex = (currentIndex + 1) % items.length;
-                items.forEach(item => item.classList.remove('selected'));
-                if (items[nextIndex]) {
-                    items[nextIndex].classList.add('selected');
-                }
-                break;
-                
-            case 'ArrowUp':
-        e.preventDefault();
-                const prevIndex = currentIndex <= 0 ? items.length - 1 : currentIndex - 1;
-                items.forEach(item => item.classList.remove('selected'));
-                if (items[prevIndex]) {
-                    items[prevIndex].classList.add('selected');
-                }
-                break;
-                
-            case 'Enter':
-                e.preventDefault();
-                const selectedItem = dropdown.querySelector('.dropdown-item.selected');
-                if (selectedItem) {
-                    input.value = selectedItem.textContent;
-                    dropdown.style.display = 'none';
-                    if (input.id === 'height-input') {
-                        medicalAnswers.height = selectedItem.textContent;
-                    } else if (input.id === 'weight-input') {
-                        medicalAnswers.weight = selectedItem.textContent;
-                    }
-                }
-                break;
-                
-            case 'Escape':
-                dropdown.style.display = 'none';
-                break;
-        }
-    }
-    
-function initializeMedicalConditionsLogic() {
-    const medicalConditionsForm = document.getElementById('funnel-medical-conditions');
-    if (!medicalConditionsForm) return;
-    
-        const checkboxes = medicalConditionsForm.querySelectorAll('input[type="checkbox"]');
-        const otherConditionInput = document.getElementById('other-condition');
-        const otherConditionCheckbox = document.getElementById('other-condition-checkbox');
-        
-        // Handle "Other" condition
-        if (otherConditionCheckbox && otherConditionInput) {
-            otherConditionCheckbox.addEventListener('change', function() {
-                if (this.checked) {
-                    otherConditionInput.style.display = 'block';
-                    otherConditionInput.focus();
-                } else {
-                    otherConditionInput.style.display = 'none';
-                    otherConditionInput.value = '';
-                }
-            });
-            
-            // Handle "Other" input
-            otherConditionInput.addEventListener('input', function() {
-                if (this.value.trim()) {
-                    otherConditionCheckbox.checked = true;
-                }
-            });
-        }
-        
-        // Handle medical condition changes
-        function handleMedicalConditionChange() {
-            const selectedConditions = [];
-            checkboxes.forEach(checkbox => {
-                if (checkbox.checked) {
-                    if (checkbox.id === 'other-condition-checkbox') {
-                        const otherValue = otherConditionInput ? otherConditionInput.value.trim() : '';
-                        if (otherValue) {
-                            selectedConditions.push(otherValue);
-                        }
-                    } else {
-                        selectedConditions.push(checkbox.value);
-                    }
-                }
-            });
-            
-            medicalAnswers.medicalConditions = selectedConditions;
-            console.log('Medical conditions updated:', selectedConditions);
-        }
-        
-        // Add event listeners
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', handleMedicalConditionChange);
-        });
-        
-        if (otherConditionInput) {
-            otherConditionInput.addEventListener('input', handleMedicalConditionChange);
-        }
-    }
 
     // ============================================================================
     // LOADING SCREEN FUNCTIONS
@@ -2669,17 +2392,7 @@ function initializeMedicalConditionsLogic() {
     }
 
     // ============================================================================
-    // MEDICAL ANSWERS OBJECT
-    // ============================================================================
-    
-    const medicalAnswers = {
-        tobaccoUse: '',
-        medicalConditions: [],
-        height: '',
-        weight: '',
-        hospitalCare: '',
-        diabetesMedication: ''
-    };
+
 
     // ============================================================================
     // IUL DATA (RATE TABLES)
@@ -3512,7 +3225,7 @@ function initializeMedicalConditionsLogic() {
                     }
                     
                     // Step 6: Simulate clicking "Get Your Quote Now"
-                    setTimeout(() => {
+        setTimeout(() => {
                         console.log('🔄 Step 6: Simulating "Get Your Quote Now" click...');
                         
                         // Find and click the "Get Your Quote Now" button
@@ -3552,12 +3265,12 @@ function initializeMedicalConditionsLogic() {
             // Get the current IUL quote slider instance
             if (window.iulQuoteSlider) {
                 window.iulQuoteSlider.showSecureQuoteModal();
-            } else {
+        } else {
                 console.error('❌ IUL Quote Slider not initialized');
                 // Fallback: manually trigger the application form
                 showNextStepAfterCongrats();
             }
-        } catch (error) {
+                        } catch (error) {
             console.error('❌ Error handling IUL quote now button:', error);
             // Fallback: manually trigger the application form
             showNextStepAfterCongrats();
@@ -3839,7 +3552,7 @@ function initializeMedicalConditionsLogic() {
         try {
             if (window.funnelData && window.funnelData.contactInfo && window.funnelData.contactInfo.dateOfBirth) {
                 const birthDate = new Date(window.funnelData.contactInfo.dateOfBirth);
-                const today = new Date();
+                        const today = new Date();
                 const age = today.getFullYear() - birthDate.getFullYear();
                 const monthDiff = today.getMonth() - birthDate.getMonth();
                 const finalAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) ? age - 1 : age;

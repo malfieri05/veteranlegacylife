@@ -190,12 +190,13 @@
                         <span>Trusted by 50,000+ Veterans Nationwide</span>
                     </div>
                     <h2>Veterans & Active Service Members</h2>
-                    <h1>You May Qualify for New Life Insurance Benefits in 2025</h1>
-                    <p>As a resident of your state, you are entitled to check your eligibility for exclusive life insurance benefits designed specifically for our nation's heroes.</p>
-                                    <div class="hero-buttons">
-                        <button class="cta-button qualify-button">See If I Qualify <span>→</span></button>
-                        <button class="cta-button load-screen-button">Load Screen</button>
+                    <div class="hero-title-button-container">
+                        <h1>You May Qualify for New Life Insurance Benefits in 2025</h1>
+                        <div class="hero-buttons">
+                            <button class="cta-button qualify-button">See If I Qualify <span>→</span></button>
+                        </div>
                     </div>
+                    <p>As a resident of your state, you are entitled to check your eligibility for exclusive life insurance benefits designed specifically for our nation's heroes.</p>
                     <div class="security-note">
                         <i class="fas fa-shield-alt"></i>
                         <span>Your information is secure and protected</span>
@@ -502,10 +503,10 @@
     </footer>
 
     <!-- Funnel Modal -->
-    <div id="funnel-modal" class="funnel-modal" style="display:none;">
+    <div id="funnel-modal" class="funnel-modal">
       <div class="funnel-modal-content">
         <div class="funnel-progress-container">
-          <div class="funnel-progress-tracker">1/12</div>
+          <div class="funnel-progress-tracker">1/6</div>
           <div class="funnel-progress-bar">
             <div class="funnel-progress-fill" style="width: 8%;"></div>
           </div>
@@ -654,172 +655,8 @@
                 </div>
                 <div style="display:flex;justify-content:center;align-items:center;margin-top:2rem;">
                 <button type="button" class="funnel-back-btn" data-back="funnel-coverage-form"><span class="back-arrow">&#8592;</span>Back</button>
-                    <button type="submit" class="cta-button primary" style="margin-left:1rem;">Next</button>
+                    <button type="submit" class="cta-button primary" style="margin-left:1rem;">Submit</button>
                 </div>
-            </div>
-        </form>
-        
-        <!-- Medical Funnel Steps -->
-        <form id="funnel-medical-tobacco" style="display:none;">
-            <h2 class="funnel-step-title">Medical Questions</h2>
-            <p class="funnel-step-desc">These questions help us match you with the best coverage options. Your answers are confidential.</p>
-            <div class="form-field">
-                <label>Have you used any form of tobacco or nicotine in the past 12 months?</label>
-                <div class="funnel-military-options">
-                    <label><input type="radio" name="tobaccoUse" value="Yes" required><span>Yes</span></label>
-                    <label><input type="radio" name="tobaccoUse" value="No"><span>No</span></label>
-                </div>
-            </div>
-            <div style="display:flex;justify-content:center;align-items:center;margin-top:2rem;">
-                <button type="button" class="funnel-back-btn" data-back="funnel-contact-form"><span class="back-arrow">&#8592;</span>Back</button>
-                <button type="button" class="cta-button primary" id="medical-tobacco-next" style="margin-left:1rem;">Next</button>
-            </div>
-        </form>
-        <form id="funnel-medical-conditions" style="display:none;">
-            <div class="form-field">
-                <label>Have you ever been diagnosed with or treated for any of the following? <span style="font-weight:400;">(Check all that apply)</span></label>
-                <div class="funnel-checkbox-options">
-                    <label><input type="checkbox" name="medicalConditions" value="Cancer"><span>Cancer (within the last 2 years)</span></label>
-                    <label><input type="checkbox" name="medicalConditions" value="HeartAttack"><span>Heart attack or stroke (within the last 2 years)</span></label>
-                    <label><input type="checkbox" name="medicalConditions" value="COPD"><span>COPD, emphysema, or currently using oxygen</span></label>
-                    <label><input type="checkbox" name="medicalConditions" value="Alzheimers"><span>Alzheimer's or dementia</span></label>
-                    <label><input type="checkbox" name="medicalConditions" value="KidneyFailure"><span>Kidney failure or on dialysis</span></label>
-                    <label><input type="checkbox" name="medicalConditions" value="None"><span>None of the above</span></label>
-                </div>
-            </div>
-            <div style="display:flex;justify-content:center;align-items:center;margin-top:2rem;">
-                <button type="button" class="funnel-back-btn" data-back="funnel-medical-tobacco"><span class="back-arrow">&#8592;</span>Back</button>
-                <button type="submit" class="cta-button primary" id="medical-conditions-next" style="margin-left:1rem;">Next</button>
-            </div>
-        </form>
-        <form id="funnel-medical-height-weight" style="display:none;">
-            <div class="form-field">
-                <label>Approximate height and weight?</label>
-                <div class="form-grid">
-                    <div class="form-field">
-                        <label for="height">Height (ft/in)</label>
-                        <div class="dropdown-container">
-                            <input type="text" id="height" name="height" placeholder="Select height..." required autocomplete="off">
-                            <div class="dropdown-list" id="height-dropdown">
-                                <div class="dropdown-item" data-value="4'8">4'8"</div>
-                                <div class="dropdown-item" data-value="4'9">4'9"</div>
-                                <div class="dropdown-item" data-value="4'10">4'10"</div>
-                                <div class="dropdown-item" data-value="4'11">4'11"</div>
-                                <div class="dropdown-item" data-value="5'0">5'0"</div>
-                                <div class="dropdown-item" data-value="5'1">5'1"</div>
-                                <div class="dropdown-item" data-value="5'2">5'2"</div>
-                                <div class="dropdown-item" data-value="5'3">5'3"</div>
-                                <div class="dropdown-item" data-value="5'4">5'4"</div>
-                                <div class="dropdown-item" data-value="5'5">5'5"</div>
-                                <div class="dropdown-item" data-value="5'6">5'6"</div>
-                                <div class="dropdown-item" data-value="5'7">5'7"</div>
-                                <div class="dropdown-item" data-value="5'8">5'8"</div>
-                                <div class="dropdown-item" data-value="5'9">5'9"</div>
-                                <div class="dropdown-item" data-value="5'10">5'10"</div>
-                                <div class="dropdown-item" data-value="5'11">5'11"</div>
-                                <div class="dropdown-item" data-value="6'0">6'0"</div>
-                                <div class="dropdown-item" data-value="6'1">6'1"</div>
-                                <div class="dropdown-item" data-value="6'2">6'2"</div>
-                                <div class="dropdown-item" data-value="6'3">6'3"</div>
-                                <div class="dropdown-item" data-value="6'4">6'4"</div>
-                                <div class="dropdown-item" data-value="6'5">6'5"</div>
-                                <div class="dropdown-item" data-value="6'6">6'6"</div>
-                                <div class="dropdown-item" data-value="6'7">6'7"</div>
-                                <div class="dropdown-item" data-value="6'8">6'8"</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-field">
-                        <label for="weight">Weight (lbs)</label>
-                        <div class="dropdown-container">
-                            <input type="text" id="weight" name="weight" placeholder="Select weight..." required autocomplete="off">
-                            <div class="dropdown-list" id="weight-dropdown">
-                                <div class="dropdown-item" data-value="100">100 lbs</div>
-                                <div class="dropdown-item" data-value="105">105 lbs</div>
-                                <div class="dropdown-item" data-value="110">110 lbs</div>
-                                <div class="dropdown-item" data-value="115">115 lbs</div>
-                                <div class="dropdown-item" data-value="120">120 lbs</div>
-                                <div class="dropdown-item" data-value="125">125 lbs</div>
-                                <div class="dropdown-item" data-value="130">130 lbs</div>
-                                <div class="dropdown-item" data-value="135">135 lbs</div>
-                                <div class="dropdown-item" data-value="140">140 lbs</div>
-                                <div class="dropdown-item" data-value="145">145 lbs</div>
-                                <div class="dropdown-item" data-value="150">150 lbs</div>
-                                <div class="dropdown-item" data-value="155">155 lbs</div>
-                                <div class="dropdown-item" data-value="160">160 lbs</div>
-                                <div class="dropdown-item" data-value="165">165 lbs</div>
-                                <div class="dropdown-item" data-value="170">170 lbs</div>
-                                <div class="dropdown-item" data-value="175">175 lbs</div>
-                                <div class="dropdown-item" data-value="180">180 lbs</div>
-                                <div class="dropdown-item" data-value="185">185 lbs</div>
-                                <div class="dropdown-item" data-value="190">190 lbs</div>
-                                <div class="dropdown-item" data-value="195">195 lbs</div>
-                                <div class="dropdown-item" data-value="200">200 lbs</div>
-                                <div class="dropdown-item" data-value="205">205 lbs</div>
-                                <div class="dropdown-item" data-value="210">210 lbs</div>
-                                <div class="dropdown-item" data-value="215">215 lbs</div>
-                                <div class="dropdown-item" data-value="220">220 lbs</div>
-                                <div class="dropdown-item" data-value="225">225 lbs</div>
-                                <div class="dropdown-item" data-value="230">230 lbs</div>
-                                <div class="dropdown-item" data-value="235">235 lbs</div>
-                                <div class="dropdown-item" data-value="240">240 lbs</div>
-                                <div class="dropdown-item" data-value="245">245 lbs</div>
-                                <div class="dropdown-item" data-value="250">250 lbs</div>
-                                <div class="dropdown-item" data-value="255">255 lbs</div>
-                                <div class="dropdown-item" data-value="260">260 lbs</div>
-                                <div class="dropdown-item" data-value="265">265 lbs</div>
-                                <div class="dropdown-item" data-value="270">270 lbs</div>
-                                <div class="dropdown-item" data-value="275">275 lbs</div>
-                                <div class="dropdown-item" data-value="280">280 lbs</div>
-                                <div class="dropdown-item" data-value="285">285 lbs</div>
-                                <div class="dropdown-item" data-value="290">290 lbs</div>
-                                <div class="dropdown-item" data-value="295">295 lbs</div>
-                                <div class="dropdown-item" data-value="300">300 lbs</div>
-                                <div class="dropdown-item" data-value="305">305 lbs</div>
-                                <div class="dropdown-item" data-value="310">310 lbs</div>
-                                <div class="dropdown-item" data-value="315">315 lbs</div>
-                                <div class="dropdown-item" data-value="320">320 lbs</div>
-                                <div class="dropdown-item" data-value="325">325 lbs</div>
-                                <div class="dropdown-item" data-value="330">330 lbs</div>
-                                <div class="dropdown-item" data-value="335">335 lbs</div>
-                                <div class="dropdown-item" data-value="340">340 lbs</div>
-                                <div class="dropdown-item" data-value="345">345 lbs</div>
-                                <div class="dropdown-item" data-value="350">350+ lbs</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div style="display:flex;justify-content:center;align-items:center;margin-top:2rem;">
-                <button type="button" class="funnel-back-btn" data-back="funnel-medical-conditions"><span class="back-arrow">&#8592;</span>Back</button>
-                <button type="button" class="cta-button primary" id="medical-height-weight-next" style="margin-left:1rem;">Next</button>
-            </div>
-        </form>
-        <form id="funnel-medical-hospital" style="display:none;">
-            <div class="form-field">
-                <label>Are you currently in a hospital, nursing home, or receiving hospice care?</label>
-                <div class="funnel-military-options">
-                    <label><input type="radio" name="hospitalCare" value="Yes" required><span>Yes</span></label>
-                    <label><input type="radio" name="hospitalCare" value="No"><span>No</span></label>
-                </div>
-            </div>
-            <div style="display:flex;justify-content:center;align-items:center;margin-top:2rem;">
-                <button type="button" class="funnel-back-btn" data-back="funnel-medical-height-weight"><span class="back-arrow">&#8592;</span>Back</button>
-                <button type="button" class="cta-button primary" id="medical-hospital-next" style="margin-left:1rem;">Next</button>
-            </div>
-        </form>
-        <form id="funnel-medical-diabetes" style="display:none;">
-            <div class="form-field">
-                <label>Do you take medication for diabetes?</label>
-                <div class="funnel-military-options">
-                    <label><input type="radio" name="diabetesMedication" value="No" required><span>No</span></label>
-                    <label><input type="radio" name="diabetesMedication" value="Pills"><span>Yes, I take pills</span></label>
-                    <label><input type="radio" name="diabetesMedication" value="Insulin"><span>Yes, I take insulin</span></label>
-                </div>
-            </div>
-            <div style="display:flex;justify-content:center;align-items:center;margin-top:2rem;">
-                <button type="button" class="funnel-back-btn" data-back="funnel-medical-hospital"><span class="back-arrow">&#8592;</span>Back</button>
-                <button type="submit" class="cta-button primary" id="medical-submit" style="margin-left:1rem;">See Results!</button>
             </div>
         </form>
         
@@ -1082,8 +919,8 @@
                 </svg>
             </div>
             <h2>Thank You!</h2>
-            <p class="success-subheading">Your information has been submitted successfully.</p>
-            <p>A member of our team will contact you within 24 hours to discuss your life insurance options.</p>
+            <p class="success-subheading">Your contact information has been submitted successfully.</p>
+            <p>A member of our team will contact you within 24 hours to discuss your life insurance options and provide personalized quotes.</p>
         </div>
     </div>
 
@@ -1126,42 +963,7 @@
       </p>
     </div>
 
-    <!-- Processing Modal for Medical Funnel -->
-    <div id="medical-processing-modal" class="modal-overlay" style="display:none;z-index:9999;">
-        <div class="processing-modal-content">
-            <div class="processing-spinner"></div>
-            <h2>You answers are being processed. Please Wait.</h2>
-        </div>
-    </div>
-    <!-- Congratulations Modal for Medical Funnel -->
-    <div id="medical-congrats-modal" class="modal-overlay" style="display:none;z-index:9999;">
-        <div class="congrats-modal-content">
-            <button class="modal-close-btn" onclick="hideMedicalCongratsModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; color: #666; cursor: pointer;">×</button>
-            <div class="congrats-checkmark">
-                <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="40" cy="40" r="40" fill="#10b981"/>
-                    <path d="M25 40L35 50L55 30" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-            <h2>Congratulations!</h2>
-            <p>Based on initial analysis of your medical answers - You have been <b>Pre-Approved!</b></p>
-            <button class="cta-button" id="get-quote-btn" style="margin-top: 1.5rem;">Complete Application</button>
-        </div>
-    </div>
 
-    <!-- Application Submission Congratulations Modal -->
-    <div id="application-congrats-modal" class="modal-overlay" style="display:none;z-index:9999;">
-        <div class="congrats-modal-content" style="max-width: 600px; padding: 3rem; text-align: center; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.1);">
-            <button class="modal-close-btn" onclick="hideApplicationCongratsModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; color: #666; cursor: pointer;">×</button>
-            
-            <!-- Logo -->
-            <div style="margin-bottom: 2rem;">
-                <img src="assets/logo.png" alt="Veteran Legacy Life" style="height: 60px; margin: 0 auto;">
-            </div>
-            
-            <!-- Phone Number (Top Right) -->
-            <div style="position: absolute; top: 20px; right: 60px; background: #f3f4f6; padding: 8px 16px; border-radius: 20px; font-size: 14px; color: #6b7280;">
-                800-300-9550
             </div>
             
             <!-- Personalized Greeting -->

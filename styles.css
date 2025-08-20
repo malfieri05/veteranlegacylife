@@ -353,7 +353,7 @@ header {
     align-items: flex-start;
     position: relative;
     z-index: 2;
-    max-width: 900px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
     text-align: center;
@@ -1334,16 +1334,98 @@ input[type="date"]:invalid {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    /* General Mobile Optimizations */
+    .container {
+        padding: 0 15px;
+    }
+    
+    /* Hero Section Mobile Optimization */
+    .hero {
+        padding: 60px 15px 40px;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+    }
+    
     .hero-content {
         grid-template-columns: 1fr;
-        gap: 2rem;
+        gap: 1.5rem;
         text-align: center;
+        padding: 0 10px;
+        max-width: 100%;
     }
     
-    .hero-title {
-        font-size: 2.5rem;
+    .hero h1 {
+        font-size: 1.8rem;
+        line-height: 1.3;
+        margin-bottom: 1rem;
     }
     
+    .hero h2 {
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+    }
+    
+    .hero p {
+        font-size: 1rem;
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Trust Badge Mobile */
+    .trust-badge {
+        margin-bottom: 15px;
+        padding: 6px 15px;
+        font-size: 0.8rem;
+        border-radius: 20px;
+    }
+    
+    /* Insurance Types Mobile */
+    .insurance-types {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin: 1.5rem 0;
+    }
+    
+    .insurance-type {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+        border-radius: 8px;
+    }
+    
+    /* Security Note Mobile */
+    .security-note {
+        font-size: 0.85rem;
+        margin: 1rem 0;
+        padding: 0.5rem;
+    }
+    
+    /* Button Mobile Optimization */
+    .hero-buttons .cta-button {
+        width: 100%;
+        max-width: 280px;
+        padding: 16px 24px;
+        font-size: 1.1rem;
+        border-radius: 12px;
+        margin: 0 auto;
+    }
+    
+    /* Title-Button Container Mobile */
+    .hero-title-button-container {
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+        margin: 1rem 0;
+    }
+    
+    .hero-title-button-container h1 {
+        font-size: 1.6rem;
+        line-height: 1.3;
+        margin: 0;
+    }
+    
+    /* Other Content Grids */
     .hero-features {
         justify-content: center;
         flex-wrap: wrap;
@@ -1384,27 +1466,11 @@ input[type="date"]:invalid {
         max-width: 100%;
     }
     
-    .cta-button.primary {
-        width: 90%;
-        min-width: unset;
-        max-width: unset;
-    }
-    
-    .hero {
-        padding: 80px 20px;
-    }
-    
-    .trust-badge {
-        margin-bottom: 20px;
-        padding: 8px 20px;
-        top: 8px;
-        font-size: 0.9em;
-    }
-    
     /* -- Header Adjustments -- */
     .header-container {
         flex-direction: column;
         gap: 10px;
+        padding: 10px 15px;
     }
 
     .brand span {
@@ -1412,13 +1478,17 @@ input[type="date"]:invalid {
     }
     
     .phone {
-        padding: 6px 12px;
-        font-size: 1.2rem;
+        padding: 8px 16px;
+        font-size: 1.1rem;
         display: flex !important;
         visibility: visible !important;
         opacity: 1 !important;
         background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
         color: white !important;
+        border-radius: 8px;
+        min-height: 44px;
+        align-items: center;
+        justify-content: center;
     }
     
     .phone-text {
@@ -1431,17 +1501,18 @@ input[type="date"]:invalid {
     }
     
     .call-now {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         display: block !important;
         visibility: visible !important;
         color: rgba(255, 255, 255, 0.9) !important;
     }
     
     .phone-number {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         display: block !important;
         visibility: visible !important;
         color: white !important;
+        font-weight: 600;
     }
 
     /* -- Hero Section Adjustments -- */
@@ -1499,29 +1570,137 @@ input[type="date"]:invalid {
 }
 
 @media (max-width: 480px) {
+    /* Extra Small Mobile Optimizations */
+    
     .container {
-        padding: 0 15px;
+        padding: 0 10px;
     }
     
+    /* Hero Section Extra Small */
     .hero {
-        padding: 100px 0 60px;
+        padding: 50px 10px 40px;
+        min-height: 100vh;
     }
     
-    .hero-title {
-        font-size: 2rem;
+    .hero-content {
+        padding: 0 5px;
     }
     
-    .hero-subtitle {
+    .hero h1 {
+        font-size: 1.5rem;
+        line-height: 1.3;
+    }
+    
+    .hero h2 {
+        font-size: 1.2rem;
+    }
+    
+    .hero p {
+        font-size: 0.95rem;
+        line-height: 1.4;
+    }
+    
+    /* Trust Badge Extra Small */
+    .trust-badge {
+        padding: 5px 12px;
+        font-size: 0.75rem;
+        margin-bottom: 12px;
+    }
+    
+    /* Insurance Types Extra Small */
+    .insurance-types {
+        gap: 0.5rem;
+        margin: 1rem 0;
+    }
+    
+    .insurance-type {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.85rem;
+    }
+    
+    /* Button Extra Small */
+    .hero-buttons .cta-button {
+        max-width: 260px;
+        padding: 14px 20px;
         font-size: 1rem;
     }
     
-    .benefit-card,
-    .testimonial-card {
-        padding: 1.5rem;
+    /* Title-Button Container Extra Small */
+    .hero-title-button-container {
+        gap: 1rem;
+        margin: 0.75rem 0;
     }
     
+    .hero-title-button-container h1 {
+        font-size: 1.4rem;
+    }
+    
+    /* Security Note Extra Small */
+    .security-note {
+        font-size: 0.8rem;
+        margin: 0.75rem 0;
+    }
+    
+    /* Cards Extra Small */
+    .benefit-card,
+    .testimonial-card {
+        padding: 1.25rem;
+        margin: 0.75rem 0;
+    }
+    
+    /* Form Container Extra Small */
     .form-container {
-        padding: 2rem 1.5rem;
+        padding: 1.5rem 1rem;
+    }
+    
+    /* Funnel Modal Extra Small */
+    .funnel-modal {
+        padding: 5px;
+        padding-top: 10px;
+    }
+    
+    .funnel-modal-content {
+        width: 98%;
+        padding: 1rem;
+        max-height: 98vh;
+    }
+    
+    .funnel-modal h2 {
+        font-size: 1.2rem;
+        margin-top: 3rem;
+    }
+    
+    .form-field input,
+    .form-field select {
+        padding: 0.7rem;
+        font-size: 0.95rem;
+    }
+    
+    /* Progress Bar Extra Small */
+    .funnel-progress-container {
+        top: 8px;
+        left: 8px;
+        right: 8px;
+        max-width: calc(100% - 16px);
+    }
+    
+    .funnel-progress-tracker {
+        font-size: 0.65rem;
+        padding: 3px 6px;
+    }
+    
+    /* Success Modal Extra Small */
+    .success-modal-content {
+        padding: 1.25rem;
+        margin: 0.5rem;
+    }
+    
+    .success-modal-content h2 {
+        font-size: 1.3rem;
+    }
+    
+    .success-modal-content p {
+        font-size: 0.95rem;
     }
 }
 
@@ -1546,12 +1725,189 @@ input[type="date"]:invalid {
 }
 
 @media (max-width: 600px) {
+    /* Enhanced Mobile Optimizations */
+    
+    /* Footer Legal Text */
     .footer-legal-text {
         font-size: 0.68rem;
         padding: 8px 4px 8px 4px;
     }
     .footer-legal-text p {
         margin-bottom: 0.2rem;
+    }
+    
+    /* Enhanced Mobile Funnel Modal */
+    .funnel-modal {
+        padding: 8px;
+        align-items: flex-start;
+        padding-top: 15px;
+    }
+    
+    .funnel-modal-content {
+        width: 96%;
+        max-width: none;
+        min-height: auto;
+        max-height: 96vh;
+        padding: 1.25rem;
+        margin: 0;
+        border-radius: 12px;
+    }
+    
+    .funnel-progress-container {
+        top: 12px;
+        left: 12px;
+        right: 12px;
+        max-width: calc(100% - 24px);
+    }
+    
+    .funnel-progress-tracker {
+        font-size: 0.7rem;
+        padding: 4px 8px;
+    }
+    
+    .funnel-modal h2 {
+        font-size: 1.25rem;
+        margin-top: 3.5rem;
+        padding-top: 0.5rem;
+        line-height: 1.3;
+    }
+    
+    .funnel-modal form {
+        gap: 1rem;
+        padding: 0.5rem 0;
+    }
+    
+    .form-field {
+        margin-bottom: 0.75rem;
+    }
+    
+    .form-field input,
+    .form-field select {
+        padding: 0.75rem;
+        font-size: 1rem;
+        border-radius: 8px;
+        min-height: 44px; /* Better touch target */
+    }
+    
+    /* State Selection Mobile */
+    #funnel-state-select {
+        width: 100%;
+        max-width: none;
+        font-size: 1rem;
+        padding: 0.75rem;
+        min-height: 44px;
+    }
+    
+    #funnel-state-form .cta-button {
+        width: 100%;
+        max-width: none;
+        font-size: 1.1rem;
+        padding: 0.9rem;
+        margin-top: 1rem;
+        min-height: 48px;
+    }
+    
+    /* Military Options Mobile */
+    .funnel-military-options {
+        gap: 0.75rem;
+    }
+    
+    .funnel-military-options label {
+        padding: 0.8rem 1rem;
+        font-size: 0.95rem;
+        min-height: 44px;
+        border-radius: 8px;
+    }
+    
+    /* Contact Form Mobile */
+    .funnel-contact-form input,
+    .funnel-contact-form select {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 1rem;
+        min-height: 44px;
+    }
+    
+    .funnel-contact-form .cta-button {
+        width: 100%;
+        padding: 0.9rem;
+        font-size: 1.1rem;
+        min-height: 48px;
+    }
+    
+    /* Success Modal Mobile */
+    .success-modal-content {
+        padding: 1.5rem;
+        margin: 1rem;
+        border-radius: 12px;
+    }
+    
+    .success-modal-content h2 {
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+    }
+    
+    .success-modal-content p {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    /* IUL Quote Modal Mobile */
+    .iul-quote-modal-content {
+        padding: 1.25rem;
+        margin: 0.5rem;
+        border-radius: 12px;
+        max-height: 95vh;
+    }
+    
+    .iul-quote-modal h2 {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .slider-container {
+        margin: 1rem 0;
+    }
+    
+    .slider-container input[type="range"] {
+        width: 100%;
+        height: 8px;
+    }
+    
+    .slider-labels {
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+    
+    .quote-display {
+        font-size: 1.1rem;
+        padding: 1rem;
+        margin: 1rem 0;
+    }
+    
+    /* Coverage Modal Mobile */
+    .coverage-modal-content {
+        padding: 1.25rem;
+        margin: 0.5rem;
+        border-radius: 12px;
+        max-height: 95vh;
+    }
+    
+    .coverage-modal h2 {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .coverage-slider {
+        width: 100%;
+        height: 8px;
+        margin: 1rem 0;
+    }
+    
+    .coverage-display {
+        font-size: 1.1rem;
+        padding: 1rem;
+        margin: 1rem 0;
     }
 }
 
@@ -1636,25 +1992,27 @@ html {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.8);
     z-index: 1000;
     justify-content: center;
     align-items: center;
     overflow-y: auto;
     padding: 20px;
     backdrop-filter: blur(4px);
+    box-sizing: border-box;
 }
 
 .funnel-modal-content {
     background-color: #fff;
     padding: 2.5rem;
     border-radius: 16px;
-    width: 85%;
-    max-width: 400px;
+    width: 90%;
+    max-width: 450px;
     position: relative;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 8px 25px rgba(0, 0, 0, 0.2);
     margin: auto;
-    height: 500px;
+    min-height: 550px;
+    max-height: 85vh;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -1663,10 +2021,11 @@ html {
     transform: scale(1);
     opacity: 1;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
 }
 
-.funnel-modal {
-    display: flex;
+.funnel-modal.active {
+    display: flex !important;
 }
 
 .funnel-modal form {
@@ -1676,7 +2035,9 @@ html {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 2rem;
+    gap: 1.5rem;
+    padding: 1rem 0;
+    width: 100%;
 }
 
 .funnel-modal form:first-child {
@@ -1686,11 +2047,12 @@ html {
 .funnel-modal h2 {
     text-align: center;
     margin-bottom: 1.5rem;
-    margin-top: 1rem;
+    margin-top: 2rem;
     color: #22304a;
     font-size: 1.5rem;
     font-weight: 700;
     letter-spacing: 0.01em;
+    padding-top: 1rem;
 }
 
 /* State Selection Form Specific Styles */
@@ -1837,6 +2199,7 @@ html {
 
 .form-field {
     position: relative;
+    margin-bottom: 1rem;
 }
 
 .form-field input {
@@ -2866,14 +3229,19 @@ html {
 
 .funnel-progress-container {
     position: absolute;
-    top: 25px;
-    left: 25px;
-    right: 25px;
+    top: 20px;
+    left: 20px;
+    right: 20px;
     z-index: 10;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
     pointer-events: none;
+    max-width: calc(100% - 40px);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 8px;
+    backdrop-filter: blur(2px);
 }
 
 .funnel-progress-tracker {
@@ -2887,6 +3255,10 @@ html {
     backdrop-filter: blur(10px);
     box-shadow: 0 2px 8px rgba(59, 110, 234, 0.1);
     align-self: flex-start;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .funnel-progress-bar {
@@ -4765,6 +5137,21 @@ html {
     }
 }
 
+/* Hero Title and Button Layout */
+.hero-title-button-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    margin: 1rem 0;
+    flex-wrap: wrap;
+}
+
+.hero-title-button-container h1 {
+    margin: 0;
+    flex: 0 0 auto;
+}
+
 /* Hero Buttons Layout */
 .hero-buttons {
     display: flex;
@@ -4774,21 +5161,14 @@ html {
 }
 
 .hero-buttons .cta-button {
-    flex: 1;
+    flex: 0 0 auto;
     min-width: 200px;
+    max-width: 400px;
+    width: auto;
+    padding: 14px 40px;
 }
 
-.load-screen-button {
-    background: linear-gradient(135deg, #64748b 0%, #475569 100%);
-    border: 2px solid #64748b;
-}
 
-.load-screen-button:hover {
-    background: linear-gradient(135deg, #475569 0%, #334155 100%);
-    border-color: #475569;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(100, 116, 139, 0.3);
-}
 
 /* Load Screen Modal Styles */
 .load-screen-content {
@@ -4849,9 +5229,22 @@ html {
         gap: 0.75rem;
     }
     
+    .hero-title-button-container {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .hero-title-button-container h1 {
+        font-size: 1.8rem;
+        line-height: 1.2;
+    }
+    
     .hero-buttons .cta-button {
         min-width: auto;
-        width: 100%;
+        width: auto;
+        max-width: 320px;
+        margin: 0 auto;
     }
     
     .load-screen-content {
@@ -4872,6 +5265,61 @@ html {
         width: 50px;
         height: 50px;
         border-width: 3px;
+    }
+}
+
+/* Mobile Touch Optimizations */
+@media (max-width: 768px) {
+    /* Better touch targets */
+    button, 
+    input[type="submit"], 
+    input[type="button"],
+    select,
+    .cta-button {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Improved form spacing */
+    .form-field {
+        margin-bottom: 1rem;
+    }
+    
+    .form-field input,
+    .form-field select,
+    .form-field textarea {
+        font-size: 16px; /* Prevents zoom on iOS */
+        padding: 0.75rem;
+        border-radius: 8px;
+    }
+    
+    /* Better button spacing */
+    .cta-button {
+        margin: 0.5rem 0;
+        padding: 0.9rem 1.5rem;
+    }
+    
+    /* Improved modal scrolling */
+    .funnel-modal,
+    .success-modal,
+    .iul-quote-modal,
+    .coverage-modal {
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Better text readability */
+    body {
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+    }
+    
+    /* Improved focus states for accessibility */
+    button:focus,
+    input:focus,
+    select:focus,
+    textarea:focus {
+        outline: 2px solid #2563eb;
+        outline-offset: 2px;
     }
 }
 
@@ -4911,4 +5359,53 @@ html {
   .funnel-progress-bar {
     height: 4px;
   }
+}
+
+/* Mobile Performance Optimizations */
+@media (max-width: 768px) {
+    /* Fix Progress Bar Overlap - Critical Mobile Fix */
+    .funnel-modal h2 {
+        margin-top: 4rem !important;
+        padding-top: 0.5rem !important;
+    }
+    
+    /* Reduce animations for better performance */
+    .hero-text,
+    .hero-image,
+    .benefit-card,
+    .testimonial-card {
+        animation-duration: 0.5s;
+    }
+    
+    /* Optimize modal transitions */
+    .funnel-modal,
+    .success-modal,
+    .iul-quote-modal,
+    .coverage-modal {
+        transition: opacity 0.2s ease-out;
+    }
+    
+    /* Better loading states */
+    .loading {
+        opacity: 0.8;
+    }
+    
+    /* Improved button feedback */
+    .cta-button:active {
+        transform: scale(0.98);
+        transition: transform 0.1s ease;
+    }
+    
+    /* Better form validation on mobile */
+    .form-field.error input,
+    .form-field.error select {
+        border-color: #ef4444;
+        box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
+    }
+    
+    .form-field.success input,
+    .form-field.success select {
+        border-color: #10b981;
+        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+    }
 }
